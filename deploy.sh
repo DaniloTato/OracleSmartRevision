@@ -35,6 +35,11 @@ sudo rm -rf "$WEB_DIR"/*
 sudo cp -r "$BUILD_DIR"/* "$WEB_DIR"
 sudo cp "$NGINX_CONFIG" "$NGINX_SITE"
 
+# config SELinux permissions
+
+sudo chcon -R -t httpd_sys_content_t "$WEB_DIR"
+sudo setsebool -P httpd_can_network_connect 1
+
 sudo nginx -t
 
 sudo systemctl enable nginx
