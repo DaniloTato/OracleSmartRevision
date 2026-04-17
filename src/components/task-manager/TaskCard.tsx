@@ -16,9 +16,9 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
-  { value: 'pendiente', label: 'To Do' },
-  { value: 'en_progreso', label: 'En Proceso' },
-  { value: 'completada', label: 'Hecho' },
+  { value: 'open', label: 'To Do' },
+  { value: 'in_progress', label: 'En Proceso' },
+  { value: 'closed', label: 'Hecho' },
 ]
 
 const PRIORITY_STYLE: Record<TaskPriority, string> = {

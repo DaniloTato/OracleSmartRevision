@@ -7,7 +7,7 @@ import type { ActivityLogEntry } from '../types'
 
 export const mockActivityLog: ActivityLogEntry[] = [
   {
-    id: 'a1',
+    id: 1,
     userId: 'u2',
     userName: 'Yael Varela',
     action: 'Completó la tarea',
@@ -18,7 +18,7 @@ export const mockActivityLog: ActivityLogEntry[] = [
     timestamp: '2025-02-10T14:32:00',
   },
   {
-    id: 'a2',
+    id: 2,
     userId: 'u3',
     userName: 'Danilo Tato',
     action: 'Cambió estado a "En progreso"',
@@ -29,7 +29,7 @@ export const mockActivityLog: ActivityLogEntry[] = [
     timestamp: '2025-02-10T11:15:00',
   },
   {
-    id: 'a3',
+    id: 3,
     userId: 'u1',
     userName: 'Admin Oracle',
     action: 'Inició sprint',
@@ -40,7 +40,7 @@ export const mockActivityLog: ActivityLogEntry[] = [
     timestamp: '2025-02-03T09:00:00',
   },
   {
-    id: 'a4',
+    id: 4,
     userId: 'u4',
     userName: 'Sebastián Soria',
     action: 'Envió a revisión',
@@ -51,7 +51,7 @@ export const mockActivityLog: ActivityLogEntry[] = [
     timestamp: '2025-02-09T16:45:00',
   },
   {
-    id: 'a5',
+    id: 5,
     userId: 'u1',
     userName: 'Admin Oracle',
     action: 'Actualizó configuración',
@@ -60,7 +60,7 @@ export const mockActivityLog: ActivityLogEntry[] = [
     timestamp: '2025-02-08T10:20:00',
   },
   {
-    id: 'a6',
+    id: 6,
     userId: 'u5',
     userName: 'Sebastián Certuche',
     action: 'Creó nueva tarea',
@@ -71,7 +71,7 @@ export const mockActivityLog: ActivityLogEntry[] = [
     timestamp: '2025-02-06T13:00:00',
   },
   {
-    id: 'a7',
+    id: 7,
     userId: 'u2',
     userName: 'Yael Varela',
     action: 'Comentó en tarea',
@@ -82,7 +82,7 @@ export const mockActivityLog: ActivityLogEntry[] = [
     timestamp: '2025-02-01T12:00:00',
   },
   {
-    id: 'a8',
+    id: 8,
     userId: 'u1',
     userName: 'Admin Oracle',
     action: 'Cerró sprint',
@@ -93,7 +93,7 @@ export const mockActivityLog: ActivityLogEntry[] = [
     timestamp: '2025-02-02T18:00:00',
   },
   {
-    id: 'a9',
+    id: 9,
     userId: 'u3',
     userName: 'Danilo Tato',
     action: 'Completó la tarea',

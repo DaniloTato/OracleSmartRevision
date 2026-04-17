@@ -25,10 +25,9 @@ const PRIORIDAD_OPTIONS: { value: '' | TaskPriority; label: string }[] = [
 
 const ESTADO_OPTIONS: { value: '' | TaskStatus; label: string }[] = [
   { value: '', label: 'Todos' },
-  { value: 'pendiente', label: 'To Do' },
-  { value: 'en_progreso', label: 'En Proceso' },
-  { value: 'revisión', label: 'Revisión' },
-  { value: 'completada', label: 'Hecho' },
+  { value: 'open', label: 'To Do' },
+  { value: 'in_progress', label: 'En Proceso' },
+  { value: 'closed', label: 'Hecho' },
 ]
 
 interface TaskPoolProps {

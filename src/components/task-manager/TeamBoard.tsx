@@ -28,8 +28,6 @@ export function TeamBoard({
       <div className="flex-1 overflow-x-auto overflow-y-hidden p-3 min-h-0">
         <div className="flex gap-4 h-full min-w-max">
           {members.map((member) => {
-            console.log('USER DEBUG:', member.userId, member)
-
             return (
               <MemberColumn
                 key={member.userId}

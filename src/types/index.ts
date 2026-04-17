@@ -24,7 +24,10 @@ export interface Member {
   role: string
 }
 
-export type TaskStatus = 'pendiente' | 'en_progreso' | 'revisión' | 'completada'
+export type TaskStatus =
+  | 'open'
+  | 'in_progress'
+  | 'closed'
 export type TaskPriority = 'baja' | 'media' | 'alta'
 export type TaskType = 'feature' | 'bug' | 'issue' | 'capacitación'
 

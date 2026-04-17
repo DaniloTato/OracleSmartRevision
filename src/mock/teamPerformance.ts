@@ -7,7 +7,7 @@ import type { TeamMemberPerformance } from '../types'
 
 export const mockTeamPerformance: TeamMemberPerformance[] = [
   {
-    userId: 'u2',
+    userId: 2,
     userName: 'Yael Varela',
     role: 'Desarrolladora',
     tasksCompleted: 12,
@@ -16,7 +16,7 @@ export const mockTeamPerformance: TeamMemberPerformance[] = [
     currentSprintContribution: 35,
   },
   {
-    userId: 'u3',
+    userId: 3,
     userName: 'Danilo Tato',
     role: 'Desarrollador',
     tasksCompleted: 8,
@@ -25,7 +25,7 @@ export const mockTeamPerformance: TeamMemberPerformance[] = [
     currentSprintContribution: 28,
   },
   {
-    userId: 'u4',
+    userId: 4,
     userName: 'Sebastián Soria',
     role: 'Desarrollador',
     tasksCompleted: 15,
@@ -34,7 +34,7 @@ export const mockTeamPerformance: TeamMemberPerformance[] = [
     currentSprintContribution: 22,
   },
   {
-    userId: 'u5',
+    userId: 5,
     userName: 'Sebastián Certuche',
     role: 'Desarrollador',
     tasksCompleted: 5,

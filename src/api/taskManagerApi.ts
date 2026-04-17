@@ -33,8 +33,21 @@ export const createTask = (projectId: number, payload: any) =>
     body: JSON.stringify(payload),
   })
 
-export const updateTask = (issueId: number, payload: any) =>
-  fetchJson(`${BASE_URL}/issues/${issueId}`, {
+export const updateTask = async (id: number, payload: any) => {
+  const res = await fetch(`${BASE_URL}/issues/${id}`, {
     method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
+
+  const text = await res.text()
+
+  console.log('STATUS:', res.status)
+  console.log('RAW RESPONSE:', text)
+
+  if (!res.ok) {
+    throw new Error(text)
+  }
+
+  return JSON.parse(text)
+}

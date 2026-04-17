@@ -19,13 +19,13 @@ TODAY.setHours(0, 0, 0, 0)
 export function getSprintProgressPercent(sprintId: number): number {
   const tasks = getTasksBySprint(sprintId)
   if (tasks.length === 0) return 0
-  const completed = tasks.filter((t) => t.status === 'completada').length
+  const completed = tasks.filter((t) => t.status === 'closed').length
   return Math.round((completed / tasks.length) * 100)
 }
 
 /** Number of completed tasks in the sprint */
 export function getCompletedTasksCount(sprintId: number): number {
-  return getTasksBySprint(sprintId).filter((t) => t.status === 'completada').length
+  return getTasksBySprint(sprintId).filter((t) => t.status === 'closed').length
 }
 
 export interface CompletedTasksByMemberRow {
@@ -41,18 +41,18 @@ export function getCompletedTasksByMember(sprintId: number): CompletedTasksByMem
   return teamMembers.map((u) => ({
     userId: u.id,
     userName: u.name,
-    completadas: sprintTasks.filter((t) => t.assigneeId === u.id && t.status === 'completada').length,
+    completadas: sprintTasks.filter((t) => t.assigneeId === u.id && t.status === 'closed').length,
   }))
 }
 
 /** Number of tasks with status "en_progreso" (En Proceso) in the sprint */
 export function getTasksInProgressCount(sprintId: number): number {
-  return getTasksBySprint(sprintId).filter((t) => t.status === 'en_progreso').length
+  return getTasksBySprint(sprintId).filter((t) => t.status === 'in_progress').length
 }
 
 /** Number of tasks with status "pendiente" (Por Hacer / To Do) in the sprint */
 export function getTasksToDoCount(sprintId: number): number {
-  return getTasksBySprint(sprintId).filter((t) => t.status === 'pendiente').length
+  return getTasksBySprint(sprintId).filter((t) => t.status === 'open').length
 }
 
 /** Variance in hours: sum(actualHours - estimatedHours) for tasks with both set */
@@ -66,7 +66,7 @@ export function getEstimatedVsRealVarianceHours(sprintId: number): number {
 /** Count of open bugs and issues (not completed) in the sprint */
 export function getOpenBugsIssuesCount(sprintId: number): number {
   return getTasksBySprint(sprintId).filter(
-    (t) => (t.type === 'bug' || t.type === 'issue') && t.status !== 'completada'
+    (t) => (t.type === 'bug' || t.type === 'issue') && t.status !== 'closed'
   ).length
 }
 
@@ -87,7 +87,7 @@ export interface SprintAggregates {
 
 export function getSprintAggregates(sprintId: number): SprintAggregates {
   const tasks = getTasksBySprint(sprintId)
-  const completedCount = tasks.filter((t) => t.status === 'completada').length
+  const completedCount = tasks.filter((t) => t.status === 'closed').length
   const varianceHours = getEstimatedVsRealVarianceHours(sprintId)
   const openBugsIssuesCount = getOpenBugsIssuesCount(sprintId)
   const productivityPercent = getSprintProgressPercent(sprintId)
@@ -191,7 +191,7 @@ export function getDistributionByType(sprintId: number): DistributionByType {
 
 /** Overdue tasks: due date before today and not completed. Severity from priority. */
 export function getOverdueTasks(sprintId: number): OverdueTaskRisk[] {
-  const tasks = getTasksBySprint(sprintId).filter((t) => t.status !== 'completada')
+  const tasks = getTasksBySprint(sprintId).filter((t) => t.status !== 'closed')
   const result: OverdueTaskRisk[] = []
   for (const t of tasks) {
     const due = new Date() // Add when DB supports due dates for tasks
@@ -210,7 +210,7 @@ export function getOverdueTasks(sprintId: number): OverdueTaskRisk[] {
 }
 
 /** Overloaded people from mock list (current sprint context; mock is global). */
-export function getOverloadedPeople(_sprintId: string): OverloadedPersonRisk[] {
+export function getOverloadedPeople(_sprintId: number): OverloadedPersonRisk[] {
   return [...mockOverloadedPeople]
 }
 

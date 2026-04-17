@@ -16,7 +16,7 @@ export interface ProductivityPoint {
 }
 
 export interface UserProductivity {
-  userId: string
+  userId: number
   points: ProductivityPoint[]
 }
 
@@ -50,6 +50,6 @@ export const mockProductivityByUser: UserProductivity[] = mockUsers.map((user) =
 }))
 
 /** Get productivity series for a user by id. */
-export function getProductivityByUserId(userId: string): UserProductivity | undefined {
+export function getProductivityByUserId(userId: number): UserProductivity | undefined {
   return mockProductivityByUser.find((u) => u.userId === userId)
 }

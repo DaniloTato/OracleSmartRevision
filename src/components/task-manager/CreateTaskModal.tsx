@@ -43,7 +43,7 @@ export function CreateTaskModal({
     onSubmit({
       title: title.trim(),
       description: '',
-      status: 'pendiente',
+      status: 'open',
       priority: prioridad,
       type: tipo,
       assigneeId: assigneeId,

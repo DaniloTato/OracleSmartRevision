@@ -40,8 +40,8 @@ function taskStatusSlicesFromTasks(tasks: Task[]): TaskStatusSlice[] {
   let pendientes = 0
   let enProgreso = 0
   for (const t of tasks) {
-    if (t.status === 'completada') completadas++
-    else if (t.status === 'pendiente') pendientes++
+    if (t.status === 'closed') completadas++
+    else if (t.status === 'open') pendientes++
     else enProgreso++
   }
   const slices: TaskStatusSlice[] = [
@@ -71,10 +71,10 @@ export function getTeamPerformanceRows(): TeamPerformanceRow[] {
     const userTasks = mockTasks.filter((t) => t.assigneeId === user.id)
     const activeTasks = userTasks.filter(isActive)
     const completedCurrentSprint = userTasks.filter(
-      (t) => t.sprintId === ACTIVE_SPRINT_ID && t.status === 'completada'
+      (t) => t.sprintId === ACTIVE_SPRINT_ID && t.status === 'closed'
     )
     const withVariance = userTasks.filter(
-      (t) => t.estimatedHours != null && t.actualHours != null && t.status === 'completada'
+      (t) => t.estimatedHours != null && t.actualHours != null && t.status === 'closed'
     )
     const avgVariation =
       withVariance.length > 0
@@ -82,7 +82,7 @@ export function getTeamPerformanceRows(): TeamPerformanceRow[] {
         : 0
     const cargaHoras = activeTasks.reduce((s, t) => s + (t.estimatedHours ?? 0), 0)
     const completionRate = userTasks.length > 0
-      ? Math.round((userTasks.filter((t) => t.status === 'completada').length / userTasks.length) * 100)
+      ? Math.round((userTasks.filter((t) => t.status === 'closed').length / userTasks.length) * 100)
       : 0
     const lowVariationBonus = Math.abs(avgVariation) <= 2 ? 10 : Math.abs(avgVariation) <= 4 ? 5 : 0
     const scoreProductividad = Math.min(100, Math.max(0, completionRate + lowVariationBonus))
@@ -132,7 +132,7 @@ export function getMemberDetail(userId: number): MemberDetail | null {
     .slice(0, 8)
 
   const completedByType = userTasks
-    .filter((t) => t.status === 'completada')
+    .filter((t) => t.status === 'closed')
     .reduce<Record<string, number>>((acc, t) => {
       const type = t.type ?? 'feature'
       acc[type] = (acc[type] ?? 0) + 1
@@ -156,7 +156,7 @@ export function getMemberDetail(userId: number): MemberDetail | null {
 
   const sprintHistory = mockSprints.filter((s) => s.status !== 'planned').map((s) => {
     const inSprint = userTasks.filter((t) => t.sprintId === s.id)
-    const completed = inSprint.filter((t) => t.status === 'completada').length
+    const completed = inSprint.filter((t) => t.status === 'closed').length
     return {
       sprintId: s.id,
       sprintName: s.name,

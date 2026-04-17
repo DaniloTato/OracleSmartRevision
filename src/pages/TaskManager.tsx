@@ -129,6 +129,8 @@ export function TaskManager() {
     async (taskId: number, status: TaskStatus) => {
       const id = Number(taskId)
 
+      console.log("CHANGED STATUS", taskId, status)
+
       setTasks((prev) =>
         prev.map((t) => (t.id === id ? { ...t, status } : t))
       )

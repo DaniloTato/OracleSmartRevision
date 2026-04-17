@@ -144,11 +144,11 @@ function KpiBox({
 
 function TaskLineItem({ task }: { task: Task }) {
   const statusLabel =
-    task.status === 'completada'
+    task.status === 'open'
       ? 'Hecho'
-      : task.status === 'en_progreso'
+      : task.status === 'in_progress'
         ? 'En proceso'
-        : task.status === 'revisión'
+        : task.status === 'closed'
           ? 'Revisión'
           : 'To Do'
   return (
@@ -211,7 +211,7 @@ function HistorialTab({
 }
 
 /** Productividad tab: same line chart as dashboard for this employee. */
-function ProductividadTab({ userId }: { userId: string }) {
+function ProductividadTab({ userId }: { userId: number }) {
   const data = getProductivityByUserId(userId)?.points ?? []
   return (
     <div className="space-y-4">

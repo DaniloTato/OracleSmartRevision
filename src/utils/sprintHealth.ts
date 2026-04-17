@@ -41,7 +41,7 @@ export function getTimeElapsedPercent(
  * Optional asOfDate for reproducible tests or demos (default: today).
  */
 export function getSprintHealth(
-  sprintId: string,
+  sprintId: number,
   asOfDate: Date = new Date()
 ): SprintHealthResult | null {
   const sprint = getSprintById(sprintId)
