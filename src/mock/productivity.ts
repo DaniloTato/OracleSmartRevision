@@ -21,9 +21,8 @@ export interface UserProductivity {
 }
 
 /** Sprints used as timeline (completed + active). Fallback to Semana 1..8 if fewer sprints. */
-const SPRINTS_FOR_TIMELINE = mockSprints.filter(
-  (s) => s.status === 'completed' || s.status === 'active'
-)
+const SPRINTS_FOR_TIMELINE = mockSprints
+
 const FALLBACK_LABELS = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5', 'Semana 6', 'Semana 7', 'Semana 8']
 const TIMELINE_LABELS = SPRINTS_FOR_TIMELINE.length >= 6
   ? SPRINTS_FOR_TIMELINE.map((s) => s.name)

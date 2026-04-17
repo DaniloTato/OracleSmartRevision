@@ -8,36 +8,22 @@ import type { Sprint } from '../types'
 export const mockSprints: Sprint[] = [
   {
     id: 1,
-    name: 'Sprint 1 - Q1 2025',
-    startDate: '2025-01-06',
-    endDate: '2025-01-19',
-    status: 'completed',
+    name: 'Sprint 1',
+    startDate: '2026-02',
+    endDate: '2026-03',
+    projectId: 1,
   },
   {
     id: 2,
-    name: 'Sprint 2 - Q1 2025',
-    startDate: '2025-01-20',
-    endDate: '2025-02-02',
-    status: 'completed',
-  },
-  {
-    id: 3,
-    name: 'Sprint 3 - Q1 2025',
-    startDate: '2025-02-03',
-    endDate: '2025-02-16',
-    status: 'active',
-  },
-  {
-    id: 4,
-    name: 'Sprint 4 - Q1 2025',
-    startDate: '2025-02-17',
-    endDate: '2025-03-02',
-    status: 'planned',
-  },
+    name: 'Sprint 0',
+    startDate: '2026-04',
+    endDate: '2026-04',
+    projectId: 1,
+  }
 ]
 
-export function getActiveSprint(): Sprint | undefined {
-  return mockSprints.find((s) => s.status === 'active')
+export function getActiveSprint(): Sprint{
+  return mockSprints[0]
 }
 
 export function getSprintById(id: number): Sprint | undefined {

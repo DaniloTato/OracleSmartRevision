@@ -1,66 +1,110 @@
 import {
   HiOutlineViewGrid,
-  HiOutlineTrendingUp,
   HiOutlineCheckCircle,
-  HiOutlinePlay,
   HiOutlineClipboardList,
 } from 'react-icons/hi'
 
-import { HiOutlineChartBar } from 'react-icons/hi'
+import { useEffect, useState, useMemo } from 'react'
 
 import {
-  getSprintById,
-  mockSprints
-} from '../mock'
-
-import {
-  getSprintProgressPercent,
-  getCompletedTasksCount,
-  getTasksInProgressCount,
-  getTasksToDoCount,
-  getEstimatedVsRealByPerson,
-  getDistributionByType,
-  getCompletedTasksByMember,
-} from '../utils/dashboard'
+  getSprints,
+  getKpiSummary,
+  getTasksByUser,
+  getIssuesBySprint,
+  getUsers
+} from '../api/dashboardApi'
 
 import { useSprint } from '../context/SprintContext'
 import { GenericBarChart } from '../components/charts/GenericBarChart'
 
-import { useState, useMemo } from 'react'
-
 import { Section } from '../components/ui/Section'
 import { KpiCard } from '../components/ui/KpiCard'
-import { Table, THead, TRow, TH, TD } from '../components/ui/Table'
-import { DistributionBar } from '../components/ui/DistributionBar'
-import { ChartPlaceholder } from '../components/ui/ChartPlaceholder'
-import { Label } from '../components/ui/Label'
-import { Select } from '../components/ui/Select'
 
 export function Dashboard() {
+
+  const projectId = 1
+
+  const [sprints, setSprints] = useState<any[]>([])
+  const [summary, setSummary] = useState<any>(null)
+  const [tasksByUser, setTasksByUser] = useState<any[]>([])
+  const [hoursByUser, setHoursByUser] = useState<any[]>([])
+
+  const [users, setUsers] = useState<any[]>([])
+
   const { selectedSprintId } = useSprint()
-  const activeSprint = getSprintById(selectedSprintId)
-  const sprintId = selectedSprintId
+  const activeSprint = sprints.find((s: any) => s.id === selectedSprintId)
 
-  const progressPercent = getSprintProgressPercent(sprintId)
-  const completedCount = getCompletedTasksCount(sprintId)
-  const inProgressCount = getTasksInProgressCount(sprintId)
-  const toDoCount = getTasksToDoCount(sprintId)
+  const completedCount = useMemo(() => {
+    return tasksByUser.reduce((sum, u) => sum + (u.tasksCompleted ?? 0), 0)
+  }, [tasksByUser])
+  const progressPercent = (completedCount/summary?.totalTasks) * 100
+  const toDoCount = summary?.totalTasks - completedCount
 
-  const estimatedVsRealRows = getEstimatedVsRealByPerson(sprintId)
-  const distribution = getDistributionByType(sprintId)
+  const estimatedVsRealRows = hoursByUser
 
-  const [tasksSprintId, setTasksSprintId] = useState(selectedSprintId)
+  /*const distribution = useMemo(() => {
+    return tasksByUser.reduce(
+      (acc, u) => {
+        acc.TASK += u.taskCount ?? 0
+        acc.BUG += u.bugCount ?? 0
+        acc.TRAINING += u.trainingCount ?? 0
+        return acc
+      },
+      { TASK: 0, BUG: 0, TRAINING: 0 }
+    )
+  }, [tasksByUser])*/
 
-  const totalDistributionValue = distribution.feature + distribution.bug + distribution.issue + distribution.capacitación;
+  //const totalDistributionValue = distribution.TASK + distribution.BUG + distribution.TRAINING;
+
+  useEffect(() => {
+    async function load() {
+      const sprintsRes = await getSprints(projectId)
+      console.log('SPRINTS:', sprintsRes)
+
+      const activeSprint = 1
+
+      console.log('ACTIVE SPRINT ID:', activeSprint)
+
+      const [summaryRes, tasksRes, issuesRes, usersRes] = await Promise.all([
+        getKpiSummary(projectId),
+        getTasksByUser(projectId, activeSprint),
+        getIssuesBySprint(projectId, activeSprint),
+        getUsers()
+      ])
+
+      const hoursGrouped = groupHoursByUser(issuesRes)
+
+      setSummary(summaryRes)
+      setTasksByUser(tasksRes)
+      setHoursByUser(hoursGrouped)
+      setSprints(sprintsRes)
+      setUsers(usersRes)
+
+      console.log('SUMMARY:', summaryRes)
+      console.log('TASKS BY USER:', tasksRes)
+      console.log('HOURS BY USER:', hoursGrouped)
+
+      setSummary(summaryRes)
+      setTasksByUser(tasksRes)
+      setHoursByUser(hoursGrouped)
+      setSprints(sprintsRes);
+    }
+
+    load()
+  }, [])
 
   const tasksChartData = useMemo(() => {
-    const data = getCompletedTasksByMember(tasksSprintId)
-
-    return data.map(u => ({
-      label: u.userName,
-      value: u.completadas,
+    return tasksByUser.map(u => ({
+      label: u.user,
+      value: u.tasksCompleted,
     }))
-  }, [tasksSprintId])
+  }, [tasksByUser])
+
+  const usersMap = useMemo(() => {
+    const map = new Map<number, string>()
+    users.forEach(u => map.set(u.id, u.name))
+    return map
+  }, [users])
 
   return (
     <div className="space-y-8">
@@ -81,13 +125,6 @@ export function Dashboard() {
 
       {/* KPI */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <KpiCard
-          title="Progreso del Sprint (%)"
-          value={progressPercent}
-          subtitle="Sprint actual"
-          icon={HiOutlineTrendingUp}
-          color="data-1"
-        />
 
         <KpiCard
           title="Tareas Completadas"
@@ -95,14 +132,6 @@ export function Dashboard() {
           subtitle="Sprint actual"
           icon={HiOutlineCheckCircle}
           color="data-2"
-        />
-
-        <KpiCard
-          title="En Proceso"
-          value={inProgressCount}
-          subtitle="Sprint actual"
-          icon={HiOutlinePlay}
-          color="data-3"
         />
 
         <KpiCard
@@ -138,21 +167,6 @@ export function Dashboard() {
 
       {/* Finished tasks per member chart */}
       <Section title="Tareas terminadas por miembro">
-        
-        {/* Sprint selector */}
-        <div className="mb-4">
-          <Label>Sprint</Label>
-          <Select
-            value={tasksSprintId}
-            onChange={(e) => setTasksSprintId(Number(e.target.value))}
-          >
-            {mockSprints.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </Select>
-        </div>
 
         <GenericBarChart
           data={tasksChartData}
@@ -168,7 +182,7 @@ export function Dashboard() {
         <Section title="Numero de horas trabajadas por miembro">
           <GenericBarChart
             data={estimatedVsRealRows.map(u => ({
-              label: u.userName,
+              label: usersMap.get(u.userId) ?? `User ${u.userId}`,
               value: u.actualHours
             }))}
             title="Horas reales por integrante"
@@ -179,72 +193,35 @@ export function Dashboard() {
         </Section>
       )}
 
-      {/* Table */}
-      <Section
-        title="Estimado vs Real por Persona"
-        icon={HiOutlineChartBar}
-      >
-        {estimatedVsRealRows.length === 0 ? (
-          <ChartPlaceholder message="No hay datos de estimado/real para el sprint." />
-        ) : (
-          <Table>
-            <THead>
-              <TRow>
-                <TH>Persona</TH>
-                <TH>Estimado (h)</TH>
-                <TH>Real (h)</TH>
-              </TRow>
-            </THead>
-
-            <tbody>
-              {estimatedVsRealRows.map((row) => (
-                <TRow key={row.userId}>
-                  <TD>{row.userName}</TD>
-                  <TD>{row.estimatedHours}</TD>
-                  <TD>{row.actualHours}</TD>
-                </TRow>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </Section>
-
       {/* Distribución */}
-      <Section title="Distribución por Tipo">
+      {/* <Section title="Distribución por Tipo">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <DistributionBar
-            label="Feature"
-            count={distribution.feature}
+            label="TASK"
+            count={distribution.TASK}
             total={totalDistributionValue}
             color="bg-data-1"
           />
 
           <DistributionBar
-            label="Bug"
-            count={distribution.bug}
+            label="BUG"
+            count={distribution.BUG}
             total={totalDistributionValue}
             color="bg-data-2"
           />
 
           <DistributionBar
-            label="Issue"
-            count={distribution.issue}
+            label="TRAINING"
+            count={distribution.TRAINING}
             total={totalDistributionValue}
             color="bg-data-3"
-          />
-
-          <DistributionBar
-            label="Capacitación"
-            count={distribution.capacitación}
-            total={totalDistributionValue}
-            color="bg-data-4"
           />
         </div>
 
         <div className="mt-4 pt-4 border-t border-[var(--color-border)] text-sm text-[var(--color-text-muted)]">
-          Total: {distribution.feature + distribution.bug + distribution.issue + distribution.capacitación} tareas
+          Total: {distribution.TASK + distribution.BUG + distribution.TRAINING} tareas
         </div>
-      </Section>
+      </Section> */}
     </div>
   )
 }
@@ -253,4 +230,20 @@ export function Dashboard() {
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-ES')
+}
+
+function groupHoursByUser(issues: any[]) {
+  const map = new Map<number, number>()
+
+  for (const issue of issues) {
+    if (!issue.assigneeId) continue
+
+    const prev = map.get(issue.assigneeId) ?? 0
+    map.set(issue.assigneeId, prev + (issue.actualHours ?? 0))
+  }
+
+  return Array.from(map.entries()).map(([userId, hours]) => ({
+    userId,
+    actualHours: hours,
+  }))
 }
