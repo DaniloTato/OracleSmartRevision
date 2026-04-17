@@ -66,7 +66,7 @@ export function getEstimatedVsRealVarianceHours(sprintId: number): number {
 /** Count of open bugs and issues (not completed) in the sprint */
 export function getOpenBugsIssuesCount(sprintId: number): number {
   return getTasksBySprint(sprintId).filter(
-    (t) => (t.type === 'bug' || t.type === 'issue') && t.status !== 'closed'
+    (t) => (t.type === 'BUG') && t.status !== 'closed'
   ).length
 }
 
@@ -172,18 +172,17 @@ export function getEstimatedVsRealByPerson(sprintId: number): EstimatedVsRealRow
 }
 
 export interface DistributionByType {
-  feature: number
-  bug: number
-  issue: number
-  capacitación: number
+  TASK: number
+  BUG: number
+  TRAINING: number
 }
 
 /** Count tasks by type (feature / bug / issue / capacitación) for the sprint */
 export function getDistributionByType(sprintId: number): DistributionByType {
   const tasks = getTasksBySprint(sprintId)
-  const out: DistributionByType = { feature: 0, bug: 0, issue: 0, capacitación: 0 }
+  const out: DistributionByType = { TASK: 0, BUG: 0, TRAINING: 0}
   for (const t of tasks) {
-    const type = t.type ?? 'feature'
+    const type = t.type ?? 'TASK'
     out[type] = (out[type] ?? 0) + 1
   }
   return out

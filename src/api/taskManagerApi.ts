@@ -51,3 +51,8 @@ export const updateTask = async (id: number, payload: any) => {
 
   return JSON.parse(text)
 }
+
+export const deleteTask = (issueId: number) =>
+  fetchJson(`${BASE_URL}/issues/${issueId}`, {
+    method: 'DELETE',
+  })

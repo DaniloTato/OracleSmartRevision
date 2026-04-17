@@ -6,6 +6,7 @@ interface TeamBoardProps {
   tasks: Task[]
   members: Member[]
   onUpdateStatus: (taskId: number, status: TaskStatus) => void
+  onDeleteTask: (taskId: number) => void
   taskIdsAssignedViaAI: Set<number>
   highlightedTaskId?: number
 }
@@ -14,6 +15,7 @@ export function TeamBoard({
   tasks,
   members,
   onUpdateStatus,
+  onDeleteTask,
   taskIdsAssignedViaAI,
   highlightedTaskId = 0,
 }: TeamBoardProps) {
@@ -34,6 +36,7 @@ export function TeamBoard({
                 member={member}
                 userTasks={tasks.filter((t) => t.assigneeId === member.userId)}
                 onUpdateStatus={onUpdateStatus}
+                onDeleteTask={onDeleteTask}
                 taskIdsAssignedViaAI={safeTaskIdsAssignedViaAI}
                 highlightedTaskId={highlightedTaskId}
               />
@@ -49,12 +52,14 @@ function MemberColumn({
   member,
   userTasks,
   onUpdateStatus,
+  onDeleteTask,
   taskIdsAssignedViaAI,
   highlightedTaskId,
 }: {
   member: Member
   userTasks: Task[]
   onUpdateStatus: (taskId: number, status: TaskStatus) => void
+  onDeleteTask: (taskId: number) => void
   taskIdsAssignedViaAI: Set<number>
   highlightedTaskId: number
 }) {
@@ -88,6 +93,7 @@ function MemberColumn({
             key={`${member.userId}-${task.id}`}
             task={task}
             onUpdateStatus={onUpdateStatus}
+            onDelete={onDeleteTask}
             isAssignedViaAI={taskIdsAssignedViaAI.has(task.id)}
             isHighlighted={task.id === highlightedTaskId}
           />

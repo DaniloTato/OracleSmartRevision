@@ -19,6 +19,7 @@ import {
   getSprints,
   createTask,
   updateTask,
+  deleteTask
 } from '../api/taskManagerApi'
 
 const POOL_ID = 'pool'
@@ -78,6 +79,11 @@ export function TaskManager() {
     }
 
     load()
+  }, [projectId])
+
+  const loadTasks = useCallback(async () => {
+    const tasksRes = await getTasks(projectId)
+    setTasks(tasksRes)
   }, [projectId])
 
   /* =========================
@@ -141,17 +147,56 @@ export function TaskManager() {
   )
 
   /* =========================
+     DELETE TASK
+  ========================== */
+  const handleDeleteTask = useCallback(async (taskId: number) => {
+    // optimistic UI update
+    setTasks((prev) => prev.filter((t) => t.id !== taskId))
+
+    try {
+      await deleteTask(taskId)
+      console.log('🗑️ TASK DELETED:', taskId)
+    } catch (err: any) {
+      console.error('❌ DELETE FAILED:', {
+        message: err?.message,
+        status: err?.response?.status,
+        data: err?.response?.data,
+        raw: err,
+      })
+    }
+  }, [])
+
+  /* =========================
      CREATE TASK
   ========================== */
-  const handleCreateTask = useCallback(
-    async (task: Omit<Task, 'id' | 'createdAt'>) => {
-      const created = await createTask(projectId, task)
+  const handleCreateTask = useCallback(async (task: Omit<Task, 'id' | 'createdAt'>) => {
+    const payload = {
+      title: task.title,
+      description: "string",
+      type: task.type,
+      status: task.status,
+      estimatedHours: task.estimatedHours,
+      actualHours: task.estimatedHours,
+      featureId: task.featureId,
+      assigneeId: task.assigneeId,
+      isVisible: task.isVisible,
+    }
 
-      setTasks((prev) => [...prev, created])
-      setCreateModalOpen(false)
-    },
-    [projectId]
-  )
+    setCreateModalOpen(false)
+
+    //MODIFY THIS HORRIBLE PIECE OF CODE ONCE BACKEND RESPONDS CORRECTLY
+    setTasks((prev) => [
+      ...prev,
+      {
+        ...task,
+        id: Date.now(), // temporary ID
+        createdAt: new Date().toISOString(),
+      }
+    ])
+
+    await createTask(projectId, payload)
+
+  }, [projectId, loadTasks])
 
   /* =========================
      FILTERS
@@ -218,6 +263,7 @@ export function TaskManager() {
                 filters={filters}
                 onFiltersChange={setFilters}
                 onUpdateStatus={handleUpdateTaskStatus}
+                onDeleteTask={handleDeleteTask}
                 poolId={POOL_ID}
                 highlightedTaskId={highlightedTaskId}
                 taskIdsAssignedViaAI={taskIdsAssignedViaAI}
@@ -227,6 +273,7 @@ export function TaskManager() {
                 tasks={boardTasksBySprint}
                 members={members}
                 onUpdateStatus={handleUpdateTaskStatus}
+                onDeleteTask={handleDeleteTask}
                 highlightedTaskId={highlightedTaskId}
                 taskIdsAssignedViaAI={taskIdsAssignedViaAI}
               />

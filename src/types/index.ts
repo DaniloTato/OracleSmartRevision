@@ -8,7 +8,7 @@ export interface Sprint {
   name: string
   startDate: string
   endDate: string
-  status: 'active' | 'planned' | 'completed'
+  projectId: number
 }
 
 export interface User {
@@ -29,7 +29,7 @@ export type TaskStatus =
   | 'in_progress'
   | 'closed'
 export type TaskPriority = 'baja' | 'media' | 'alta'
-export type TaskType = 'feature' | 'bug' | 'issue' | 'capacitación'
+export type TaskType = 'TASK' | 'BUG' | 'TRAINING'
 
 export interface Task {
   id: number
@@ -46,7 +46,9 @@ export interface Task {
   updatedAt?: string
 
   estimatedHours?: number
-  actualHours?: number
+  actualHours: number
+  isVisible: boolean
+  featureId: number
 }
 
 export interface ActivityLogEntry {

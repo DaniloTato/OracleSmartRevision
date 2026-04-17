@@ -13,12 +13,11 @@ interface CreateTaskModalProps {
   onSubmit: (task: Omit<Task, 'id' | 'createdAt'>) => void
 }
 
-const TIPO_OPTIONS: TaskType[] = ['feature', 'bug', 'issue', 'capacitación']
+const TIPO_OPTIONS: TaskType[] = ['TASK', 'BUG', 'TRAINING']
 const TIPO_LABELS: Record<TaskType, string> = {
-  feature: 'Feature',
-  bug: 'Bug',
-  issue: 'Issue',
-  capacitación: 'Capacitación',
+  TASK: 'TASK',
+  BUG: 'BUG',
+  TRAINING: 'CAPACITACIÓN',
 }
 const PRIORIDAD_OPTIONS: TaskPriority[] = ['alta', 'media', 'baja']
 
@@ -29,7 +28,7 @@ export function CreateTaskModal({
   onSubmit,
 }: CreateTaskModalProps) {
   const [title, setTitle] = useState('')
-  const [tipo, setTipo] = useState<TaskType>('feature')
+  const [tipo, setTipo] = useState<TaskType>('TASK')
   const [prioridad, setPrioridad] = useState<TaskPriority>('media')
   const [sprintId, setSprintId] = useState(sprints[0]?.id ?? '')
   const [estimatedHours, setEstimatedHours] = useState<number>(4)
@@ -49,6 +48,9 @@ export function CreateTaskModal({
       assigneeId: assigneeId,
       sprintId: sprintId || (sprints[0]?.id ?? ''),
       estimatedHours: estimatedHours || 0,
+      actualHours: 0,
+      isVisible: true,
+      featureId: 1
     })
   }
 
@@ -168,7 +170,7 @@ export function CreateTaskModal({
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-lg bg-[var(--color-oracle-orange)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+              className="flex-1 rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-medium text-[var(--color-text)] hover:bg-gray-50"
             >
               Crear
             </button>

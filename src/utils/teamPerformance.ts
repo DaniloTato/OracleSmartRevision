@@ -154,7 +154,7 @@ export function getMemberDetail(userId: number): MemberDetail | null {
   const suggestedType = bestType ? bestType[0] : 'feature'
   strengths.push(`Sugerencia IA: asignarle tareas tipo ${typeLabels[suggestedType] ?? suggestedType}.`)
 
-  const sprintHistory = mockSprints.filter((s) => s.status !== 'planned').map((s) => {
+  const sprintHistory = mockSprints.map((s) => {
     const inSprint = userTasks.filter((t) => t.sprintId === s.id)
     const completed = inSprint.filter((t) => t.status === 'closed').length
     return {

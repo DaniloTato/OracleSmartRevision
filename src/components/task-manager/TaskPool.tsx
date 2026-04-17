@@ -10,10 +10,10 @@ import type { Sprint } from '../../types'
 
 const TIPO_OPTIONS: { value: '' | TaskType; label: string }[] = [
   { value: '', label: 'Todos' },
-  { value: 'feature', label: 'Feature' },
-  { value: 'bug', label: 'Bug' },
-  { value: 'issue', label: 'Issue' },
-  { value: 'capacitación', label: 'Capacitación' },
+  { value: 'TASK', label: 'Feature' },
+  { value: 'BUG', label: 'Bug' },
+  { value: 'BUG', label: 'Issue' },
+  { value: 'TRAINING', label: 'Capacitación' },
 ]
 
 const PRIORIDAD_OPTIONS: { value: '' | TaskPriority; label: string }[] = [
@@ -41,6 +41,7 @@ interface TaskPoolProps {
   }
   onFiltersChange: (f: TaskPoolProps['filters']) => void
   onUpdateStatus: (taskId: number, status: TaskStatus) => void
+  onDeleteTask: (taskId: number) => void
   poolId: string
   taskIdsAssignedViaAI: Set<number>
   /** When set, the matching task card is visually highlighted (from deep link ?taskId=) */
@@ -53,6 +54,7 @@ export function TaskPool({
   filters,
   onFiltersChange,
   onUpdateStatus,
+  onDeleteTask,
   poolId,
   taskIdsAssignedViaAI,
   highlightedTaskId = undefined,
@@ -119,6 +121,7 @@ export function TaskPool({
                 key={task.id}
                 task={task}
                 onUpdateStatus={onUpdateStatus}
+                onDelete={onDeleteTask}
                 isAssignedViaAI={taskIdsAssignedViaAI.has(task.id)}
                 isHighlighted={task.id === highlightedTaskId}
               />

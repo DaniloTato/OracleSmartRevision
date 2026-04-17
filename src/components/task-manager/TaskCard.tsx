@@ -3,6 +3,9 @@
  * Shows title, type, priority, estimated h, status; optional status dropdown.
  */
 
+
+//MAY NEED TO REFACTOR >:L
+
 import { useRef, useEffect } from 'react'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
@@ -30,13 +33,14 @@ const PRIORITY_STYLE: Record<TaskPriority, string> = {
 interface TaskCardProps {
   task: Task
   onUpdateStatus?: (taskId: number, status: TaskStatus) => void
+  onDelete: (taskId: number) => void
   /** When true, show small "IA" badge (task was assigned via AI recommendation) */
   isAssignedViaAI?: boolean
   /** When true, highlight card (e.g. from deep link ?taskId=) and scroll into view */
   isHighlighted?: boolean
 }
 
-export function TaskCard({ task, onUpdateStatus, isAssignedViaAI, isHighlighted }: TaskCardProps) {
+export function TaskCard({ task, onUpdateStatus, onDelete, isAssignedViaAI, isHighlighted }: TaskCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const {
     attributes,
@@ -122,6 +126,19 @@ export function TaskCard({ task, onUpdateStatus, isAssignedViaAI, isHighlighted 
           <span className="text-xs text-[var(--color-text-muted)]">
             {STATUS_OPTIONS.find((o) => o.value === task.status)?.label ?? task.status}
           </span>
+        )}
+
+        {onDelete && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete(task.id)
+            }}
+            className="text-xs text-red-500 hover:text-red-700 ml-2"
+            title="Eliminar tarea"
+          >
+            🗑
+          </button>
         )}
       </div>
     </div>
