@@ -88,10 +88,22 @@ export function TaskManager() {
     if (!over) return
 
     const taskId = Number(active.id)
-    const targetId = over.id as string
 
-    const updatedAssignee =
-      targetId === POOL_ID ? null : Number(targetId)
+    const rawId = over.id
+
+    const isPool = rawId === POOL_ID
+
+    const parsedId =
+      typeof rawId === 'string' ? rawId : String(rawId)
+
+    const updatedAssignee = isPool
+      ? null
+      : Number(parsedId)
+
+    if (!isPool && Number.isNaN(updatedAssignee)) {
+      console.error('Invalid assignee id:', rawId)
+      return
+    }
 
     setTasks((prev) =>
       prev.map((t) =>
@@ -106,6 +118,7 @@ export function TaskManager() {
     console.log('PATCH SENT:', {
       taskId,
       assigneeId: updatedAssignee,
+      rawTarget: rawId,
     })
   }, [])
 

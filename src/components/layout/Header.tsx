@@ -22,7 +22,7 @@ export function Header() {
           <select
             id="sprint-select"
             value={selectedSprintId}
-            onChange={(e) => setSelectedSprintId(e.target.value)}
+            onChange={(e) => setSelectedSprintId(Number(e.target.value))}
             className="rounded-lg border border-[var(--color-border)] bg-white px-3 py-1.5 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-oracle-orange)] focus:border-transparent"
           >
             {mockSprints.map((s) => (
