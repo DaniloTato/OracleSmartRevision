@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react'
-import type { MemberDetail } from '../../utils/teamPerformance'
+import type { MemberDetail } from '../../types/teamPerformance'
 import type { Task } from '../../types'
 import { getProductivityByUserId } from '../../mock/productivity'
 import { ProductivityChart } from '../charts/ProductivityChart'

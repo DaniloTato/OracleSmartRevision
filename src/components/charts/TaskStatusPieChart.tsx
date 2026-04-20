@@ -3,7 +3,7 @@
  */
 
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts'
-import type { TaskStatusSlice } from '../../utils/teamPerformance'
+import type { TaskStatusSlice } from '../../types/teamPerformance.ts'
 
 interface TaskStatusPieChartProps {
   data: TaskStatusSlice[]

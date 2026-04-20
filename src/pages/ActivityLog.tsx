@@ -1,7 +1,7 @@
 // STILL NEEDS TO BE REFACTORED
 
 import { useState, useMemo } from 'react'
-import { getActivityLog } from '../mock'
+import { getActivityLog } from '../mock/activityLog'
 import { mockSprints } from '../mock/sprints'
 import { mockUsers } from '../mock/users'
 import type { ActivityLogEntry } from '../types'
