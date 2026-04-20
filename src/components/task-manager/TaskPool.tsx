@@ -15,7 +15,6 @@ interface TaskPoolProps {
   onUpdateStatus: (taskId: number, status: TaskStatus) => void
   onDeleteTask: (taskId: number) => void
   poolId: string
-  taskIdsAssignedViaAI: Set<number>
   highlightedTaskId?: number
 }
 
@@ -56,7 +55,6 @@ export function TaskPool({
   onUpdateStatus,
   onDeleteTask,
   poolId,
-  taskIdsAssignedViaAI,
   highlightedTaskId,
 }: TaskPoolProps) {
   const { setNodeRef, isOver } = useDroppable({ id: poolId })
@@ -137,7 +135,6 @@ export function TaskPool({
                 task={task}
                 onUpdateStatus={onUpdateStatus}
                 onDelete={onDeleteTask}
-                isAssignedViaAI={taskIdsAssignedViaAI.has(task.id)}
                 isHighlighted={task.id === highlightedTaskId}
               />
             ))}

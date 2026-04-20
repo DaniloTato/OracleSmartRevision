@@ -10,6 +10,8 @@ import {
   Cell,
 } from 'recharts'
 
+import { useEffect, useState } from 'react'
+
 interface BarChartDatum {
   label: string
   value: number
@@ -42,6 +44,16 @@ export function GenericBarChart({
   xAxisLabel,
   valueLabel = 'Valor',
 }: GenericBarChartProps) {
+
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  if (!mounted) return null
+
   if (data.length === 0) {
     return (
       <div
@@ -70,8 +82,8 @@ export function GenericBarChart({
         </p>
       </div>
 
-      <div style={{ width: '100%', height }} className="min-h-[220px]">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="w-full" style={{ height: `${height}px`, minHeight: `${height}px` }}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <BarChart
             layout="vertical"
             data={data}

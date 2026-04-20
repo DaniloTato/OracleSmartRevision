@@ -1,8 +1,3 @@
-/* TODO: fix bug.
-[Error] Encountered two children with the same key, `BUG`. 
-Keys should be unique so that components maintain their identity across updates.
-*/
-
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
@@ -50,8 +45,6 @@ export function TaskManager() {
   })
 
   const [createModalOpen, setCreateModalOpen] = useState(false)
-
-  const [taskIdsAssignedViaAI] = useState<Set<number>>(new Set())
 
   const { selectedSprintId } = useSprint()
 
@@ -158,7 +151,6 @@ export function TaskManager() {
 
     try {
       await deleteTask(taskId)
-      console.log('🗑️ TASK DELETED:', taskId)
     } catch (err: any) {
       console.error('❌ DELETE FAILED:', {
         message: err?.message,
@@ -257,7 +249,6 @@ export function TaskManager() {
                 onDeleteTask={handleDeleteTask}
                 poolId={POOL_ID}
                 highlightedTaskId={highlightedTaskId}
-                taskIdsAssignedViaAI={taskIdsAssignedViaAI}
               />
 
               <TeamBoard
@@ -266,7 +257,6 @@ export function TaskManager() {
                 onUpdateStatus={handleUpdateTaskStatus}
                 onDeleteTask={handleDeleteTask}
                 highlightedTaskId={highlightedTaskId}
-                taskIdsAssignedViaAI={taskIdsAssignedViaAI}
               />
             </div>
           </DndContext>

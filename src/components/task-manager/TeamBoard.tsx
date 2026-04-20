@@ -7,7 +7,6 @@ interface TeamBoardProps {
   members: Member[]
   onUpdateStatus: (taskId: number, status: TaskStatus) => void
   onDeleteTask: (taskId: number) => void
-  taskIdsAssignedViaAI: Set<number>
   highlightedTaskId?: number
 }
 
@@ -16,11 +15,8 @@ export function TeamBoard({
   members,
   onUpdateStatus,
   onDeleteTask,
-  taskIdsAssignedViaAI,
   highlightedTaskId = 0,
 }: TeamBoardProps) {
-  const safeTaskIdsAssignedViaAI = taskIdsAssignedViaAI ?? new Set<number>()
-
   return (
     <div className="flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-sidebar-bg)] overflow-hidden min-h-[320px] flex-1 min-w-0">
       <div className="p-4 border-b border-[var(--color-border)] shrink-0">
@@ -37,7 +33,6 @@ export function TeamBoard({
                 userTasks={tasks.filter((t) => t.assigneeId === member.userId)}
                 onUpdateStatus={onUpdateStatus}
                 onDeleteTask={onDeleteTask}
-                taskIdsAssignedViaAI={safeTaskIdsAssignedViaAI}
                 highlightedTaskId={highlightedTaskId}
               />
             )
@@ -53,14 +48,12 @@ function MemberColumn({
   userTasks,
   onUpdateStatus,
   onDeleteTask,
-  taskIdsAssignedViaAI,
   highlightedTaskId,
 }: {
   member: Member
   userTasks: Task[]
   onUpdateStatus: (taskId: number, status: TaskStatus) => void
   onDeleteTask: (taskId: number) => void
-  taskIdsAssignedViaAI: Set<number>
   highlightedTaskId: number
 }) {
   const { setNodeRef, isOver } = useDroppable({
@@ -94,7 +87,6 @@ function MemberColumn({
             task={task}
             onUpdateStatus={onUpdateStatus}
             onDelete={onDeleteTask}
-            isAssignedViaAI={taskIdsAssignedViaAI.has(task.id)}
             isHighlighted={task.id === highlightedTaskId}
           />
         ))}
