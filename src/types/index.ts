@@ -37,7 +37,7 @@ export interface Task {
   description?: string
   status: TaskStatus
   priority: TaskPriority
-  type?: TaskType
+  type: TaskType
 
   sprintId: number
   assigneeId: number | null

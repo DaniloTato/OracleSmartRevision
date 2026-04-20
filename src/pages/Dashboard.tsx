@@ -37,33 +37,17 @@ export function Dashboard() {
   const completedCount = useMemo(() => {
     return tasksByUser.reduce((sum, u) => sum + (u.tasksCompleted ?? 0), 0)
   }, [tasksByUser])
+
   const progressPercent = (completedCount/summary?.totalTasks) * 100
   const toDoCount = summary?.totalTasks - completedCount
 
   const estimatedVsRealRows = hoursByUser
 
-  /*const distribution = useMemo(() => {
-    return tasksByUser.reduce(
-      (acc, u) => {
-        acc.TASK += u.taskCount ?? 0
-        acc.BUG += u.bugCount ?? 0
-        acc.TRAINING += u.trainingCount ?? 0
-        return acc
-      },
-      { TASK: 0, BUG: 0, TRAINING: 0 }
-    )
-  }, [tasksByUser])*/
-
-  //const totalDistributionValue = distribution.TASK + distribution.BUG + distribution.TRAINING;
-
   useEffect(() => {
     async function load() {
       const sprintsRes = await getSprints(projectId)
-      console.log('SPRINTS:', sprintsRes)
 
       const activeSprint = 1
-
-      console.log('ACTIVE SPRINT ID:', activeSprint)
 
       const [summaryRes, tasksRes, issuesRes, usersRes] = await Promise.all([
         getKpiSummary(projectId),
@@ -79,15 +63,6 @@ export function Dashboard() {
       setHoursByUser(hoursGrouped)
       setSprints(sprintsRes)
       setUsers(usersRes)
-
-      console.log('SUMMARY:', summaryRes)
-      console.log('TASKS BY USER:', tasksRes)
-      console.log('HOURS BY USER:', hoursGrouped)
-
-      setSummary(summaryRes)
-      setTasksByUser(tasksRes)
-      setHoursByUser(hoursGrouped)
-      setSprints(sprintsRes);
     }
 
     load()
@@ -192,36 +167,7 @@ export function Dashboard() {
           />
         </Section>
       )}
-
-      {/* Distribución */}
-      {/* <Section title="Distribución por Tipo">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <DistributionBar
-            label="TASK"
-            count={distribution.TASK}
-            total={totalDistributionValue}
-            color="bg-data-1"
-          />
-
-          <DistributionBar
-            label="BUG"
-            count={distribution.BUG}
-            total={totalDistributionValue}
-            color="bg-data-2"
-          />
-
-          <DistributionBar
-            label="TRAINING"
-            count={distribution.TRAINING}
-            total={totalDistributionValue}
-            color="bg-data-3"
-          />
-        </div>
-
-        <div className="mt-4 pt-4 border-t border-[var(--color-border)] text-sm text-[var(--color-text-muted)]">
-          Total: {distribution.TASK + distribution.BUG + distribution.TRAINING} tareas
-        </div>
-      </Section> */}
+      
     </div>
   )
 }

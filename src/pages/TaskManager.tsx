@@ -1,3 +1,8 @@
+/* TODO: fix bug.
+[Error] Encountered two children with the same key, `BUG`. 
+Keys should be unique so that components maintain their identity across updates.
+*/
+
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
@@ -12,6 +17,8 @@ import { Section } from '../components/ui/Section'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { ChartPlaceholder } from '../components/ui/ChartPlaceholder'
+
+import { useSprint } from '../context/SprintContext'
 
 import {
   getTasks,
@@ -44,6 +51,8 @@ export function TaskManager() {
 
   const [taskIdsAssignedViaAI] = useState<Set<number>>(new Set())
 
+  const { selectedSprintId } = useSprint()
+
   const [searchParams] = useSearchParams()
   const filterUnassignedFromUrl = searchParams.get('filter') === 'unassigned'
   const highlightedTaskId = searchParams.get('taskId') ? Number(searchParams.get('taskId')) : undefined
@@ -65,14 +74,6 @@ export function TaskManager() {
         setTasks(tasksRes)
         setMembers(membersRes)
         setSprints(sprintsRes)
-
-        const activeSprint =
-          sprintsRes.find((s: any) => s.status === 'active')?.id ??
-          sprintsRes?.[0]?.id ??
-          ''
-
-        // normalize sprintId as string (IMPORTANT)
-        setFilters((f) => ({ ...f, sprintId: String(activeSprint) }))
       } finally {
         setLoading(false)
       }
@@ -80,6 +81,15 @@ export function TaskManager() {
 
     load()
   }, [projectId])
+
+  useEffect(() => {
+    if (!selectedSprintId) return
+
+    setFilters((f) => ({
+      ...f,
+      sprintId: String(selectedSprintId),
+    }))
+  }, [selectedSprintId])
 
   const loadTasks = useCallback(async () => {
     const tasksRes = await getTasks(projectId)
@@ -180,6 +190,7 @@ export function TaskManager() {
       featureId: task.featureId,
       assigneeId: task.assigneeId,
       isVisible: task.isVisible,
+      sprintId: selectedSprintId,
     }
 
     setCreateModalOpen(false)
@@ -191,6 +202,7 @@ export function TaskManager() {
         ...task,
         id: Date.now(), // temporary ID
         createdAt: new Date().toISOString(),
+        sprintId: selectedSprintId,
       }
     ])
 
