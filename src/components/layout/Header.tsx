@@ -4,7 +4,7 @@
  */
 
 import { HiOutlineCalendar} from 'react-icons/hi'
-import { mockSprints } from '../../mock'
+import { mockSprints } from '../../mock/sprints'
 import { useSprint } from '../../context/SprintContext'
 
 export function Header() {

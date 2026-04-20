@@ -10,11 +10,12 @@ import { HiOutlineChartPie } from 'react-icons/hi'
 import {
   getMemberDetail,
   getTaskStatusDistributionForMember,
-} from '../utils/teamPerformance'
+} from '../mock/teamPerformance'
 import { MemberDetailDrawer } from '../components/team-performance/MemberDetailDrawer'
 import { TaskStatusPieChart } from '../components/charts/TaskStatusPieChart'
 import { useSprint } from '../context/SprintContext'
-import { getSprintById, mockUsers } from '../mock'
+import { mockUsers } from '../mock/users'
+import { getSprintById } from '../mock/sprints'
 
 export function TeamPerformance() {
   const { selectedSprintId } = useSprint()

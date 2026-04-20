@@ -18,12 +18,14 @@ import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { ChartPlaceholder } from '../components/ui/ChartPlaceholder'
 
+import { filterPoolTasks, filterBoardTasks } from '../utils/taskManager/filters'
+
 import { useSprint } from '../context/SprintContext'
+import { loadTaskManagerData } from '../services/taskManager'
+import { getUpdatedAssignee } from '../utils/taskManager/dnd'
 
 import {
   getTasks,
-  getMembers,
-  getSprints,
   createTask,
   updateTask,
   deleteTask
@@ -65,15 +67,11 @@ export function TaskManager() {
       setLoading(true)
 
       try {
-        const [tasksRes, membersRes, sprintsRes] = await Promise.all([
-          getTasks(projectId),
-          getMembers(projectId),
-          getSprints(projectId),
-        ])
+        const { tasks, members, sprints } = await loadTaskManagerData(projectId)
 
-        setTasks(tasksRes)
-        setMembers(membersRes)
-        setSprints(sprintsRes)
+        setTasks(tasks)
+        setMembers(members)
+        setSprints(sprints)
       } finally {
         setLoading(false)
       }
@@ -109,12 +107,7 @@ export function TaskManager() {
 
     const isPool = rawId === POOL_ID
 
-    const parsedId =
-      typeof rawId === 'string' ? rawId : String(rawId)
-
-    const updatedAssignee = isPool
-      ? null
-      : Number(parsedId)
+    const updatedAssignee = getUpdatedAssignee(over.id, POOL_ID)
 
     if (!isPool && Number.isNaN(updatedAssignee)) {
       console.error('Invalid assignee id:', rawId)
@@ -215,27 +208,13 @@ export function TaskManager() {
   ========================== */
 
   const poolTasks = useMemo(
-    () =>
-      tasks.filter(
-        (t) =>
-          t.assigneeId == null &&
-          (filters.sprintId === '' ||
-            String(t.sprintId) === filters.sprintId) &&
-          (filters.tipo === '' || t.type === filters.tipo) &&
-          (filters.prioridad === '' || t.priority === filters.prioridad) &&
-          (filters.estado === '' || t.status === filters.estado)
-      ),
+    () => filterPoolTasks(tasks, filters),
     [tasks, filters]
   )
 
+  
   const boardTasksBySprint = useMemo(
-    () =>
-      tasks.filter(
-        (t) =>
-          t.assigneeId != null &&
-          (filters.sprintId === '' ||
-            String(t.sprintId) === filters.sprintId)
-      ),
+    () => filterBoardTasks(tasks, filters),
     [tasks, filters]
   )
 

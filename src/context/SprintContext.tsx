@@ -4,13 +4,9 @@
  */
 
 import { createContext, useContext, useState, useCallback } from 'react'
-import { mockSprints } from '../mock'
+import { mockSprints } from '../mock/sprints'
 import { getActiveSprint } from '../mock/sprints'
-
-interface SprintContextValue {
-  selectedSprintId: number
-  setSelectedSprintId: (id: number) => void
-}
+import type { SprintContextValue } from '../types/sprintContext'
 
 const SprintContext = createContext<SprintContextValue | null>(null)
 

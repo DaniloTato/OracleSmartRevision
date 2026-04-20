@@ -1,45 +1,37 @@
-/**
- * Mock team performance metrics for "Rendimiento del Equipo" page.
- * No API; computed-style data for display.
- */
+import { mockTasks } from './tasks'
+import { mockUsers } from './users'
+import { mockSprints, getActiveSprint } from './sprints'
 
-import type { TeamMemberPerformance } from '../types'
+import {
+  buildTaskStatusDistribution,
+  buildMemberDetail,
+} from '../utils/teamPerformance'
 
-export const mockTeamPerformance: TeamMemberPerformance[] = [
-  {
-    userId: 2,
-    userName: 'Yael Varela',
-    role: 'Desarrolladora',
-    tasksCompleted: 12,
-    tasksInProgress: 1,
-    completionRate: 92,
-    currentSprintContribution: 35,
-  },
-  {
-    userId: 3,
-    userName: 'Danilo Tato',
-    role: 'Desarrollador',
-    tasksCompleted: 8,
-    tasksInProgress: 2,
-    completionRate: 80,
-    currentSprintContribution: 28,
-  },
-  {
-    userId: 4,
-    userName: 'Sebastián Soria',
-    role: 'Desarrollador',
-    tasksCompleted: 15,
-    tasksInProgress: 0,
-    completionRate: 100,
-    currentSprintContribution: 22,
-  },
-  {
-    userId: 5,
-    userName: 'Sebastián Certuche',
-    role: 'Desarrollador',
-    tasksCompleted: 5,
-    tasksInProgress: 1,
-    completionRate: 83,
-    currentSprintContribution: 15,
-  },
-]
+// ----------------------------
+
+export function getTaskStatusDistributionForMember(
+  sprintId: number,
+  userId: number
+) {
+  const tasks = mockTasks.filter(
+    (t) => t.sprintId === sprintId && t.assigneeId === userId
+  )
+
+  return buildTaskStatusDistribution(tasks)
+}
+
+// ----------------------------
+
+export function getMemberDetail(userId: number) {
+  const user = mockUsers.find((u) => u.id === userId)
+  if (!user) return null
+
+  const activeSprintId = getActiveSprint()?.id ?? 1
+
+  return buildMemberDetail({
+    user,
+    tasks: mockTasks,
+    allSprints: mockSprints,
+    activeSprintId,
+  })
+}

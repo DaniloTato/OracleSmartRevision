@@ -12,7 +12,6 @@ const TIPO_OPTIONS: { value: '' | TaskType; label: string }[] = [
   { value: '', label: 'Todos' },
   { value: 'TASK', label: 'Feature' },
   { value: 'BUG', label: 'Bug' },
-  { value: 'BUG', label: 'Issue' },
   { value: 'TRAINING', label: 'Capacitación' },
 ]
 
