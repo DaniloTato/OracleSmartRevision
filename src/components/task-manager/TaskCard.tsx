@@ -1,58 +1,24 @@
-/**
- * Draggable task card used in both pool and team columns.
- * Shows title, type, priority, estimated h, status; optional status dropdown.
- */
-
-
-//MAY NEED TO REFACTOR >:L
-
 import { useRef, useEffect } from 'react'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import type { Task, TaskStatus, TaskPriority } from '../../types'
+import type { TaskCardProps } from './types.ts'
+import { TYPE_LABELS, STATUS_OPTIONS, PRIORITY_CLASSES } from './taskCard.config'
 
-const TYPE_LABELS: Record<string, string> = {
-  feature: 'Feature',
-  bug: 'Bug',
-  issue: 'Issue',
-  capacitación: 'Capacitación',
-}
-
-const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
-  { value: 'open', label: 'To Do' },
-  { value: 'in_progress', label: 'En Proceso' },
-  { value: 'closed', label: 'Hecho' },
-]
-
-const PRIORITY_STYLE: Record<TaskPriority, string> = {
-  baja: 'bg-gray-100 text-gray-700',
-  media: 'bg-amber-100 text-amber-800',
-  alta: 'bg-red-100 text-red-800',
-}
-
-interface TaskCardProps {
-  task: Task
-  onUpdateStatus?: (taskId: number, status: TaskStatus) => void
-  onDelete: (taskId: number) => void
-  /** When true, show small "IA" badge (task was assigned via AI recommendation) */
-  isAssignedViaAI?: boolean
-  /** When true, highlight card (e.g. from deep link ?taskId=) and scroll into view */
-  isHighlighted?: boolean
-}
-
-export function TaskCard({ task, onUpdateStatus, onDelete, isAssignedViaAI, isHighlighted }: TaskCardProps) {
+export function TaskCard({
+  task,
+  onUpdateStatus,
+  onDelete,
+  isAssignedViaAI,
+  isHighlighted,
+}: TaskCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    isDragging,
-  } = useDraggable({ id: task.id, data: { task } })
+
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({ id: task.id, data: { task } })
 
   useEffect(() => {
-    if (isHighlighted && cardRef.current) {
-      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    if (isHighlighted) {
+      cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
   }, [isHighlighted])
 
@@ -60,7 +26,7 @@ export function TaskCard({ task, onUpdateStatus, onDelete, isAssignedViaAI, isHi
     ? { transform: CSS.Translate.toString(transform) }
     : undefined
 
-  const typeLabel = (task.type && TYPE_LABELS[task.type]) || 'Feature'
+  const typeLabel = TYPE_LABELS[task.type] ?? 'Feature'
 
   return (
     <div
@@ -71,50 +37,53 @@ export function TaskCard({ task, onUpdateStatus, onDelete, isAssignedViaAI, isHi
       style={style}
       {...listeners}
       {...attributes}
-      className={`rounded-lg border bg-white p-3 shadow-sm text-left cursor-grab active:cursor-grabbing touch-none ${
-        isDragging ? 'opacity-50 shadow-md' : ''
-      } ${
-        isHighlighted
-          ? 'ring-2 ring-[var(--color-oracle-orange)] border-[var(--color-oracle-orange)]'
-          : 'border-[var(--color-border)]'
-      }`}
+      className={`
+        rounded-lg border p-3 shadow-sm text-left
+        bg-[var(--color-surface)]
+        text-[var(--color-text)]
+        cursor-grab active:cursor-grabbing touch-none
+        ${isDragging ? 'opacity-50 shadow-md' : ''}
+        ${
+          isHighlighted
+            ? 'ring-2 border-[var(--color-primary)] ring-[var(--color-primary)]'
+            : 'border-[var(--color-border)]'
+        }
+      `}
     >
-      <div className="flex items-start justify-between gap-1">
-        <p className="font-medium text-sm text-[var(--color-text)] leading-tight flex-1 min-w-0">
-          {task.title}
-        </p>
+      {/* Title */}
+      <div className="flex justify-between gap-1">
+        <p className="text-sm font-medium truncate">{task.title}</p>
+
         {isAssignedViaAI && (
-          <span
-            className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold bg-violet-100 text-violet-700"
-            title="Asignada por recomendación IA"
-          >
+          <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-data-2 text-white">
             IA
           </span>
         )}
       </div>
-      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        <span className="text-xs text-[var(--color-text-muted)]">{typeLabel}</span>
-        <span
-          className={`rounded px-1.5 py-0.5 text-xs font-medium capitalize ${PRIORITY_STYLE[task.priority] ?? 'bg-gray-100 text-gray-700'}`}
-        >
+
+      {/* Meta */}
+      <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <span>{typeLabel}</span>
+
+        <span className={`px-1.5 py-0.5 rounded font-medium ${PRIORITY_CLASSES[task.priority]}`}>
           {task.priority}
         </span>
-        {task.estimatedHours != null && (
-          <span className="text-xs text-[var(--color-text-muted)]">
-            {task.estimatedHours}h
-          </span>
-        )}
+
+        {task.estimatedHours != null && <span>{task.estimatedHours}h</span>}
       </div>
-      <div className="mt-2 flex items-center justify-between gap-2">
+
+      {/* Actions */}
+      <div className="mt-2 flex justify-between items-center">
         {onUpdateStatus ? (
           <select
             value={task.status}
-            onChange={(e) =>
-              onUpdateStatus(task.id, e.target.value as TaskStatus)
-            }
+            onChange={(e) => onUpdateStatus(task.id, e.target.value as any)}
             onClick={(e) => e.stopPropagation()}
             onPointerDown={(e) => e.stopPropagation()}
-            className="text-xs rounded border border-[var(--color-border)] bg-white px-2 py-1 text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-oracle-orange)]"
+            className="text-xs border rounded px-2 py-1
+              bg-[var(--color-surface)]
+              border-[var(--color-border)]
+            "
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -124,22 +93,19 @@ export function TaskCard({ task, onUpdateStatus, onDelete, isAssignedViaAI, isHi
           </select>
         ) : (
           <span className="text-xs text-[var(--color-text-muted)]">
-            {STATUS_OPTIONS.find((o) => o.value === task.status)?.label ?? task.status}
+            {STATUS_OPTIONS.find((o) => o.value === task.status)?.label}
           </span>
         )}
 
-        {onDelete && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete(task.id)
-            }}
-            className="text-xs text-red-500 hover:text-red-700 ml-2"
-            title="Eliminar tarea"
-          >
-            🗑
-          </button>
-        )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete(task.id)
+          }}
+          className="text-xs text-[var(--color-danger)] hover:opacity-80"
+        >
+          🗑
+        </button>
       </div>
     </div>
   )

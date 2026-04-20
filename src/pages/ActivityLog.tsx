@@ -1,3 +1,5 @@
+// STILL NEEDS TO BE REFACTORED
+
 import { useState, useMemo } from 'react'
 import { getActivityLog } from '../mock'
 import { mockSprints } from '../mock/sprints'
