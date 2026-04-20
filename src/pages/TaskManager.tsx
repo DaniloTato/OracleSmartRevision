@@ -95,9 +95,7 @@ export function TaskManager() {
     if (!over) return
 
     const taskId = Number(active.id)
-
     const rawId = over.id
-
     const isPool = rawId === POOL_ID
 
     const updatedAssignee = getUpdatedAssignee(over.id, POOL_ID)
@@ -107,93 +105,76 @@ export function TaskManager() {
       return
     }
 
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId ? { ...t, assigneeId: updatedAssignee } : t
-      )
-    )
+    try {
+      await updateTask(taskId, {
+        assigneeId: updatedAssignee,
+      })
 
-    await updateTask(taskId, {
-      assigneeId: updatedAssignee,
-    })
-
-    console.log('PATCH SENT:', {
-      taskId,
-      assigneeId: updatedAssignee,
-      rawTarget: rawId,
-    })
-  }, [])
+      await loadTasks()
+    } catch (err) {
+      console.error("ASSIGN UPDATE FAILED:", err)
+    }
+  }, [loadTasks])
 
   /* =========================
      STATUS UPDATE
   ========================== */
   const handleUpdateTaskStatus = useCallback(
     async (taskId: number, status: TaskStatus) => {
-      const id = Number(taskId)
+      try {
+        await updateTask(taskId, { status })
 
-      console.log("CHANGED STATUS", taskId, status)
-
-      setTasks((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, status } : t))
-      )
-
-      await updateTask(taskId, { status })
+        await loadTasks()
+      } catch (err) {
+        console.error("STATUS UPDATE FAILED:", err)
+      }
     },
-    []
+    [loadTasks]
   )
 
   /* =========================
      DELETE TASK
   ========================== */
   const handleDeleteTask = useCallback(async (taskId: number) => {
-    // optimistic UI update
-    setTasks((prev) => prev.filter((t) => t.id !== taskId))
-
     try {
       await deleteTask(taskId)
-    } catch (err: any) {
-      console.error('❌ DELETE FAILED:', {
-        message: err?.message,
-        status: err?.response?.status,
-        data: err?.response?.data,
-        raw: err,
-      })
+      await loadTasks()
+    } catch (err) {
+      console.error("DELETE FAILED:", err)
     }
-  }, [])
+  }, [loadTasks])
 
-  /* =========================
-     CREATE TASK
-  ========================== */
-  const handleCreateTask = useCallback(async (task: Omit<Task, 'id' | 'createdAt'>) => {
-    const payload = {
-      title: task.title,
-      description: "string",
-      type: task.type,
-      status: task.status,
-      estimatedHours: task.estimatedHours,
-      actualHours: task.estimatedHours,
-      featureId: task.featureId,
-      assigneeId: task.assigneeId,
-      isVisible: task.isVisible,
-      sprintId: selectedSprintId,
-    }
-
-    setCreateModalOpen(false)
-
-    //MODIFY THIS HORRIBLE PIECE OF CODE ONCE BACKEND RESPONDS CORRECTLY
-    setTasks((prev) => [
-      ...prev,
-      {
-        ...task,
-        id: Date.now(), // temporary ID
-        createdAt: new Date().toISOString(),
+  const handleCreateTask = useCallback(
+    async (task: Omit<Task, 'id' | 'createdAt'>) => {
+      const payload = {
+        title: task.title,
+        description: "string",
+        type: task.type,
+        status: task.status,
+        estimatedHours: task.estimatedHours,
+        actualHours: task.estimatedHours,
+        featureId: task.featureId,
+        assigneeId: task.assigneeId,
+        isVisible: task.isVisible,
         sprintId: selectedSprintId,
       }
-    ])
 
-    await createTask(projectId, payload)
+      setCreateModalOpen(false)
 
-  }, [projectId, loadTasks])
+      try {
+        const created = await createTask(projectId, payload)
+
+        if (created) {
+          setTasks((prev) => [...prev, created])
+        } else {
+          await loadTasks()
+        }
+      } catch (err) {
+        console.error("CREATE TASK FAILED:", err)
+      }
+    },
+    [projectId, selectedSprintId, loadTasks]
+  )
 
   /* =========================
      FILTERS
