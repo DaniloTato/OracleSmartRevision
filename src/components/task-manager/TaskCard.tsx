@@ -8,7 +8,6 @@ export function TaskCard({
   task,
   onUpdateStatus,
   onDelete,
-  isAssignedViaAI,
   isHighlighted,
 }: TaskCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
@@ -53,12 +52,6 @@ export function TaskCard({
       {/* Title */}
       <div className="flex justify-between gap-1">
         <p className="text-sm font-medium truncate">{task.title}</p>
-
-        {isAssignedViaAI && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-data-2 text-white">
-            IA
-          </span>
-        )}
       </div>
 
       {/* Meta */}

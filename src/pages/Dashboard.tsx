@@ -4,76 +4,52 @@ import {
   HiOutlineClipboardList,
 } from 'react-icons/hi'
 
-import { useEffect, useState, useMemo } from 'react'
-
-import {
-  getSprints,
-  getKpiSummary,
-  getTasksByUser,
-  getIssuesBySprint,
-  getUsers
-} from '../api/dashboardApi'
+import { useMemo } from 'react'
 
 import { useSprint } from '../context/SprintContext'
-import { GenericBarChart } from '../components/charts/GenericBarChart'
+import { useDashboardData } from '../hooks/useDashboardData'
 
+import { GenericBarChart } from '../components/charts/GenericBarChart'
 import { Section } from '../components/ui/Section'
 import { KpiCard } from '../components/ui/KpiCard'
 
 export function Dashboard() {
-
   const projectId = 1
 
-  const [sprints, setSprints] = useState<any[]>([])
-  const [summary, setSummary] = useState<any>(null)
-  const [tasksByUser, setTasksByUser] = useState<any[]>([])
-  const [hoursByUser, setHoursByUser] = useState<any[]>([])
-
-  const [users, setUsers] = useState<any[]>([])
-
   const { selectedSprintId } = useSprint()
-  const activeSprint = sprints.find((s: any) => s.id === selectedSprintId)
+  const sprintId = selectedSprintId ?? 1
+
+  const {
+    sprints,
+    summary,
+    tasks,
+    hours,
+    users,
+    loading,
+  } = useDashboardData(projectId, sprintId)
+
+  const activeSprint = useMemo(
+    () => sprints.find(s => s.id === sprintId),
+    [sprints, sprintId]
+  )
 
   const completedCount = useMemo(() => {
-    return tasksByUser.reduce((sum, u) => sum + (u.tasksCompleted ?? 0), 0)
-  }, [tasksByUser])
+    return tasks.reduce((sum, u) => sum + (u.tasksCompleted ?? 0), 0)
+  }, [tasks])
 
-  const progressPercent = (completedCount/summary?.totalTasks) * 100
-  const toDoCount = summary?.totalTasks - completedCount
+  const totalTasks = summary?.totalTasks ?? 0
 
-  const estimatedVsRealRows = hoursByUser
+  const progressPercent =
+    totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0
 
-  useEffect(() => {
-    async function load() {
-      const sprintsRes = await getSprints(projectId)
-
-      const activeSprint = 1
-
-      const [summaryRes, tasksRes, issuesRes, usersRes] = await Promise.all([
-        getKpiSummary(projectId),
-        getTasksByUser(projectId, activeSprint),
-        getIssuesBySprint(projectId, activeSprint),
-        getUsers()
-      ])
-
-      const hoursGrouped = groupHoursByUser(issuesRes)
-
-      setSummary(summaryRes)
-      setTasksByUser(tasksRes)
-      setHoursByUser(hoursGrouped)
-      setSprints(sprintsRes)
-      setUsers(usersRes)
-    }
-
-    load()
-  }, [])
+  const toDoCount = totalTasks - completedCount
 
   const tasksChartData = useMemo(() => {
-    return tasksByUser.map(u => ({
+    return tasks.map(u => ({
       label: u.user,
       value: u.tasksCompleted,
     }))
-  }, [tasksByUser])
+  }, [tasks])
 
   const usersMap = useMemo(() => {
     const map = new Map<number, string>()
@@ -81,8 +57,13 @@ export function Dashboard() {
     return map
   }, [users])
 
+  if (loading) {
+    return <div className="p-4">Cargando dashboard...</div>
+  }
+
   return (
     <div className="space-y-8">
+
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
@@ -118,7 +99,7 @@ export function Dashboard() {
         />
       </div>
 
-      {/* Estado */}
+      {/* Sprint */}
       {activeSprint && (
         <Section title="Estado del Sprint">
           <p className="text-sm text-[var(--color-text-muted)] mb-4">
@@ -140,34 +121,33 @@ export function Dashboard() {
         </Section>
       )}
 
-      {/* Finished tasks per member chart */}
+      {/* Tasks chart */}
       <Section title="Tareas terminadas por miembro">
-
         <GenericBarChart
           data={tasksChartData}
           title="Tareas completadas por integrante"
-          description="Comparación de desempeño por desarrollador en el sprint seleccionado"
+          description="Comparación de desempeño por desarrollador"
           xAxisLabel="Número de tareas completadas"
           valueLabel="Tareas completadas"
         />
       </Section>
 
-      {/* Real Hours Per Developer */}
+      {/* Hours chart */}
       {activeSprint && (
-        <Section title="Numero de horas trabajadas por miembro">
+        <Section title="Horas trabajadas por miembro">
           <GenericBarChart
-            data={estimatedVsRealRows.map(u => ({
+            data={hours.map(u => ({
               label: usersMap.get(u.userId) ?? `User ${u.userId}`,
               value: u.actualHours
             }))}
             title="Horas reales por integrante"
-            description="Cantidad de horas registradas en el sprint actual"
-            xAxisLabel="Horas reales trabajadas"
-            valueLabel="Horas reales trabajadas"
+            description="Horas registradas en el sprint actual"
+            xAxisLabel="Horas trabajadas"
+            valueLabel="Horas"
           />
         </Section>
       )}
-      
+
     </div>
   )
 }
@@ -176,20 +156,4 @@ export function Dashboard() {
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-ES')
-}
-
-function groupHoursByUser(issues: any[]) {
-  const map = new Map<number, number>()
-
-  for (const issue of issues) {
-    if (!issue.assigneeId) continue
-
-    const prev = map.get(issue.assigneeId) ?? 0
-    map.set(issue.assigneeId, prev + (issue.actualHours ?? 0))
-  }
-
-  return Array.from(map.entries()).map(([userId, hours]) => ({
-    userId,
-    actualHours: hours,
-  }))
 }
