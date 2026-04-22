@@ -6,18 +6,18 @@
 import type { OverloadedPersonRisk } from '../types'
 
 export const mockOverloadedPeople: OverloadedPersonRisk[] = [
-  {
-    userId: 2,
-    userName: 'Yael Varela',
-    currentTasks: 5,
-    maxRecommended: 3,
-    severity: 'Alta',
-  },
-  {
-    userId: 3,
-    userName: 'Danilo Tato',
-    currentTasks: 4,
-    maxRecommended: 4,
-    severity: 'Media',
-  },
+   {
+      userId: 2,
+      userName: 'Yael Varela',
+      currentTasks: 5,
+      maxRecommended: 3,
+      severity: 'Alta',
+   },
+   {
+      userId: 3,
+      userName: 'Danilo Tato',
+      currentTasks: 4,
+      maxRecommended: 4,
+      severity: 'Media',
+   },
 ]

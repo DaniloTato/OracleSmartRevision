@@ -1,13 +1,13 @@
 export interface KpiSummary {
-  totalTasks: number
+   totalTasks: number
 }
 
 export interface TasksByUser {
-  user: string
-  tasksCompleted: number
+   user: string
+   tasksCompleted: number
 }
 
 export interface HoursByUser {
-  userId: number
-  actualHours: number
+   userId: number
+   actualHours: number
 }
