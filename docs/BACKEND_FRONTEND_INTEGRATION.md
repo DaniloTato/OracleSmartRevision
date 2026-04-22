@@ -8,19 +8,19 @@ Documento **unificado** para quien construye el **API en Spring Boot** sobre **O
 
 ## Tabla de contenidos
 
-1. [Resumen y prioridades](#1-resumen-y-prioridades)  
-2. [Oracle Cloud y Autonomous Database](#2-oracle-cloud-y-autonomous-database)  
-3. [Spring Boot → conexión a ATP](#3-spring-boot--conexión-a-atp)  
-4. [Usuarios y esquema](#4-usuarios-y-esquema)  
-5. [Modelo físico, migraciones y checklist BD](#5-modelo-físico-migraciones-y-checklist-bd)  
-6. [Detalles prácticos ATP](#6-detalles-prácticos-atp)  
-7. [Mapa BD ↔ pantallas del front](#7-mapa-bd--pantallas-del-front)  
-8. [Brechas de esquema vs UI actual](#8-brechas-de-esquema-vs-ui-actual)  
-9. [Mapeo de enums (contrato API)](#9-mapeo-de-enums-contrato-api)  
-10. [API REST](#10-api-rest)  
-11. [CORS y entorno](#11-cors-y-entorno)  
-12. [Checklist entrega backend](#12-checklist-entrega-backend)  
-13. [Qué hará el frontend después](#13-qué-hará-el-frontend-después)
+1. [Resumen y prioridades](#1-resumen-y-prioridades)
+2. [Oracle Cloud y Autonomous Database](#2-oracle-cloud-y-autonomous-database)
+3. [Spring Boot → conexión a ATP](#3-spring-boot--conexión-a-atp)
+4. [Usuarios y esquema](#4-usuarios-y-esquema)
+5. [Modelo físico, migraciones y checklist BD](#5-modelo-físico-migraciones-y-checklist-bd)
+6. [Detalles prácticos ATP](#6-detalles-prácticos-atp)
+7. [Mapa BD ↔ pantallas del front](#7-mapa-bd--pantallas-del-front)
+8. [Brechas de esquema vs UI actual](#8-brechas-de-esquema-vs-ui-actual)
+9. [Mapeo de enums (contrato API)](#9-mapeo-de-enums-contrato-api)
+10.   [API REST](#10-api-rest)
+11.   [CORS y entorno](#11-cors-y-entorno)
+12.   [Checklist entrega backend](#12-checklist-entrega-backend)
+13.   [Qué hará el frontend después](#13-qué-hará-el-frontend-después)
 
 ---
 
@@ -37,14 +37,14 @@ Documento **unificado** para quien construye el **API en Spring Boot** sobre **O
 
 ## 2. Oracle Cloud y Autonomous Database
 
-| Ítem | Descripción |
-|------|-------------|
-| **Servicio** | **Autonomous Transaction Processing (ATP)** para carga OLTP del gestor de tareas. |
-| **Compartment** | Donde viva la instancia (separar `dev` / `prod` si aplica). |
-| **Wallet** | Descargar desde la consola de la ADB (`tnsnames.ora`, `sqlnet.ora`, `cwallet.sso` o equivalente PEM). **No** versionar el wallet en git público. |
-| **Conexión** | Anotar servicios TNS (`..._high`, `..._medium`, `..._low`). Para servidor de aplicaciones suele usarse `_medium` o `_low`. |
-| **Usuario ADMIN** | Solo administración y DDL inicial; la aplicación en runtime debe usar **usuario de app** (ver §4). |
-| **Red** | Opcional: **private endpoint** + VPN/bastión; si hay acceso público, restringir por IP. |
+| Ítem              | Descripción                                                                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Servicio**      | **Autonomous Transaction Processing (ATP)** para carga OLTP del gestor de tareas.                                                                |
+| **Compartment**   | Donde viva la instancia (separar `dev` / `prod` si aplica).                                                                                      |
+| **Wallet**        | Descargar desde la consola de la ADB (`tnsnames.ora`, `sqlnet.ora`, `cwallet.sso` o equivalente PEM). **No** versionar el wallet en git público. |
+| **Conexión**      | Anotar servicios TNS (`..._high`, `..._medium`, `..._low`). Para servidor de aplicaciones suele usarse `_medium` o `_low`.                       |
+| **Usuario ADMIN** | Solo administración y DDL inicial; la aplicación en runtime debe usar **usuario de app** (ver §4).                                               |
+| **Red**           | Opcional: **private endpoint** + VPN/bastión; si hay acceso público, restringir por IP.                                                          |
 
 ---
 
@@ -66,11 +66,11 @@ Ejemplo ilustrativo:
 
 ```yaml
 spring:
-  datasource:
-    url: jdbc:oracle:thin:@demo_tp?TNS_ADMIN=/ruta/absoluta/al/wallet
-    username: ${ADB_APP_USER}
-    password: ${ADB_APP_PASSWORD}
-    driver-class-name: oracle.jdbc.OracleDriver
+   datasource:
+      url: jdbc:oracle:thin:@demo_tp?TNS_ADMIN=/ruta/absoluta/al/wallet
+      username: ${ADB_APP_USER}
+      password: ${ADB_APP_PASSWORD}
+      driver-class-name: oracle.jdbc.OracleDriver
 ```
 
 También es habitual usar `jdbc:oracle:thin:@NOMBRE_EN_TNSNAMES` y definir `TNS_ADMIN` (o `oracle.net.tns_admin`) apuntando al directorio del wallet descomprimido.
@@ -81,17 +81,17 @@ También es habitual usar `jdbc:oracle:thin:@NOMBRE_EN_TNSNAMES` y definir `TNS_
 - [ ] Credenciales del **usuario de aplicación**, no `ADMIN`.
 - [ ] JDK compatible con `ojdbc11` (Java 11+).
 
-Seguir la guía oficial *Connecting to Autonomous Database* para la variante exacta de URL según versión del driver.
+Seguir la guía oficial _Connecting to Autonomous Database_ para la variante exacta de URL según versión del driver.
 
 ---
 
 ## 4. Usuarios y esquema
 
-| Rol | Uso |
-|-----|-----|
-| **ADMIN** (creado con la ADB) | Crear esquema/usuario app, grants iniciales. |
+| Rol                                        | Uso                                                       |
+| ------------------------------------------ | --------------------------------------------------------- |
+| **ADMIN** (creado con la ADB)              | Crear esquema/usuario app, grants iniciales.              |
 | **Usuario de aplicación** (ej. `APP_USER`) | Propietario de tablas o usuario con grants sobre objetos. |
-| **Solo lectura** (opcional) | Reporting / snapshots. |
+| **Solo lectura** (opcional)                | Reporting / snapshots.                                    |
 
 **Recomendación MVP:** un esquema/usuario dedicado para la app, distinto de `ADMIN`, con privilegios mínimos.
 
@@ -111,14 +111,14 @@ Seguir la guía oficial *Connecting to Autonomous Database* para la variante exa
 
 ### 5.2 Ajustes recomendados al modelo (v1)
 
-| Cambio | Motivo |
-|--------|--------|
+| Cambio                          | Motivo                                  |
+| ------------------------------- | --------------------------------------- |
 | `app_users` en lugar de `users` | Claridad y menos fricción en SQL/tools. |
-| `issues.assigned_to` **NULL** | Tareas sin asignar (Task Manager). |
-| `issues.due_date` (DATE) | Panel “En riesgo” / atrasadas. |
-| `issues.priority` | Valores acordados con §9. |
-| Ampliar `issues.status` | Ej. `in_review` para “revisión”. |
-| Ampliar `issues.type` | Ej. `ISSUE` si se distingue de `TASK`. |
+| `issues.assigned_to` **NULL**   | Tareas sin asignar (Task Manager).      |
+| `issues.due_date` (DATE)        | Panel “En riesgo” / atrasadas.          |
+| `issues.priority`               | Valores acordados con §9.               |
+| Ampliar `issues.status`         | Ej. `in_review` para “revisión”.        |
+| Ampliar `issues.type`           | Ej. `ISSUE` si se distingue de `TASK`.  |
 
 ### 5.3 Migraciones
 
@@ -148,31 +148,31 @@ Seguir la guía oficial *Connecting to Autonomous Database* para la variante exa
 
 ## 7. Mapa BD ↔ pantallas del front
 
-| Entidad Oracle | Uso en el front | Notas para el API |
-|----------------|-----------------|-------------------|
-| `project` | Contexto / selector | `GET /projects`, `GET /projects/:id` |
-| `sprint` | Dashboard, comparativo, filtros, Task Manager | Lista por `projectId` |
-| `feature` | MVP puede ocultarse en UI | Default `featureId` por sprint o CRUD mínimo |
-| `issues` | Tareas, KPIs, riesgo, rendimiento | Incluir `sprintId` resuelto en DTO |
-| `app_users` + `project_member` | Asignación, equipo, actividad | Rol visible desde `role` o `role_in_project` |
-| `role` | Texto de rol | |
-| `timelog` | Horas auditables | Coexistir con `issues.actual_hours` si ambos existen |
-| `issue_log` | Historial de actividad | `GET` paginado |
-| `kpi_snapshot` | Dashboard / histórico | Opcional si primero se calcula en queries |
-| `admin_user` | Panel admin | Fuera del MVP del front actual |
+| Entidad Oracle                 | Uso en el front                               | Notas para el API                                    |
+| ------------------------------ | --------------------------------------------- | ---------------------------------------------------- |
+| `project`                      | Contexto / selector                           | `GET /projects`, `GET /projects/:id`                 |
+| `sprint`                       | Dashboard, comparativo, filtros, Task Manager | Lista por `projectId`                                |
+| `feature`                      | MVP puede ocultarse en UI                     | Default `featureId` por sprint o CRUD mínimo         |
+| `issues`                       | Tareas, KPIs, riesgo, rendimiento             | Incluir `sprintId` resuelto en DTO                   |
+| `app_users` + `project_member` | Asignación, equipo, actividad                 | Rol visible desde `role` o `role_in_project`         |
+| `role`                         | Texto de rol                                  |                                                      |
+| `timelog`                      | Horas auditables                              | Coexistir con `issues.actual_hours` si ambos existen |
+| `issue_log`                    | Historial de actividad                        | `GET` paginado                                       |
+| `kpi_snapshot`                 | Dashboard / histórico                         | Opcional si primero se calcula en queries            |
+| `admin_user`                   | Panel admin                                   | Fuera del MVP del front actual                       |
 
 ---
 
 ## 8. Brechas de esquema vs UI actual
 
-| Necesidad del front | Si falta en SQL inicial | Acción |
-|--------------------|-------------------------|--------|
-| `dueDate` | Añadir `due_date` | Migración |
-| Estado “revisión” | Ampliar `CHECK` o mapear | Acordar en §9 |
-| `priority` | Columna + dominio | Migración |
-| Tipo “issue” (incidencia) | Ampliar `type` | Migración o mapeo en API |
-| Sin asignar | `assigned_to` NULL | Nullable + filtro API |
-| IDs en JSON | `NUMBER` en Oracle | API devuelve string o number de forma **consistente** |
+| Necesidad del front       | Si falta en SQL inicial  | Acción                                                |
+| ------------------------- | ------------------------ | ----------------------------------------------------- |
+| `dueDate`                 | Añadir `due_date`        | Migración                                             |
+| Estado “revisión”         | Ampliar `CHECK` o mapear | Acordar en §9                                         |
+| `priority`                | Columna + dominio        | Migración                                             |
+| Tipo “issue” (incidencia) | Ampliar `type`           | Migración o mapeo en API                              |
+| Sin asignar               | `assigned_to` NULL       | Nullable + filtro API                                 |
+| IDs en JSON               | `NUMBER` en Oracle       | API devuelve string o number de forma **consistente** |
 
 ---
 
@@ -180,29 +180,29 @@ Seguir la guía oficial *Connecting to Autonomous Database* para la variante exa
 
 ### Estado tarea (UI deseada ↔ Oracle sugerido)
 
-| Front (`TaskStatus`) | Oracle `issues.status` |
-|----------------------|-------------------------|
-| `pendiente` | `open` |
-| `en_progreso` | `in_progress` |
-| `revisión` | `in_review` *(o equivalente acordado)* |
-| `completada` | `closed` |
+| Front (`TaskStatus`) | Oracle `issues.status`                 |
+| -------------------- | -------------------------------------- |
+| `pendiente`          | `open`                                 |
+| `en_progreso`        | `in_progress`                          |
+| `revisión`           | `in_review` _(o equivalente acordado)_ |
+| `completada`         | `closed`                               |
 
 ### Tipo tarea
 
-| Front (`TaskType`) | Oracle `issues.type` |
-|--------------------|------------------------|
-| `feature` | `TASK` o tipo dedicado |
-| `bug` | `BUG` |
-| `issue` | `ISSUE` si se amplía el `CHECK` |
-| `capacitación` | `TRAINING` |
+| Front (`TaskType`) | Oracle `issues.type`            |
+| ------------------ | ------------------------------- |
+| `feature`          | `TASK` o tipo dedicado          |
+| `bug`              | `BUG`                           |
+| `issue`            | `ISSUE` si se amplía el `CHECK` |
+| `capacitación`     | `TRAINING`                      |
 
 ### Sprint
 
-| Front | `sprint.status` |
-|-------|-----------------|
-| `active` | `active` |
-| `planned` | `planned` |
-| `completed` | `completed` |
+| Front       | `sprint.status` |
+| ----------- | --------------- |
+| `active`    | `active`        |
+| `planned`   | `planned`       |
+| `completed` | `completed`     |
 
 ---
 
@@ -212,103 +212,103 @@ Base sugerida: `https://api…/v1`. Respuestas **JSON**. Errores: `{ "code", "me
 
 ### 10.1 Autenticación
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| `POST` | `/auth/login` | `{ "email", "password" }` → `{ "accessToken", "expiresIn", "user" }` |
-| `GET` | `/auth/me` | Usuario actual (+ `projectId` activo si aplica) |
-| `POST` | `/auth/logout` | Opcional |
+| Método | Ruta           | Descripción                                                          |
+| ------ | -------------- | -------------------------------------------------------------------- |
+| `POST` | `/auth/login`  | `{ "email", "password" }` → `{ "accessToken", "expiresIn", "user" }` |
+| `GET`  | `/auth/me`     | Usuario actual (+ `projectId` activo si aplica)                      |
+| `POST` | `/auth/logout` | Opcional                                                             |
 
 Front: `Authorization: Bearer <token>`.
 
 ### 10.2 Proyecto y miembros
 
-| Método | Ruta |
-|--------|------|
-| `GET` | `/projects` |
-| `GET` | `/projects/:projectId` |
-| `GET` | `/projects/:projectId/members` |
+| Método | Ruta                           |
+| ------ | ------------------------------ |
+| `GET`  | `/projects`                    |
+| `GET`  | `/projects/:projectId`         |
+| `GET`  | `/projects/:projectId/members` |
 
 ### 10.3 Sprints
 
-| Método | Ruta |
-|--------|------|
-| `GET` | `/projects/:projectId/sprints` |
-| `GET` | `/projects/:projectId/sprints/:sprintId` |
+| Método | Ruta                                     |
+| ------ | ---------------------------------------- |
+| `GET`  | `/projects/:projectId/sprints`           |
+| `GET`  | `/projects/:projectId/sprints/:sprintId` |
 
 Fechas en ISO `YYYY-MM-DD` donde aplique.
 
 ### 10.4 Issues (tareas)
 
-| Método | Ruta | Query / notas |
-|--------|------|----------------|
-| `GET` | `/projects/:projectId/issues` | `sprintId`, `status[]`, `assigneeId`, `unassigned`, `type`, `search`, `page`, `pageSize` |
-| `GET` | `/projects/:projectId/issues/:issueId` | |
-| `POST` | `/projects/:projectId/issues` | Body alineado al DTO de abajo |
-| `PATCH` | `/projects/:projectId/issues/:issueId` | Parcial |
-| `DELETE` | `…/issues/:issueId` | Opcional |
+| Método   | Ruta                                   | Query / notas                                                                            |
+| -------- | -------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `GET`    | `/projects/:projectId/issues`          | `sprintId`, `status[]`, `assigneeId`, `unassigned`, `type`, `search`, `page`, `pageSize` |
+| `GET`    | `/projects/:projectId/issues/:issueId` |                                                                                          |
+| `POST`   | `/projects/:projectId/issues`          | Body alineado al DTO de abajo                                                            |
+| `PATCH`  | `/projects/:projectId/issues/:issueId` | Parcial                                                                                  |
+| `DELETE` | `…/issues/:issueId`                    | Opcional                                                                                 |
 
 **DTO recomendado (issue = tarea en UI):**
 
 ```json
 {
-  "id": "1",
-  "projectId": "1",
-  "sprintId": "1",
-  "featureId": "1",
-  "title": "…",
-  "description": "…",
-  "status": "pendiente",
-  "priority": "media",
-  "type": "bug",
-  "assigneeId": "101",
-  "dueDate": "2026-04-20",
-  "createdAt": "2026-04-10T12:00:00Z",
-  "updatedAt": "2026-04-10T14:00:00Z",
-  "estimatedHours": 5,
-  "actualHours": 6,
-  "isVisible": true
+   "id": "1",
+   "projectId": "1",
+   "sprintId": "1",
+   "featureId": "1",
+   "title": "…",
+   "description": "…",
+   "status": "pendiente",
+   "priority": "media",
+   "type": "bug",
+   "assigneeId": "101",
+   "dueDate": "2026-04-20",
+   "createdAt": "2026-04-10T12:00:00Z",
+   "updatedAt": "2026-04-10T14:00:00Z",
+   "estimatedHours": 5,
+   "actualHours": 6,
+   "isVisible": true
 }
 ```
 
 ### 10.5 Features (opcional MVP)
 
-| Método | Ruta |
-|--------|------|
-| `GET` | `/projects/:projectId/sprints/:sprintId/features` |
+| Método | Ruta                                              |
+| ------ | ------------------------------------------------- |
+| `GET`  | `/projects/:projectId/sprints/:sprintId/features` |
 
 Si no hay UI: el POST de issue puede crear/usar un feature por defecto del sprint.
 
 ### 10.6 Time logs
 
-| Método | Ruta |
-|--------|------|
-| `GET` | `/projects/:projectId/issues/:issueId/timelogs` |
+| Método | Ruta                                            |
+| ------ | ----------------------------------------------- |
+| `GET`  | `/projects/:projectId/issues/:issueId/timelogs` |
 | `POST` | `/projects/:projectId/issues/:issueId/timelogs` |
 
 Body ejemplo: `{ "hoursLogged": 2, "logDate": "2026-04-10" }`.
 
 ### 10.7 Actividad
 
-| Método | Ruta |
-|--------|------|
-| `GET` | `/projects/:projectId/activity` |
+| Método | Ruta                            |
+| ------ | ------------------------------- |
+| `GET`  | `/projects/:projectId/activity` |
 
 Query: `sprintId`, `from`, `to`, `page`, `pageSize`. Origen: `issue_log` + joins a usuarios.
 
 ### 10.8 Dashboard
 
-| Método | Ruta | Descripción |
-|--------|------|---------------|
-| `GET` | `/projects/:projectId/dashboard/summary` | `?sprintId=` — KPIs del sprint (conteos, progreso %, riesgos, etc.) |
-| `GET` | `/projects/:projectId/dashboard/compare` | `?baselineSprintId=&compareSprintId=` |
-| `GET` | `/projects/:projectId/kpi-snapshots` | Opcional: `?sprintId=&limit=` |
+| Método | Ruta                                     | Descripción                                                         |
+| ------ | ---------------------------------------- | ------------------------------------------------------------------- |
+| `GET`  | `/projects/:projectId/dashboard/summary` | `?sprintId=` — KPIs del sprint (conteos, progreso %, riesgos, etc.) |
+| `GET`  | `/projects/:projectId/dashboard/compare` | `?baselineSprintId=&compareSprintId=`                               |
+| `GET`  | `/projects/:projectId/kpi-snapshots`     | Opcional: `?sprintId=&limit=`                                       |
 
 ### 10.9 Rendimiento del equipo
 
-| Método | Ruta |
-|--------|------|
-| `GET` | `/projects/:projectId/team-performance?sprintId=` |
-| `GET` | `/projects/:projectId/users/:userId/task-status-distribution?sprintId=` |
+| Método | Ruta                                                                    |
+| ------ | ----------------------------------------------------------------------- |
+| `GET`  | `/projects/:projectId/team-performance?sprintId=`                       |
+| `GET`  | `/projects/:projectId/users/:userId/task-status-distribution?sprintId=` |
 
 Paginación sugerida: `{ "items": [], "total", "page", "pageSize" }`.
 
@@ -352,4 +352,4 @@ Paginación sugerida: `{ "items": [], "total", "page", "pageSize" }`.
 
 ---
 
-*Documento unificado para el repo **oracle-smart** — Oracle Management Project: **Spring Boot**, **Oracle Autonomous DB (OCI)**, frontend **React/Vite**.*
+_Documento unificado para el repo **oracle-smart** — Oracle Management Project: **Spring Boot**, **Oracle Autonomous DB (OCI)**, frontend **React/Vite**._

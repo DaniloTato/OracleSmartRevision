@@ -2,49 +2,49 @@
 const BASE_URL = '/api'
 
 async function fetchJson(url: string, options?: RequestInit) {
-  const res = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options?.headers || {}),
-    },
-    ...options,
-  })
+   const res = await fetch(url, {
+      headers: {
+         'Content-Type': 'application/json',
+         ...(options?.headers || {}),
+      },
+      ...options,
+   })
 
-  if (!res.ok) {
-    throw new Error(await res.text())
-  }
+   if (!res.ok) {
+      throw new Error(await res.text())
+   }
 
-  const text = await res.text()
+   const text = await res.text()
 
-  if (!text) return null
+   if (!text) return null
 
-  return JSON.parse(text)
+   return JSON.parse(text)
 }
 
 /* PROJECT DATA */
 export const getSprints = (projectId: number) =>
-  fetchJson(`${BASE_URL}/projects/${projectId}/sprints`)
+   fetchJson(`${BASE_URL}/projects/${projectId}/sprints`)
 
 export const getMembers = (projectId: number) =>
-  fetchJson(`${BASE_URL}/projects/${projectId}/members`)
+   fetchJson(`${BASE_URL}/projects/${projectId}/members`)
 
 /* TASKS (ISSUES) */
 export const getTasks = (projectId: number) =>
-  fetchJson(`${BASE_URL}/projects/${projectId}/issues`)
+   fetchJson(`${BASE_URL}/projects/${projectId}/issues`)
 
 export const createTask = (projectId: number, payload: any) =>
-  fetchJson(`${BASE_URL}/projects/${projectId}/issues`, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  })
+   fetchJson(`${BASE_URL}/projects/${projectId}/issues`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+   })
 
 export const updateTask = (id: number, payload: any) =>
-  fetchJson(`${BASE_URL}/issues/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify(payload),
-  })
+   fetchJson(`${BASE_URL}/issues/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+   })
 
 export const deleteTask = (issueId: number) =>
-  fetchJson(`${BASE_URL}/issues/${issueId}`, {
-    method: 'DELETE',
-  })
+   fetchJson(`${BASE_URL}/issues/${issueId}`, {
+      method: 'DELETE',
+   })

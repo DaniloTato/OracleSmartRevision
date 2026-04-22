@@ -12,22 +12,25 @@ import { TeamPerformance } from './pages/TeamPerformance'
 import { ActivityLog } from './pages/ActivityLog'
 
 function App() {
-  return (
-    <BrowserRouter>
-      <SprintProvider>
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="task-manager" element={<TaskManager />} />
-            <Route path="team-performance" element={<TeamPerformance />} />
-            <Route path="activity-log" element={<ActivityLog />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </SprintProvider>
-    </BrowserRouter>
-  )
+   return (
+      <BrowserRouter>
+         <SprintProvider>
+            <Routes>
+               <Route path="/" element={<MainLayout />}>
+                  <Route index element={<Navigate to="/dashboard" replace />} />
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="task-manager" element={<TaskManager />} />
+                  <Route
+                     path="team-performance"
+                     element={<TeamPerformance />}
+                  />
+                  <Route path="activity-log" element={<ActivityLog />} />
+               </Route>
+               <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+         </SprintProvider>
+      </BrowserRouter>
+   )
 }
 
 export default App
