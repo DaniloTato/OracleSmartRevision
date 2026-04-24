@@ -71,7 +71,13 @@ export function TaskCard({
                {task.priority}
             </span>
 
-            {task.estimatedHours != null && <span>{task.estimatedHours}h</span>}
+            {task.estimatedHours != null && (
+               <span>Est: {task.estimatedHours}</span>
+            )}
+
+            {task.actualHours != null && (
+               <span>Real: {task.actualHours}</span>
+            )}
          </div>
 
          {/* Actions */}
