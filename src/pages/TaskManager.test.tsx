@@ -70,7 +70,7 @@ describe('TaskManager (Requirements)', () => {
    // [TM-01] REQUIREMENT:
    // - Real-time display of tasks assigned to each user
    // =========================================================
-   test('displays tasks assigned to each user in real-time', async () => {
+   test('[TM-01] displays tasks assigned to each user in real-time', async () => {
       vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
          tasks: [
             { id: 1, title: 'Task A', assignedTo: 'Danilo', sprintId: 1 },
@@ -97,7 +97,7 @@ describe('TaskManager (Requirements)', () => {
    // - State changes must be reflected in the system
    // - Task updates should trigger API interaction
    // =========================================================
-   test('updates UI when task state changes', async () => {
+   test('[TM-02] updates UI when task state changes', async () => {
       vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
          tasks: [
             { id: 1, title: 'Task A', assignedTo: 'Danilo', status: 'open', sprintId: 1 }
@@ -123,7 +123,7 @@ describe('TaskManager (Requirements)', () => {
    //   * Estimated hours
    //   * Actual hours
    // =========================================================
-   test('completed tasks show required fields', async () => {
+   test('[TM-03] completed tasks show required fields', async () => {
       vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
          tasks: [
             {
@@ -159,7 +159,7 @@ describe('TaskManager (Requirements)', () => {
    // - Users must be able to mark tasks as completed
    // - Correct API call must be issued
    // =========================================================
-   test('allows marking a task as completed', async () => {
+   test('[TM-04] allows marking a task as completed', async () => {
       vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
          tasks: [{ id: 1, title: 'Task A', status: 'open', sprintId: 1 }],
          members: [],
@@ -181,7 +181,7 @@ describe('TaskManager (Requirements)', () => {
    // - Users must be able to create new tasks
    // - Modal submission must trigger API call
    // =========================================================
-   test('creates a new task via modal', async () => {
+   test('[TM-05] creates a new task via modal', async () => {
       vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
          tasks: [],
          members: [],
