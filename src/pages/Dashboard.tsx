@@ -12,6 +12,7 @@ import { useDashboardData } from '../hooks/useDashboardData'
 import { GenericBarChart } from '../components/charts/GenericBarChart'
 import { Section } from '../components/ui/Section'
 import { KpiCard } from '../components/ui/KpiCard'
+import { MultiBarChart } from '../components/charts/MultiBarChart'
 
 export function Dashboard() {
    const projectId = 1
@@ -19,10 +20,12 @@ export function Dashboard() {
    const { selectedSprintId } = useSprint()
    const sprintId = selectedSprintId ?? 1
 
-   const { sprints, summary, tasks, hours, users, loading } = useDashboardData(
-      projectId,
-      sprintId
-   )
+   const { sprints, summary, tasks, hours, users, multiSprintTasks, loading } =
+   useDashboardData(projectId, sprintId)
+
+   const userKeys = useMemo(() => {
+      return users.map((u) => u.name)
+   }, [users])
 
    const activeSprint = useMemo(
       () => sprints.find((s) => s.id === sprintId),
@@ -141,6 +144,16 @@ export function Dashboard() {
                />
             </Section>
          )}
+
+         <Section title="Tareas completadas por sprint y desarrollador">
+            <MultiBarChart
+               data={multiSprintTasks}
+               keys={userKeys}
+               xKey="sprint"
+               title="Tareas completadas por desarrollador por sprint"
+               description="Comparación del desempeño entre sprints"
+            />
+         </Section>
       </div>
    )
 }

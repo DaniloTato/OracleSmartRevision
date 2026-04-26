@@ -11,3 +11,8 @@ export interface HoursByUser {
    userId: number
    actualHours: number
 }
+
+export interface TasksPerSprint {
+   sprint: string
+   [userName: string]: number | string
+}

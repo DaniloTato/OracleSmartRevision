@@ -3,14 +3,21 @@ export async function getSprints(projectId: number) {
    return res.json()
 }
 
-export async function getKpiSummary(projectId: number) {
-   const res = await fetch(`/api/projects/${projectId}/kpis/summary`)
+export async function getKpiSummary(projectId: number, sprintId: number) {
+   const res = await fetch(`/api/projects/${projectId}/kpis/summary?sprintId=${sprintId}`)
    return res.json()
 }
 
-export async function getTasksByUser(projectId: number, sprintId: number) {
+export async function getTasksByUserAndSprint(projectId: number, sprintId: number) {
    const res = await fetch(
       `/api/projects/${projectId}/kpis/tasks-by-user?sprintId=${sprintId}`
+   )
+   return res.json()
+}
+
+export async function getTasksByUser(projectId: number) {
+   const res = await fetch(
+      `/api/projects/${projectId}/kpis/tasks-by-user`
    )
    return res.json()
 }

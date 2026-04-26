@@ -1,19 +1,37 @@
 import {
    getSprints,
    getKpiSummary,
-   getTasksByUser,
    getIssuesBySprint,
    getUsers,
+   getTasksByUserAndSprint,
 } from '../api/dashboardApi'
 
-export async function loadDashboardData(projectId: number, sprintId: number) {
+import type { TasksPerSprint } from '../types/dashboard'
+
+export async function loadDashboardData(
+   projectId: number, 
+   sprintId: number
+): Promise<{
+   sprints: any[]
+   summary: any
+   tasks: any[]
+   hours: any[]
+   users: any[]
+   multiSprintTasks: TasksPerSprint[]
+}> {
    const [sprints, summary, tasks, issues, users] = await Promise.all([
       getSprints(projectId),
-      getKpiSummary(projectId),
-      getTasksByUser(projectId, sprintId),
+      getKpiSummary(projectId, sprintId),
+      getTasksByUserAndSprint(projectId, sprintId),
       getIssuesBySprint(projectId, sprintId),
       getUsers(),
    ])
+
+   const multiSprintTasks: TasksPerSprint[] = await getTasksByUserPerSprint(
+      projectId,
+      sprints,
+      users
+   )
 
    return {
       sprints,
@@ -21,6 +39,7 @@ export async function loadDashboardData(projectId: number, sprintId: number) {
       tasks,
       hours: groupHoursByUser(issues),
       users,
+      multiSprintTasks
    }
 }
 
@@ -38,4 +57,33 @@ function groupHoursByUser(issues: any[]) {
       userId,
       actualHours: hours,
    }))
+}
+
+export async function getTasksByUserPerSprint(
+   projectId: number,
+   sprints: any[],
+   users: any[]
+): Promise<TasksPerSprint[]> {
+   const results = await Promise.all(
+      sprints.map((s) =>
+         getTasksByUserAndSprint(projectId, s.id)
+      )
+   )
+
+   return sprints.map((sprint, i) => {
+      const row: TasksPerSprint = {
+         sprint: sprint.name,
+      }
+
+      const sprintData = results[i]
+
+      users.forEach((u) => {
+         const match = sprintData.find(
+            (t: any) => t.user === u.name
+         )
+         row[u.name] = match?.tasksCompleted ?? 0
+      })
+
+      return row
+   })
 }
