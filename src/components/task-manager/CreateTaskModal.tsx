@@ -3,14 +3,18 @@
  */
 
 import { useState } from 'react'
-import type { Task, TaskType, TaskPriority } from '../../types'
+import type { CreateTaskDto, TaskType} from '../../types/Task'
 import type { Sprint, Member } from '../../types'
+import { useSprint } from '../../context/SprintContext'
+import type { Feature } from '../../types'
+import { getFeaturesBySprint } from '../../api/taskManagerApi'
+import { useEffect } from 'react'
 
 interface CreateTaskModalProps {
    sprints: Sprint[]
    members: Member[]
    onClose: () => void
-   onSubmit: (task: Omit<Task, 'id' | 'createdAt'>) => void
+   onSubmit: (task: CreateTaskDto) => void
 }
 
 const TIPO_OPTIONS: TaskType[] = ['TASK', 'BUG', 'TRAINING']
@@ -19,38 +23,59 @@ const TIPO_LABELS: Record<TaskType, string> = {
    BUG: 'BUG',
    TRAINING: 'CAPACITACIÓN',
 }
-const PRIORIDAD_OPTIONS: TaskPriority[] = ['alta', 'media', 'baja']
 
 export function CreateTaskModal({
-   sprints,
    members,
    onClose,
    onSubmit,
 }: CreateTaskModalProps) {
+
+   const { selectedSprintId } = useSprint()
+
+   const [features, setFeatures] = useState<Feature[]>([])
+   const [featureId, setFeatureId] = useState<number | null>(null)
+
    const [title, setTitle] = useState('')
    const [tipo, setTipo] = useState<TaskType>('TASK')
-   const [prioridad, setPrioridad] = useState<TaskPriority>('media')
-   const [sprintId, setSprintId] = useState(sprints[0]?.id ?? '')
    const [estimatedHours, setEstimatedHours] = useState<number>(4)
    const [assigneeId, setAssigneeId] = useState<number | null>(null)
 
+   const hasNoFeatures = features.length === 0
+
+   useEffect(() => {
+
+      async function fetchFeatures() {
+
+         if (!selectedSprintId) return
+         try {
+            const data = await getFeaturesBySprint(selectedSprintId)
+            setFeatures(data)
+            // auto-select first feature
+            if (data.length > 0) {
+               setFeatureId(data[0].id)
+            }
+         } catch (err) {
+            console.error('Error fetching features', err)
+         }
+      }
+
+      fetchFeatures()
+
+   }, [selectedSprintId])
+
    const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault()
-      if (!title.trim()) return
-      const dueDate = new Date()
-      dueDate.setDate(dueDate.getDate() + 7)
+      if (!title.trim() || !featureId) return
       onSubmit({
          title: title.trim(),
          description: '',
          status: 'open',
-         priority: prioridad,
          type: tipo,
-         assigneeId: assigneeId,
-         sprintId: sprintId || (sprints[0]?.id ?? ''),
+         assigneeId,
          estimatedHours: estimatedHours || 0,
          actualHours: 0,
          isVisible: true,
-         featureId: 1,
+         featureId,
       })
    }
 
@@ -82,6 +107,28 @@ export function CreateTaskModal({
                      placeholder="Ej: Implementar exportación CSV"
                   />
                </div>
+
+               <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
+                     Feature *
+                  </label>
+                  <select
+                     value={featureId ?? ''}
+                     onChange={(e) => setFeatureId(Number(e.target.value))}
+                     disabled={hasNoFeatures}
+                     className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-oracle-orange)] disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  >
+                     {hasNoFeatures ? (
+                        <option value="">No hay features disponibles</option>
+                     ) : (
+                        features.map((f) => (
+                           <option key={f.id} value={f.id}>
+                              {f.title}
+                           </option>
+                        ))
+                     )}
+                  </select>
+               </div>
                <div>
                   <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
                      Tipo
@@ -94,40 +141,6 @@ export function CreateTaskModal({
                      {TIPO_OPTIONS.map((t) => (
                         <option key={t} value={t}>
                            {TIPO_LABELS[t]}
-                        </option>
-                     ))}
-                  </select>
-               </div>
-               <div>
-                  <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
-                     Prioridad
-                  </label>
-                  <select
-                     value={prioridad}
-                     onChange={(e) =>
-                        setPrioridad(e.target.value as TaskPriority)
-                     }
-                     className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-oracle-orange)]"
-                  >
-                     {PRIORIDAD_OPTIONS.map((p) => (
-                        <option key={p} value={p}>
-                           {p.charAt(0).toUpperCase() + p.slice(1)}
-                        </option>
-                     ))}
-                  </select>
-               </div>
-               <div>
-                  <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
-                     Sprint
-                  </label>
-                  <select
-                     value={sprintId}
-                     onChange={(e) => setSprintId(Number(e.target.value))}
-                     className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-oracle-orange)]"
-                  >
-                     {sprints.map((s) => (
-                        <option key={s.id} value={s.id}>
-                           {s.name}
                         </option>
                      ))}
                   </select>

@@ -8,6 +8,7 @@ export interface Sprint {
    name: string
    startDate: string
    endDate: string
+   status: string
    projectId: number
 }
 
@@ -22,30 +23,6 @@ export interface Member {
    userId: number
    name: string
    role: string
-}
-
-export type TaskStatus = 'open' | 'in_progress' | 'closed'
-export type TaskPriority = 'baja' | 'media' | 'alta'
-export type TaskType = 'TASK' | 'BUG' | 'TRAINING'
-
-export interface Task {
-   id: number
-   title: string
-   description?: string
-   status: TaskStatus
-   priority: TaskPriority
-   type: TaskType
-
-   sprintId: number
-   assigneeId: number | null
-
-   createdAt: string
-   updatedAt?: string
-
-   estimatedHours?: number
-   actualHours: number
-   isVisible: boolean
-   featureId: number
 }
 
 export interface ActivityLogEntry {
@@ -98,4 +75,16 @@ export interface HighVarianceRisk {
    actualHours: number
    varianceHours: number
    severity: RiskSeverity
+}
+
+export type FeaturePriority = 'low' | 'medium' | 'high'
+export type FeatureStatus = 'open' | 'in_progress' | 'closed'
+
+export interface Feature {
+   id: number
+   title: string
+   description?: string
+   sprintId: number
+   priority: FeaturePriority
+   status: FeatureStatus
 }

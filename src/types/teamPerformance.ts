@@ -1,4 +1,4 @@
-import type { Task } from './index'
+import type { Task } from "./Task"
 
 export interface TaskStatusSlice {
    name: string

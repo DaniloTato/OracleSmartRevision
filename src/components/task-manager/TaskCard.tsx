@@ -5,7 +5,6 @@ import type { TaskCardProps } from './types.ts'
 import {
    TYPE_LABELS,
    STATUS_OPTIONS,
-   PRIORITY_CLASSES,
 } from './taskCard.config'
 
 export function TaskCard({
@@ -64,12 +63,6 @@ export function TaskCard({
          {/* Meta */}
          <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-[var(--color-text-muted)]">
             <span>{typeLabel}</span>
-
-            <span
-               className={`px-1.5 py-0.5 rounded font-medium ${PRIORITY_CLASSES[task.priority]}`}
-            >
-               {task.priority}
-            </span>
 
             {task.estimatedHours != null && (
                <span>Est: {task.estimatedHours}</span>

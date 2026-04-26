@@ -1,4 +1,4 @@
-import type { TaskPriority, TaskStatus, TaskType } from '../../types'
+import type { TaskStatus, TaskType } from '../../types/Task'
 
 export const TYPE_LABELS: Record<TaskType, string> = {
    TASK: 'Task',
@@ -11,9 +11,3 @@ export const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
    { value: 'in_progress', label: 'En Proceso' },
    { value: 'closed', label: 'Hecho' },
 ]
-
-export const PRIORITY_CLASSES: Record<TaskPriority, string> = {
-   baja: 'bg-[var(--color-surface)] text-[var(--color-text-muted)]',
-   media: 'bg-[var(--color-warning-light)] text-[var(--color-warning)]',
-   alta: 'bg-[var(--color-danger-light)] text-[var(--color-danger)]',
-}

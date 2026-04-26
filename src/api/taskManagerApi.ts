@@ -1,3 +1,6 @@
+import type { CreateTaskDto } from "../types/Task"
+import type { Feature } from "../types"
+
 //change for deployment
 const BASE_URL = '/api'
 
@@ -32,7 +35,7 @@ export const getMembers = (projectId: number) =>
 export const getTasks = (projectId: number) =>
    fetchJson(`${BASE_URL}/projects/${projectId}/issues`)
 
-export const createTask = (projectId: number, payload: any) =>
+export const createTask = (projectId: number, payload: CreateTaskDto) =>
    fetchJson(`${BASE_URL}/projects/${projectId}/issues`, {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -48,3 +51,6 @@ export const deleteTask = (issueId: number) =>
    fetchJson(`${BASE_URL}/issues/${issueId}`, {
       method: 'DELETE',
    })
+
+export const getFeaturesBySprint = (sprintId: number) =>
+   fetchJson(`${BASE_URL}/sprints/${sprintId}/features`) as Promise<Feature[]>

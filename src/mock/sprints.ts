@@ -12,6 +12,7 @@ export const mockSprints: Sprint[] = [
       startDate: '2026-02',
       endDate: '2026-03',
       projectId: 1,
+      status: "completed"
    },
    {
       id: 2,
@@ -19,6 +20,7 @@ export const mockSprints: Sprint[] = [
       startDate: '2026-04',
       endDate: '2026-04',
       projectId: 1,
+      status: "completed"
    },
 ]
 

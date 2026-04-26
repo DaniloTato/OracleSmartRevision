@@ -4,7 +4,7 @@
 
 import { useState } from 'react'
 import type { MemberDetail } from '../../types/teamPerformance'
-import type { Task } from '../../types'
+import type { Task } from '../../types/Task'
 import { getProductivityByUserId } from '../../mock/productivity'
 import { ProductivityChart } from '../charts/ProductivityChart'
 

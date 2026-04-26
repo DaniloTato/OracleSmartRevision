@@ -2,7 +2,8 @@ import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 
-import type { Task, TaskStatus, TaskType, TaskPriority, Member } from '../types'
+import type { CreateTaskDto, Task, TaskStatus, TaskType} from '../types/Task'
+import type { Member } from '../types'
 
 import { TaskPool } from '../components/task-manager/TaskPool'
 import { TeamBoard } from '../components/task-manager/TeamBoard'
@@ -39,7 +40,6 @@ export function TaskManager() {
 
    const [filters, setFilters] = useState({
       tipo: '' as '' | TaskType,
-      prioridad: '' as '' | TaskPriority,
       estado: '' as '' | TaskStatus,
       sprintId: '',
    })
@@ -154,7 +154,7 @@ export function TaskManager() {
    )
 
    const handleCreateTask = useCallback(
-      async (task: Omit<Task, 'id' | 'createdAt'>) => {
+      async (task: CreateTaskDto) => {
          const payload = {
             title: task.title,
             description: 'string',
@@ -165,7 +165,6 @@ export function TaskManager() {
             featureId: task.featureId,
             assigneeId: task.assigneeId,
             isVisible: task.isVisible,
-            sprintId: selectedSprintId,
          }
 
          setCreateModalOpen(false)

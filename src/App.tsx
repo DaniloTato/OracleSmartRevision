@@ -8,7 +8,6 @@ import { SprintProvider } from './context/SprintContext'
 import { MainLayout } from './components/layout/MainLayout'
 import { Dashboard } from './pages/Dashboard'
 import { TaskManager } from './pages/TaskManager'
-import { TeamPerformance } from './pages/TeamPerformance'
 import { ActivityLog } from './pages/ActivityLog'
 
 function App() {
@@ -20,10 +19,6 @@ function App() {
                   <Route index element={<Navigate to="/dashboard" replace />} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="task-manager" element={<TaskManager />} />
-                  <Route
-                     path="team-performance"
-                     element={<TeamPerformance />}
-                  />
                   <Route path="activity-log" element={<ActivityLog />} />
                </Route>
                <Route path="*" element={<Navigate to="/dashboard" replace />} />

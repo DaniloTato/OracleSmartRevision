@@ -1,5 +1,4 @@
-import type { Task, TaskStatus } from '../../types'
-import type { TaskType, TaskPriority } from '../../types'
+import type { Task, TaskStatus, TaskType} from '../../types/Task'
 
 export interface TaskCardProps {
    task: Task
@@ -15,7 +14,6 @@ export type Option<T> = { value: T; label: string }
 
 export interface Filters {
    tipo: '' | TaskType
-   prioridad: '' | TaskPriority
    estado: '' | TaskStatus
    sprintId: string
 }

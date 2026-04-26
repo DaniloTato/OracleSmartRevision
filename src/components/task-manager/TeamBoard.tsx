@@ -1,6 +1,7 @@
 import { useDroppable } from '@dnd-kit/core'
 import { TaskCard } from './TaskCard'
-import type { Task, TaskStatus, Member } from '../../types'
+import type {Member } from '../../types'
+import type { Task, TaskStatus } from '../../types/Task'
 
 interface TeamBoardProps {
    tasks: Task[]

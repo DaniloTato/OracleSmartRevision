@@ -3,10 +3,9 @@ import { TaskCard } from './TaskCard'
 import type {
    Task,
    TaskStatus,
-   TaskType,
-   TaskPriority,
-   Sprint,
-} from '../../types'
+   TaskType
+} from '../../types/Task'
+import type {Sprint} from '../../types/'
 import type { Filters, Option } from './types'
 
 /* =========================
@@ -33,13 +32,6 @@ const TIPO_OPTIONS: Option<'' | TaskType>[] = [
    { value: 'TASK', label: 'Feature' },
    { value: 'BUG', label: 'Bug' },
    { value: 'TRAINING', label: 'Capacitación' },
-]
-
-const PRIORIDAD_OPTIONS: Option<'' | TaskPriority>[] = [
-   { value: '', label: 'Todas' },
-   { value: 'alta', label: 'Alta' },
-   { value: 'media', label: 'Media' },
-   { value: 'baja', label: 'Baja' },
 ]
 
 const ESTADO_OPTIONS: Option<'' | TaskStatus>[] = [
@@ -90,13 +82,6 @@ export function TaskPool({
                   value={filters.tipo}
                   options={TIPO_OPTIONS}
                   onChange={(v) => updateFilter('tipo', v)}
-               />
-
-               <FilterSelect
-                  label="Prioridad"
-                  value={filters.prioridad}
-                  options={PRIORIDAD_OPTIONS}
-                  onChange={(v) => updateFilter('prioridad', v)}
                />
 
                <FilterSelect

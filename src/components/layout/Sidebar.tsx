@@ -2,7 +2,6 @@ import { NavLink } from 'react-router-dom'
 import {
    HiOutlineViewGrid,
    HiOutlineClipboardList,
-   HiOutlineChartBar,
    HiOutlineClock,
 } from 'react-icons/hi'
 
@@ -12,11 +11,6 @@ const navItems = [
       to: '/task-manager',
       label: 'Gestor de Tareas',
       icon: HiOutlineClipboardList,
-   },
-   {
-      to: '/team-performance',
-      label: 'Rendimiento del Equipo',
-      icon: HiOutlineChartBar,
    },
    {
       to: '/activity-log',

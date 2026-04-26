@@ -1,4 +1,4 @@
-import type { Task } from '../types/index'
+import type { Task } from "../types/Task"
 import type { MemberDetail, TaskStatusSlice } from '../types/teamPerformance'
 
 export function buildTaskStatusDistribution(tasks: Task[]): TaskStatusSlice[] {

@@ -1,8 +1,7 @@
-import type { Task, TaskStatus, TaskType, TaskPriority } from '../../types'
+import type { Task, TaskStatus, TaskType} from '../../types/Task'
 
 interface Filters {
    tipo: '' | TaskType
-   prioridad: '' | TaskPriority
    estado: '' | TaskStatus
    sprintId: string
 }
@@ -13,7 +12,6 @@ export function filterPoolTasks(tasks: Task[], filters: Filters): Task[] {
          t.assigneeId == null &&
          (filters.sprintId === '' || String(t.sprintId) === filters.sprintId) &&
          (filters.tipo === '' || t.type === filters.tipo) &&
-         (filters.prioridad === '' || t.priority === filters.prioridad) &&
          (filters.estado === '' || t.status === filters.estado)
    )
 }
