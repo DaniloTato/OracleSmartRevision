@@ -1,7 +1,7 @@
 import {
    getSprints,
    getKpiSummary,
-   getEstimatedHoursByUser,
+   getRealHoursByUser,
    getUsers,
    getTasksByUserAndSprint,
 } from '../api/dashboardApi'
@@ -24,7 +24,7 @@ export async function loadDashboardData(
       getSprints(projectId),
       getKpiSummary(projectId, sprintId),
       getTasksByUserAndSprint(projectId, sprintId),
-      getEstimatedHoursByUser(projectId, sprintId),
+      getRealHoursByUser(projectId, sprintId),
       getUsers(),
 
    ])
@@ -88,7 +88,7 @@ export async function getHoursByUserPerSprint(
 ) {
    const results = await Promise.all(
       sprints.map((s) =>
-         getEstimatedHoursByUser(projectId, s.id)
+         getRealHoursByUser(projectId, s.id)
       )
    )
 

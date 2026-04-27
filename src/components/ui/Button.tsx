@@ -1,6 +1,6 @@
 import type { ReactNode, ButtonHTMLAttributes } from 'react'
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'ghost'
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
 
 type ButtonProps = {
    children: ReactNode
@@ -38,6 +38,17 @@ export function Button({
       text-[var(--color-text-muted)] 
       hover:bg-gray-100
     `,
+
+      danger: `
+      bg-danger 
+      text-white 
+      hover:bg-red-700 
+      active:scale-[0.98]
+      focus:outline-none 
+      focus:ring-2 
+      focus:ring-red-300
+      transition-all
+      `,
    }
 
    return (

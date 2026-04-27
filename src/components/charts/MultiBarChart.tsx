@@ -24,6 +24,9 @@ const DEFAULT_COLORS = [
    'var(--color-data-3)',
    'var(--color-data-4)',
    'var(--color-data-5)',
+   'var(--color-data-6)',
+   'var(--color-data-7)',
+   'var(--color-data-8)',
 ]
 
 export function MultiBarChart({

@@ -46,6 +46,11 @@ export function TaskManager() {
 
    const [createModalOpen, setCreateModalOpen] = useState(false)
 
+   const [deletingTaskId, setDeletingTaskId] = useState<number | null>(null)
+
+   const [closingTaskId, setClosingTaskId] = useState<number | null>(null)
+   const [realHours, setRealHours] = useState<number>(0)
+
    const { selectedSprintId } = useSprint()
 
    const [searchParams] = useSearchParams()
@@ -127,9 +132,13 @@ export function TaskManager() {
   ========================== */
    const handleUpdateTaskStatus = useCallback(
       async (taskId: number, status: TaskStatus) => {
+         if (status === 'closed') {
+            setClosingTaskId(taskId)
+            return
+         }
+
          try {
             await updateTask(taskId, { status })
-
             await loadTasks()
          } catch (err) {
             console.error('STATUS UPDATE FAILED:', err)
@@ -141,6 +150,13 @@ export function TaskManager() {
    /* =========================
      DELETE TASK
   ========================== */
+  const handleAskDeleteConfirmation = useCallback(
+      async (taskId: number) => {
+         setDeletingTaskId(taskId)
+      },
+      []
+   )
+
    const handleDeleteTask = useCallback(
       async (taskId: number) => {
          try {
@@ -161,7 +177,7 @@ export function TaskManager() {
             type: task.type,
             status: task.status,
             estimatedHours: task.estimatedHours,
-            actualHours: task.estimatedHours,
+            actualHours: 0,
             featureId: task.featureId,
             assigneeId: task.assigneeId,
             isVisible: task.isVisible,
@@ -234,7 +250,7 @@ export function TaskManager() {
                         filters={filters}
                         onFiltersChange={setFilters}
                         onUpdateStatus={handleUpdateTaskStatus}
-                        onDeleteTask={handleDeleteTask}
+                        onDeleteTask={handleAskDeleteConfirmation}
                         poolId={POOL_ID}
                         highlightedTaskId={highlightedTaskId}
                      />
@@ -243,7 +259,7 @@ export function TaskManager() {
                         tasks={boardTasksBySprint}
                         members={members}
                         onUpdateStatus={handleUpdateTaskStatus}
-                        onDeleteTask={handleDeleteTask}
+                        onDeleteTask={handleAskDeleteConfirmation}
                         highlightedTaskId={highlightedTaskId}
                      />
                   </div>
@@ -258,6 +274,88 @@ export function TaskManager() {
                onClose={() => setCreateModalOpen(false)}
                onSubmit={handleCreateTask}
             />
+         )}
+
+         {closingTaskId && (
+            <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
+               <div className="bg-white rounded-xl p-6 w-[320px] space-y-4">
+                  <h2 className="text-lg font-semibold">
+                     Registrar horas reales
+                  </h2>
+
+                  <input
+                     type="number"
+                     className="w-full border rounded p-2"
+                     placeholder="Horas reales"
+                     value={realHours}
+                     onChange={(e) => setRealHours(Number(e.target.value))}
+                  />
+
+                  <div className="flex justify-end gap-2">
+                     <Button
+                        variant="ghost"
+                        onClick={() => {
+                           setClosingTaskId(null)
+                           setRealHours(0)
+                        }}
+                     >
+                        Cancelar
+                     </Button>
+
+                     <Button
+                        onClick={async () => {
+                           try {
+                              await updateTask(closingTaskId, {
+                                 status: 'closed',
+                                 actualHours: realHours,
+                              })
+
+                              await loadTasks()
+                           } catch (err) {
+                              console.error('CLOSE TASK FAILED:', err)
+                           } finally {
+                              setClosingTaskId(null)
+                              setRealHours(0)
+                           }
+                        }}
+                     >
+                        Confirmar
+                     </Button>
+                  </div>
+               </div>
+            </div>
+         )}
+
+         {deletingTaskId && (
+            <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
+               <div className="bg-white rounded-xl p-6 w-[320px] space-y-4">
+                  <h2 className="text-lg font-semibold">
+                     ¿Eliminar tarea?
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                     Esta acción no se puede deshacer.
+                  </p>
+                  <div className="flex justify-end gap-2">
+                     <Button
+                        variant="ghost"
+                        onClick={() => setDeletingTaskId(null)}
+                     >
+                        Cancelar
+                     </Button>
+                     <Button
+                        variant="danger"
+                        onClick={() => {
+                           if (deletingTaskId !== null) {
+                              handleDeleteTask(deletingTaskId)
+                              setDeletingTaskId(null)
+                           }
+                        }}
+                     >
+                        Eliminar
+                     </Button>
+                  </div>
+               </div>
+            </div>
          )}
       </div>
    )

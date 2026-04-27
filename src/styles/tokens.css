@@ -7,11 +7,15 @@
    --color-primary-light: #3b82f6;
    --color-primary-dark: #1d4ed8;
 
-   /* Data (non-semantic) */
+   /* Data (non-semantic, colorblind-safe-ish) */
    --color-data-1: #3b82f6; /* blue */
    --color-data-2: #8b5cf6; /* purple */
    --color-data-3: #f59e0b; /* amber */
-   --color-data-4: #ec4899; /* teal */
+   --color-data-4: #ec4899; /* pink */
+   --color-data-5: #06b6d4; /* cyan */
+   --color-data-6: #6366f1; /* indigo */
+   --color-data-7: #a855f7; /* violet */
+   --color-data-8: #14b8a6; /* teal */
 
    /* Semantic colors */
    --color-danger: #dc2626; /* red-600 */
