@@ -2,6 +2,13 @@ import { render, screen } from '@testing-library/react'
 import { Dashboard } from './Dashboard'
 import { vi } from 'vitest'
 
+import type {
+   Sprint, User
+} from '../types'
+
+import type { KpiSummary, TasksByUser, HoursByUser, TasksPerSprint } from '../types/dashboard'
+
+
 // ================= MOCKS =================
 
 vi.mock('../context/SprintContext', () => ({
@@ -28,24 +35,54 @@ vi.mock('../components/charts/GenericBarChart', () => ({
 
 // ================= TEST DATA =================
 
-const mockData = {
+const mockData: {
+
+   sprints: Sprint[]
+   summary: KpiSummary
+   tasks: TasksByUser[]
+   hours: HoursByUser[]
+   users: User[]
+   multiSprintTasks: TasksPerSprint[]
+   multiSprintHours: TasksPerSprint[]
+   loading: boolean
+} = {
    sprints: [
       {
          id: 1,
          name: 'Sprint 1',
          startDate: '2024-01-01',
          endDate: '2024-01-10',
+         status: 'active',
+         projectId: 1,
       },
    ],
-   summary: { totalTasks: 10 },
+   summary: {
+      totalTasks: 10,
+   },
    tasks: [
       { user: 'Danilo', tasksCompleted: 5 },
       { user: 'Ana', tasksCompleted: 3 },
    ],
-   hours: [{ userId: 1, actualHours: 20 }],
+   hours: [
+      { userId: 1, user: 'Danilo', hours: 20 },
+   ],
    users: [
       { id: 1, name: 'Danilo', role: 'PM' },
       { id: 2, name: 'Ana', role: 'Backend Dev' },
+   ],
+   multiSprintTasks: [
+      {
+         sprint: 'Sprint 1',
+         Danilo: 5,
+         Ana: 3,
+      },
+   ],
+   multiSprintHours: [
+      {
+         sprint: 'Sprint 1',
+         Danilo: 20,
+         Ana: 0,
+      },
    ],
    loading: false,
 }

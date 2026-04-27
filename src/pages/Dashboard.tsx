@@ -20,7 +20,7 @@ export function Dashboard() {
    const { selectedSprintId } = useSprint()
    const sprintId = selectedSprintId ?? 1
 
-   const { sprints, summary, tasks, hours, users, multiSprintTasks, loading } =
+   const { sprints, summary, tasks, hours, users, multiSprintTasks, loading, multiSprintHours } =
    useDashboardData(projectId, sprintId)
 
    const userKeys = useMemo(() => {
@@ -49,12 +49,6 @@ export function Dashboard() {
          value: u.tasksCompleted,
       }))
    }, [tasks])
-
-   const usersMap = useMemo(() => {
-      const map = new Map<number, string>()
-      users.forEach((u) => map.set(u.id, u.name))
-      return map
-   }, [users])
 
    if (loading) {
       return <div className="p-4">Cargando dashboard...</div>
@@ -130,20 +124,18 @@ export function Dashboard() {
          </Section>
 
          {/* Hours chart */}
-         {activeSprint && (
-            <Section title="Horas trabajadas por miembro">
-               <GenericBarChart
-                  data={hours.map((u) => ({
-                     label: usersMap.get(u.userId) ?? `User ${u.userId}`,
-                     value: u.actualHours,
-                  }))}
-                  title="Horas reales por integrante"
-                  description="Horas registradas en el sprint actual"
-                  xAxisLabel="Horas trabajadas"
-                  valueLabel="Horas"
-               />
-            </Section>
-         )}
+         <Section title="Horas trabajadas por miembro">
+            <GenericBarChart
+               data={hours.map((u) => ({
+                  label: u.user,
+                  value: u.hours,
+               }))}
+               title="Horas reales por integrante"
+               description="Horas registradas en el sprint actual"
+               xAxisLabel="Horas trabajadas"
+               valueLabel="Horas"
+            />
+         </Section>
 
          <Section title="Tareas completadas por sprint y desarrollador">
             <MultiBarChart
@@ -152,6 +144,16 @@ export function Dashboard() {
                xKey="sprint"
                title="Tareas completadas por desarrollador por sprint"
                description="Comparación del desempeño entre sprints"
+            />
+         </Section>
+
+         <Section title="Horas trabajadas por sprint y desarrollador">
+            <MultiBarChart
+               data={multiSprintHours}
+               keys={userKeys}
+               xKey="sprint"
+               title="Horas por desarrollador por sprint"
+               description="Comparación de horas trabajadas entre sprints"
             />
          </Section>
       </div>

@@ -9,7 +9,8 @@ export interface TasksByUser {
 
 export interface HoursByUser {
    userId: number
-   actualHours: number
+   user: string
+   hours: number
 }
 
 export interface TasksPerSprint {

@@ -1,7 +1,7 @@
 import {
    getSprints,
    getKpiSummary,
-   getIssuesBySprint,
+   getEstimatedHoursByUser,
    getUsers,
    getTasksByUserAndSprint,
 } from '../api/dashboardApi'
@@ -18,16 +18,24 @@ export async function loadDashboardData(
    hours: any[]
    users: any[]
    multiSprintTasks: TasksPerSprint[]
+   multiSprintHours: TasksPerSprint[]
 }> {
-   const [sprints, summary, tasks, issues, users] = await Promise.all([
+   const [sprints, summary, tasks, hours, users] = await Promise.all([
       getSprints(projectId),
       getKpiSummary(projectId, sprintId),
       getTasksByUserAndSprint(projectId, sprintId),
-      getIssuesBySprint(projectId, sprintId),
+      getEstimatedHoursByUser(projectId, sprintId),
       getUsers(),
+
    ])
 
    const multiSprintTasks: TasksPerSprint[] = await getTasksByUserPerSprint(
+      projectId,
+      sprints,
+      users
+   )
+
+   const multiSprintHours: TasksPerSprint[] = await getHoursByUserPerSprint(
       projectId,
       sprints,
       users
@@ -37,26 +45,11 @@ export async function loadDashboardData(
       sprints,
       summary,
       tasks,
-      hours: groupHoursByUser(issues),
+      hours,
       users,
-      multiSprintTasks
+      multiSprintTasks,
+      multiSprintHours
    }
-}
-
-function groupHoursByUser(issues: any[]) {
-   const map = new Map<number, number>()
-
-   for (const issue of issues) {
-      if (!issue.assigneeId) continue
-
-      const prev = map.get(issue.assigneeId) ?? 0
-      map.set(issue.assigneeId, prev + (issue.actualHours ?? 0))
-   }
-
-   return Array.from(map.entries()).map(([userId, hours]) => ({
-      userId,
-      actualHours: hours,
-   }))
 }
 
 export async function getTasksByUserPerSprint(
@@ -84,6 +77,32 @@ export async function getTasksByUserPerSprint(
          row[u.name] = match?.tasksCompleted ?? 0
       })
 
+      return row
+   })
+}
+
+export async function getHoursByUserPerSprint(
+   projectId: number,
+   sprints: any[],
+   users: any[]
+) {
+   const results = await Promise.all(
+      sprints.map((s) =>
+         getEstimatedHoursByUser(projectId, s.id)
+      )
+   )
+
+   return sprints.map((sprint, i) => {
+      const row: any = {
+         sprint: sprint.name,
+      }
+      const sprintData = results[i]
+      users.forEach((u) => {
+         const match = sprintData.find(
+            (h: any) => h.user === u.name
+         )
+         row[u.name] = match?.hours ?? 0
+      })
       return row
    })
 }

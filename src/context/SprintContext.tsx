@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import type { SprintContextValue} from '../types/sprintContext'
 import type { Sprint } from '../types'
-import { getSprints } from '../api/sprintContext'
+import { getSprints } from '../api/sprintContextApi'
 
 const SprintContext = createContext<SprintContextValue | null>(null)
 

@@ -40,3 +40,13 @@ export async function getUsers() {
    const res = await fetch(`/api/users`)
    return res.json()
 }
+
+export async function getEstimatedHoursByUser(
+   projectId: number,
+   sprintId: number
+) {
+   const res = await fetch(
+      `/api/projects/${projectId}/kpis/estimated-hours-by-user?sprintId=${sprintId}`
+   )
+   return res.json()
+}

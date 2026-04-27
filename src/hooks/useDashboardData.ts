@@ -14,6 +14,7 @@ export function useDashboardData(projectId: number, sprintId: number) {
       hours: [] as HoursByUser[],
       users: [] as User[],
       multiSprintTasks: [] as TasksPerSprint[],
+      multiSprintHours: [] as TasksPerSprint[],
    })
 
    useEffect(() => {
@@ -29,7 +30,8 @@ export function useDashboardData(projectId: number, sprintId: number) {
                tasks: res.tasks,
                hours: res.hours,
                users: res.users,
-               multiSprintTasks: res.multiSprintTasks ?? []
+               multiSprintTasks: res.multiSprintTasks ?? [],
+               multiSprintHours: res.multiSprintHours ?? []
             })
          } catch (err) {
             console.error('Dashboard load failed', err)
