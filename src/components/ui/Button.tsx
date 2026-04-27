@@ -40,15 +40,10 @@ export function Button({
     `,
 
       danger: `
-      bg-danger 
+      bg-danger
       text-white 
-      hover:bg-red-700 
-      active:scale-[0.98]
-      focus:outline-none 
-      focus:ring-2 
-      focus:ring-red-300
-      transition-all
-      `,
+      hover:bg-danger
+   `,
    }
 
    return (

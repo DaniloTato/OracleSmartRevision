@@ -19,6 +19,7 @@
 
    /* Semantic colors */
    --color-danger: #dc2626; /* red-600 */
+   --color-danger-dark: #9a0e2c; /* red-600 */
    --color-danger-light: #fee2e2;
 
    --color-success: #16a34a; /* green-600 */
@@ -77,6 +78,11 @@ body {
 .bg-danger {
    background-color: var(--color-danger);
 }
+
+.hover\:bg-danger:hover {
+   background-color: var(--color-danger-dark);
+}
+
 .text-danger {
    color: var(--color-danger);
 }
