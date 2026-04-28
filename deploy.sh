@@ -45,3 +45,5 @@ sudo nginx -t
 sudo systemctl enable nginx
 sudo systemctl restart nginx
 sudo systemctl status nginx --no-pager
+
+#we must also add deploy instructions for the telegrambot bot

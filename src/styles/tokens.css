@@ -2,117 +2,300 @@
 
 /* === Design System Colors === */
 :root {
-   /* Primary (safe for UI) */
-   --color-primary: #2563eb; /* blue-600 */
-   --color-primary-light: #3b82f6;
-   --color-primary-dark: #1d4ed8;
+    /* Primary (safe for UI) */
+    --color-primary: #2563eb; /* blue-600 */
+    --color-primary-light: #3b82f6;
+    --color-primary-dark: #1d4ed8;
 
-   /* Data (non-semantic, colorblind-safe-ish) */
-   --color-data-1: #3b82f6; /* blue */
-   --color-data-2: #8b5cf6; /* purple */
-   --color-data-3: #f59e0b; /* amber */
-   --color-data-4: #ec4899; /* pink */
-   --color-data-5: #06b6d4; /* cyan */
-   --color-data-6: #6366f1; /* indigo */
-   --color-data-7: #a855f7; /* violet */
-   --color-data-8: #14b8a6; /* teal */
+    /* Data (non-semantic, colorblind-safe-ish) */
+    --color-data-1: #3b82f6; /* blue */
+    --color-data-2: #8b5cf6; /* purple */
+    --color-data-3: #f59e0b; /* amber */
+    --color-data-4: #ec4899; /* pink */
+    --color-data-5: #06b6d4; /* cyan */
+    --color-data-6: #6366f1; /* indigo */
+    --color-data-7: #a855f7; /* violet */
+    --color-data-8: #14b8a6; /* teal */
 
-   /* Semantic colors */
-   --color-danger: #dc2626; /* red-600 */
-   --color-danger-dark: #9a0e2c; /* red-600 */
-   --color-danger-light: #fee2e2;
+    /* Semantic colors */
+    --color-danger: #dc2626; /* red-600 */
+    --color-danger-dark: #9a0e2c; /* red-600 */
+    --color-danger-light: #fee2e2;
 
-   --color-success: #16a34a; /* green-600 */
-   --color-success-light: #dcfce7;
+    --color-success: #16a34a; /* green-600 */
+    --color-success-light: #dcfce7;
 
-   --color-warning: #d97706; /* amber-600 */
-   --color-warning-light: #fef3c7;
+    --color-warning: #d97706; /* amber-600 */
+    --color-warning-light: #fef3c7;
 
-   /* Neutrals */
-   --color-surface: #ffffff;
-   --color-border: #e5e7eb;
-   --color-border-dark: #d1d5db;
-   --color-text: #1f2937;
-   --color-text-muted: #6b7280;
-   --color-sidebar-bg: #fafafa;
-   --color-header-border: #e5e7eb;
+    /* Neutrals */
+    --color-surface: #ffffff;
+    --color-border: #e5e7eb;
+    --color-border-dark: #d1d5db;
+    --color-text: #1f2937;
+    --color-text-muted: #6b7280;
+    --color-sidebar-bg: #fafafa;
+    --color-header-border: #e5e7eb;
+
+    /* DarkMode */
+    --color-dark-bg: #000000;
+    --color-dark-surface: #0f172a; /* slate-900 */
+    --color-dark-card: #111827; /* gray-900 */
+    --color-dark-border: #374151; /* gray-700 */
+    --color-dark-text: #f9fafb; /* gray-50 */
+    --color-dark-text-muted: #9ca3af; /* gray-400 */
+
+    --color-dark-warning: rgba(185, 43, 43, 0.476);
+    --color-dark-info: rgba(209, 16, 216, 0.242);
+    --color-dark-suggestion: rgba(18, 202, 193, 0.397);
+    --color-dark-success: rgba(22, 163, 74, 0.397);
 }
 
 /* Base */
 body {
-   margin: 0;
-   min-height: 100vh;
-   font-family:
-      system-ui,
-      -apple-system,
-      'Segoe UI',
-      Roboto,
-      'Helvetica Neue',
-      Arial,
-      sans-serif;
-   color: var(--color-text);
-   background-color: var(--color-surface);
+    margin: 0;
+    min-height: 100vh;
+    font-family:
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        'Helvetica Neue',
+        Arial,
+        sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-surface);
 }
 
 #root {
-   min-height: 100vh;
+    min-height: 100vh;
 }
 
 /* === Utilities === */
 
 /* Primary */
 .bg-primary {
-   background-color: var(--color-primary);
+    background-color: var(--color-primary);
 }
 .text-primary {
-   color: var(--color-primary);
+    color: var(--color-primary);
 }
 .border-primary {
-   border-color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 .hover\:bg-primary-light:hover {
-   background-color: var(--color-primary-light);
+    background-color: var(--color-primary-light);
 }
 
 /* Danger */
 .bg-danger {
-   background-color: var(--color-danger);
+    background-color: var(--color-danger);
 }
 
 .hover\:bg-danger:hover {
-   background-color: var(--color-danger-dark);
+    background-color: var(--color-danger-dark);
 }
 
 .text-danger {
-   color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 /* Success */
 .bg-success {
-   background-color: var(--color-success);
+    background-color: var(--color-success);
 }
 .text-success {
-   color: var(--color-success);
+    color: var(--color-success);
 }
 
 /* Warning */
 .bg-warning {
-   background-color: var(--color-warning);
+    background-color: var(--color-warning);
 }
 .text-warning {
-   color: var(--color-warning);
+    color: var(--color-warning);
 }
 
 /* Data colors */
 .bg-data-1 {
-   background-color: var(--color-data-1);
+    background-color: var(--color-data-1);
 }
 .bg-data-2 {
-   background-color: var(--color-data-2);
+    background-color: var(--color-data-2);
 }
 .bg-data-3 {
-   background-color: var(--color-data-3);
+    background-color: var(--color-data-3);
 }
 .bg-data-4 {
-   background-color: var(--color-data-4);
+    background-color: var(--color-data-4);
+}
+
+.bg-surface {
+    background-color: var(--color-surface);
+}
+
+.border-default {
+    border-color: var(--color-border);
+}
+
+.text-muted {
+    color: var(--color-text-muted);
+}
+
+.bg-soft {
+    background-color: #f9fafb; /* gray-50 */
+}
+
+.bg-warning-soft {
+    background-color: var(--color-warning-light);
+}
+
+.bg-success-soft {
+    background-color: var(--color-success-light);
+}
+
+.bg-layout {
+    background-color: var(--color-surface);
+}
+
+
+/* DarkPage */
+.dark-page {
+    background-color: var(--color-dark-bg);
+    color: var(--color-dark-text);
+}
+
+.dark-page .bg-surface {
+    background-color: var(--color-dark-card);
+}
+
+.dark-page .border-default {
+    border-color: var(--color-dark-border);
+}
+
+/* Text */
+.dark-page .text-muted {
+    color: var(--color-dark-text-muted);
+}
+
+/* Sections / containers */
+.dark-page .bg-soft {
+    background-color: var(--color-dark-surface);
+}
+
+/* Semantic blocks */
+.dark-page .bg-warning-soft {
+    background-color: var(--color-dark-warning);
+}
+
+.dark-page .bg-success-soft {
+    background-color: var(--color-dark-success);
+}
+
+.dark-page .bg-info-soft {
+    background-color: var(--color-dark-info);
+}
+
+.dark-page .bg-suggestion-soft {
+    background-color: var(--color-dark-suggestion);
+}
+
+.dark-page .bg-layout {
+    background-color: var(--color-dark-bg);
+}
+
+/* Badge (light mode) */
+.bg-badge-default {
+    background-color: #f3f4f6; /* gray-100 */
+}
+.text-badge-default {
+    color: #374151; /* gray-700 */
+}
+
+.bg-badge-info {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+.text-badge-info {
+    color: var(--color-data-1);
+}
+
+.bg-badge-success {
+    background-color: var(--color-success-light);
+}
+.text-badge-success {
+    color: var(--color-success);
+}
+
+.bg-badge-warning {
+    background-color: var(--color-warning-light);
+}
+.text-badge-warning {
+    color: var(--color-warning);
+}
+
+.bg-badge-danger {
+    background-color: var(--color-danger-light);
+}
+.text-badge-danger {
+    color: var(--color-danger);
+}
+
+
+/* Dark mode overrides */
+.dark-page .bg-badge-default {
+    background-color: #1f2937; /* gray-800 */
+}
+.dark-page .text-badge-default {
+    color: #d1d5db;
+}
+
+.dark-page .bg-badge-info {
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark-page .bg-badge-success {
+    background-color: var(--color-dark-success);
+}
+
+.dark-page .bg-badge-warning {
+    background-color: var(--color-dark-warning);
+}
+
+.dark-page .bg-badge-danger {
+    background-color: rgba(220, 38, 38, 0.2);
+}
+
+/* Severity badge (light) */
+.bg-severity-low {
+    background-color: var(--color-success-light);
+}
+.text-severity-low {
+    color: var(--color-success);
+}
+
+.bg-severity-medium {
+    background-color: var(--color-warning-light);
+}
+.text-severity-medium {
+    color: var(--color-warning);
+}
+
+.bg-severity-high {
+    background-color: var(--color-danger-light);
+}
+.text-severity-high {
+    color: var(--color-danger);
+}
+
+/* Dark mode */
+.dark-page .bg-severity-low {
+    background-color: var(--color-dark-success);
+}
+
+.dark-page .bg-severity-medium {
+    background-color: var(--color-dark-warning);
+}
+
+.dark-page .bg-severity-high {
+    background-color: rgba(220, 38, 38, 0.2);
 }

@@ -1,7 +1,7 @@
 import {
-   HiOutlineViewGrid,
-   HiOutlineCheckCircle,
-   HiOutlineClipboardList,
+    HiOutlineViewGrid,
+    HiOutlineCheckCircle,
+    HiOutlineClipboardList,
 } from 'react-icons/hi'
 
 import { useMemo } from 'react'
@@ -15,153 +15,164 @@ import { KpiCard } from '../components/ui/KpiCard'
 import { MultiBarChart } from '../components/charts/MultiBarChart'
 
 export function Dashboard() {
-   const projectId = 1
+    const projectId = 1
 
-   const { selectedSprintId } = useSprint()
-   const sprintId = selectedSprintId ?? 1
+    const { selectedSprintId } = useSprint()
+    const sprintId = selectedSprintId ?? 1
 
-   const { sprints, summary, tasks, hours, users, multiSprintTasks, loading, multiSprintHours } =
-   useDashboardData(projectId, sprintId)
+    const {
+        sprints,
+        summary,
+        tasks,
+        hours,
+        users,
+        multiSprintTasks,
+        loading,
+        multiSprintHours,
+    } = useDashboardData(projectId, sprintId)
 
-   const userKeys = useMemo(() => {
-      return users.map((u) => u.name)
-   }, [users])
+    const userKeys = useMemo(() => {
+        return users.map((u) => u.name)
+    }, [users])
 
-   const activeSprint = useMemo(
-      () => sprints.find((s) => s.id === sprintId),
-      [sprints, sprintId]
-   )
+    const activeSprint = useMemo(
+        () => sprints.find((s) => s.id === sprintId),
+        [sprints, sprintId]
+    )
 
-   const completedCount = useMemo(() => {
-      return tasks.reduce((sum, u) => sum + (u.tasksCompleted ?? 0), 0)
-   }, [tasks])
+    const completedCount = useMemo(() => {
+        return tasks.reduce((sum, u) => sum + (u.tasksCompleted ?? 0), 0)
+    }, [tasks])
 
-   const totalTasks = summary?.totalTasks ?? 0
+    const totalTasks = summary?.totalTasks ?? 0
 
-   const progressPercent =
-      totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0
+    const progressPercent =
+        totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0
 
-   const toDoCount = totalTasks - completedCount
+    const toDoCount = totalTasks - completedCount
 
-   const tasksChartData = useMemo(() => {
-      return tasks.map((u) => ({
-         label: u.user,
-         value: u.tasksCompleted,
-      }))
-   }, [tasks])
+    const tasksChartData = useMemo(() => {
+        return tasks.map((u) => ({
+            label: u.user,
+            value: u.tasksCompleted,
+        }))
+    }, [tasks])
 
-   if (loading) {
-      return <div className="p-4">Cargando dashboard...</div>
-   }
+    if (loading) {
+        return <div className="p-4">Cargando dashboard...</div>
+    }
 
-   return (
-      <div className="space-y-8">
-         {/* Header */}
-         <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
-               <HiOutlineViewGrid className="w-6 h-6" />
+    return (
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
+                    <HiOutlineViewGrid className="w-6 h-6" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-semibold text-[var(--color-text)]">
+                        Dashboard
+                    </h1>
+                    <p className="text-sm text-[var(--color-text-muted)]">
+                        Resumen del sprint y métricas del equipo
+                    </p>
+                </div>
             </div>
-            <div>
-               <h1 className="text-2xl font-semibold text-[var(--color-text)]">
-                  Dashboard
-               </h1>
-               <p className="text-sm text-[var(--color-text-muted)]">
-                  Resumen del sprint y métricas del equipo
-               </p>
+
+            {/* KPI */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <KpiCard
+                    title="Tareas Completadas"
+                    value={completedCount}
+                    subtitle="Sprint actual"
+                    icon={HiOutlineCheckCircle}
+                    color="data-2"
+                />
+
+                <KpiCard
+                    title="Por Hacer"
+                    value={toDoCount}
+                    subtitle="Sprint actual"
+                    icon={HiOutlineClipboardList}
+                    color="data-4"
+                />
             </div>
-         </div>
 
-         {/* KPI */}
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <KpiCard
-               title="Tareas Completadas"
-               value={completedCount}
-               subtitle="Sprint actual"
-               icon={HiOutlineCheckCircle}
-               color="data-2"
-            />
+            {/* Sprint */}
+            {activeSprint && (
+                <Section title="Estado del Sprint">
+                    <p className="text-sm text-[var(--color-text-muted)] mb-4">
+                        {activeSprint.name} —{' '}
+                        {formatDate(activeSprint.startDate)} a{' '}
+                        {formatDate(activeSprint.endDate)}
+                    </p>
 
-            <KpiCard
-               title="Por Hacer"
-               value={toDoCount}
-               subtitle="Sprint actual"
-               icon={HiOutlineClipboardList}
-               color="data-4"
-            />
-         </div>
+                    <div className="h-4 rounded-full bg-gray-100 overflow-hidden">
+                        <div
+                            className="h-full bg-gradient-to-r from-primary to-[var(--color-primary-light)]"
+                            style={{ width: `${progressPercent}%` }}
+                        />
+                    </div>
 
-         {/* Sprint */}
-         {activeSprint && (
-            <Section title="Estado del Sprint">
-               <p className="text-sm text-[var(--color-text-muted)] mb-4">
-                  {activeSprint.name} — {formatDate(activeSprint.startDate)} a{' '}
-                  {formatDate(activeSprint.endDate)}
-               </p>
+                    <div className="mt-2 text-sm flex justify-between">
+                        <span>Progreso</span>
+                        <span className="font-semibold">
+                            {progressPercent}%
+                        </span>
+                    </div>
+                </Section>
+            )}
 
-               <div className="h-4 rounded-full bg-gray-100 overflow-hidden">
-                  <div
-                     className="h-full bg-gradient-to-r from-primary to-[var(--color-primary-light)]"
-                     style={{ width: `${progressPercent}%` }}
-                  />
-               </div>
-
-               <div className="mt-2 text-sm flex justify-between">
-                  <span>Progreso</span>
-                  <span className="font-semibold">{progressPercent}%</span>
-               </div>
+            {/* Tasks chart */}
+            <Section title="Tareas terminadas por miembro">
+                <GenericBarChart
+                    data={tasksChartData}
+                    title="Tareas completadas por integrante"
+                    description="Comparación de desempeño por desarrollador"
+                    xAxisLabel="Número de tareas completadas"
+                    valueLabel="Tareas completadas"
+                />
             </Section>
-         )}
 
-         {/* Tasks chart */}
-         <Section title="Tareas terminadas por miembro">
-            <GenericBarChart
-               data={tasksChartData}
-               title="Tareas completadas por integrante"
-               description="Comparación de desempeño por desarrollador"
-               xAxisLabel="Número de tareas completadas"
-               valueLabel="Tareas completadas"
-            />
-         </Section>
+            {/* Hours chart */}
+            <Section title="Horas trabajadas por miembro">
+                <GenericBarChart
+                    data={hours.map((u) => ({
+                        label: u.user,
+                        value: u.hours,
+                    }))}
+                    title="Horas reales por integrante"
+                    description="Horas registradas en el sprint actual"
+                    xAxisLabel="Horas trabajadas"
+                    valueLabel="Horas"
+                />
+            </Section>
 
-         {/* Hours chart */}
-         <Section title="Horas trabajadas por miembro">
-            <GenericBarChart
-               data={hours.map((u) => ({
-                  label: u.user,
-                  value: u.hours,
-               }))}
-               title="Horas reales por integrante"
-               description="Horas registradas en el sprint actual"
-               xAxisLabel="Horas trabajadas"
-               valueLabel="Horas"
-            />
-         </Section>
+            <Section title="Tareas completadas por sprint y desarrollador">
+                <MultiBarChart
+                    data={multiSprintTasks}
+                    keys={userKeys}
+                    xKey="sprint"
+                    title="Tareas completadas por desarrollador por sprint"
+                    description="Comparación del desempeño entre sprints"
+                />
+            </Section>
 
-         <Section title="Tareas completadas por sprint y desarrollador">
-            <MultiBarChart
-               data={multiSprintTasks}
-               keys={userKeys}
-               xKey="sprint"
-               title="Tareas completadas por desarrollador por sprint"
-               description="Comparación del desempeño entre sprints"
-            />
-         </Section>
-
-         <Section title="Horas trabajadas por sprint y desarrollador">
-            <MultiBarChart
-               data={multiSprintHours}
-               keys={userKeys}
-               xKey="sprint"
-               title="Horas por desarrollador por sprint"
-               description="Comparación de horas trabajadas entre sprints"
-            />
-         </Section>
-      </div>
-   )
+            <Section title="Horas trabajadas por sprint y desarrollador">
+                <MultiBarChart
+                    data={multiSprintHours}
+                    keys={userKeys}
+                    xKey="sprint"
+                    title="Horas por desarrollador por sprint"
+                    description="Comparación de horas trabajadas entre sprints"
+                />
+            </Section>
+        </div>
+    )
 }
 
 /* ===== helpers ===== */
 
 function formatDate(iso: string) {
-   return new Date(iso).toLocaleDateString('es-ES')
+    return new Date(iso).toLocaleDateString('es-ES')
 }

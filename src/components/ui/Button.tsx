@@ -3,55 +3,55 @@ import type { ReactNode, ButtonHTMLAttributes } from 'react'
 type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
 
 type ButtonProps = {
-   children: ReactNode
-   variant?: Variant
+    children: ReactNode
+    variant?: Variant
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
 export function Button({
-   children,
-   variant = 'primary',
-   className = '',
-   ...props
+    children,
+    variant = 'primary',
+    className = '',
+    ...props
 }: ButtonProps) {
-   const base = 'rounded-lg px-4 py-2 text-sm font-medium transition-colors'
+    const base = 'rounded-lg px-4 py-2 text-sm font-medium transition-colors'
 
-   const variants: Record<Variant, string> = {
-      primary: `
+    const variants: Record<Variant, string> = {
+        primary: `
       bg-primary text-white 
       hover:bg-primary-light
     `,
 
-      secondary: `
+        secondary: `
       bg-white 
       text-[var(--color-text)] 
       border border-[var(--color-border)] 
       hover:bg-gray-100
     `,
 
-      outline: `
+        outline: `
       border border-primary 
       text-primary 
       hover:bg-primary/10
     `,
 
-      ghost: `
+        ghost: `
       text-[var(--color-text-muted)] 
       hover:bg-gray-100
     `,
 
-      danger: `
+        danger: `
       bg-danger
       text-white 
       hover:bg-danger
    `,
-   }
+    }
 
-   return (
-      <button
-         className={`${base} ${variants[variant]} ${className}`}
-         {...props}
-      >
-         {children}
-      </button>
-   )
+    return (
+        <button
+            className={`${base} ${variants[variant]} ${className}`}
+            {...props}
+        >
+            {children}
+        </button>
+    )
 }

@@ -17,10 +17,10 @@ Documento **unificado** para quien construye el **API en Spring Boot** sobre **O
 7. [Mapa BD ↔ pantallas del front](#7-mapa-bd--pantallas-del-front)
 8. [Brechas de esquema vs UI actual](#8-brechas-de-esquema-vs-ui-actual)
 9. [Mapeo de enums (contrato API)](#9-mapeo-de-enums-contrato-api)
-10.   [API REST](#10-api-rest)
-11.   [CORS y entorno](#11-cors-y-entorno)
-12.   [Checklist entrega backend](#12-checklist-entrega-backend)
-13.   [Qué hará el frontend después](#13-qué-hará-el-frontend-después)
+10. [API REST](#10-api-rest)
+11. [CORS y entorno](#11-cors-y-entorno)
+12. [Checklist entrega backend](#12-checklist-entrega-backend)
+13. [Qué hará el frontend después](#13-qué-hará-el-frontend-después)
 
 ---
 
@@ -66,11 +66,11 @@ Ejemplo ilustrativo:
 
 ```yaml
 spring:
-   datasource:
-      url: jdbc:oracle:thin:@demo_tp?TNS_ADMIN=/ruta/absoluta/al/wallet
-      username: ${ADB_APP_USER}
-      password: ${ADB_APP_PASSWORD}
-      driver-class-name: oracle.jdbc.OracleDriver
+    datasource:
+        url: jdbc:oracle:thin:@demo_tp?TNS_ADMIN=/ruta/absoluta/al/wallet
+        username: ${ADB_APP_USER}
+        password: ${ADB_APP_PASSWORD}
+        driver-class-name: oracle.jdbc.OracleDriver
 ```
 
 También es habitual usar `jdbc:oracle:thin:@NOMBRE_EN_TNSNAMES` y definir `TNS_ADMIN` (o `oracle.net.tns_admin`) apuntando al directorio del wallet descomprimido.
@@ -251,22 +251,22 @@ Fechas en ISO `YYYY-MM-DD` donde aplique.
 
 ```json
 {
-   "id": "1",
-   "projectId": "1",
-   "sprintId": "1",
-   "featureId": "1",
-   "title": "…",
-   "description": "…",
-   "status": "pendiente",
-   "priority": "media",
-   "type": "bug",
-   "assigneeId": "101",
-   "dueDate": "2026-04-20",
-   "createdAt": "2026-04-10T12:00:00Z",
-   "updatedAt": "2026-04-10T14:00:00Z",
-   "estimatedHours": 5,
-   "actualHours": 6,
-   "isVisible": true
+    "id": "1",
+    "projectId": "1",
+    "sprintId": "1",
+    "featureId": "1",
+    "title": "…",
+    "description": "…",
+    "status": "pendiente",
+    "priority": "media",
+    "type": "bug",
+    "assigneeId": "101",
+    "dueDate": "2026-04-20",
+    "createdAt": "2026-04-10T12:00:00Z",
+    "updatedAt": "2026-04-10T14:00:00Z",
+    "estimatedHours": 5,
+    "actualHours": 6,
+    "isVisible": true
 }
 ```
 

@@ -1,18 +1,23 @@
 {
-  "name": "telegrambot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "axios": "^1.15.2",
-    "dotenv": "^17.4.2",
-    "node-telegram-bot-api": "^0.67.0"
-  }
+    "name": "telegrambot",
+    "version": "1.0.0",
+    "description": "Telegram bot for task manager",
+    "main": "src/bot.js",
+    "type": "commonjs",
+    "scripts": {
+        "start": "node src/bot.js",
+        "dev": "nodemon src/bot.js",
+        "test": "echo \"No tests yet\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^1.15.2",
+        "dotenv": "^17.4.2",
+        "node-telegram-bot-api": "^0.67.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.0"
+    }
 }
