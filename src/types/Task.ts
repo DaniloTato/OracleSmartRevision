@@ -22,7 +22,7 @@ export interface Task {
     actualHours: number
 
     isVisible: boolean
-    dueDate: Date
+    dueDate?: Date
 }
 
 export interface CreateTaskDto {
@@ -39,4 +39,5 @@ export interface CreateTaskDto {
     assigneeId?: number | null
 
     isVisible?: boolean
+    dueDate?: string
 }

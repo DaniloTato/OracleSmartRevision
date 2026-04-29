@@ -1,5 +1,5 @@
 import { HiOutlineSparkles, HiOutlineExclamationCircle } from 'react-icons/hi'
-import { useMemo } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 
 import { Section } from '../components/ui/Section'
 import { KpiCard } from '../components/ui/KpiCard'
@@ -8,11 +8,125 @@ import { formatDate } from '../helpers/FormatDate'
 import { SeverityBadge } from '../components/ui/SeverityBadge'
 
 import type { DelayReport, SprintDelayReport } from '../types/DelayReport'
-import { mockReports, mockSprintReport } from '../mock/DelayReports'
+import { fetchReports } from '../api/aiReportsApi'
 
 export function AiReportsPage() {
-    const reports: DelayReport[] = mockReports
-    const sprintReport: SprintDelayReport = mockSprintReport
+    const [reports, setReports] = useState<DelayReport[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        let mounted = true
+
+        async function load() {
+            try {
+                const data = await fetchReports()
+                if (mounted) setReports(data)
+            } catch (err) {
+                console.error('Error fetching reports:', err)
+            } finally {
+                if (mounted) setLoading(false)
+            }
+        }
+
+        load()
+
+        return () => {
+            mounted = false
+        }
+    }, [])
+
+    const sprintReport: SprintDelayReport = useMemo(() => {
+        if (!reports.length) {
+            return {
+                sprintId: undefined,
+                totalDelayedTasks: 0,
+                totalDelayDays: 0,
+                avgDelayDays: 0,
+
+                impact: {
+                    overallImpact: 'low',
+                    summary: 'Sin datos aún',
+                },
+
+                mainCauses: [],
+                recommendations: [],
+                suggestedAdjustments: {
+                    suggestedEndDate: null,
+                    notes: 'Sin datos suficientes',
+                },
+            }
+        }
+
+        const totalDelay = reports.reduce((acc, r) => acc + r.delayDays, 0)
+        const avgDelay = totalDelay / reports.length
+
+        const severityCount = reports.reduce((acc, r) => {
+            acc[r.severity] = (acc[r.severity] || 0) + 1
+            return acc
+        }, {} as Record<string, number>)
+
+        const categoryCount = reports.reduce((acc, r) => {
+            acc[r.aiCategory] = (acc[r.aiCategory] || 0) + 1
+            return acc
+        }, {} as Record<string, number>)
+
+        const mainCauses = Object.entries(categoryCount)
+            .map(([category, count]) => ({
+                category: category as DelayReport['aiCategory'],
+                count,
+            }))
+            .sort((a, b) => b.count - a.count)
+
+        const overallImpact: 'low' | 'medium' | 'high' =
+            avgDelay > 3 || severityCount.high > 2
+                ? 'high'
+                : avgDelay > 1.5
+                ? 'medium'
+                : 'low'
+
+        const recommendations = [
+            severityCount.high
+                ? `${severityCount.high} tareas críticas requieren atención inmediata`
+                : 'No hay tareas críticas',
+
+            avgDelay > 2
+                ? 'El promedio de retraso es alto, revisar planificación'
+                : 'Retrasos dentro de rango aceptable',
+        ]
+
+        const suggestedEndDate =
+            avgDelay > 2
+                ? new Date(Date.now() + Math.ceil(avgDelay) * 86400000)
+                : null
+
+        return {
+            sprintId: undefined,
+
+            totalDelayedTasks: reports.length,
+            totalDelayDays: totalDelay,
+            avgDelayDays: avgDelay,
+
+            impact: {
+                overallImpact,
+                summary: `Se registraron ${reports.length} retrasos con un promedio de ${avgDelay.toFixed(
+                    1
+                )} días`,
+            },
+
+            mainCauses,
+            recommendations,
+
+            suggestedAdjustments: {
+                suggestedEndDate: suggestedEndDate
+                    ? suggestedEndDate.toISOString()
+                    : null,
+                notes:
+                    avgDelay > 2
+                        ? 'Se recomienda extender el sprint ligeramente'
+                        : 'No es necesario ajustar el sprint',
+            },
+        }
+    }, [reports])
 
     const total = reports.length
 
@@ -30,6 +144,14 @@ export function AiReportsPage() {
             {} as Record<string, number>
         )
     }, [reports])
+
+    if (loading) {
+        return (
+            <div className="p-6 text-muted">
+                Cargando reportes...
+            </div>
+        )
+    }
 
     return (
         <div className="dark-page min-h-screen p-6 space-y-8">
@@ -73,14 +195,6 @@ export function AiReportsPage() {
                     <p className="text-sm text-muted">
                         {sprintReport.impact.summary}
                     </p>
-
-                    <div className="flex flex-wrap gap-2">
-                        {sprintReport.mainCauses.map((c) => (
-                            <Badge key={c.category} variant="info">
-                                {c.category} — {c.count}
-                            </Badge>
-                        ))}
-                    </div>
 
                     <div>
                         <p className="font-semibold">
@@ -160,10 +274,10 @@ export function AiReportsPage() {
                                     <span className="font-semibold">
                                         Impacto:
                                     </span>{' '}
-                                    {r.impact.description}
+                                    {r.description}
                                 </p>
                                 <p className="text-xs text-muted">
-                                    Retraso: {r.impact.delayDays} días
+                                    Retraso: {r.delayDays} días
                                 </p>
                             </div>
 

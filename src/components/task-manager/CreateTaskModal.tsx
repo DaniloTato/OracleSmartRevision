@@ -1,6 +1,6 @@
-/**
- * Modal to create a new task. Submitting adds to pool or to a person if "Asignar a" is set.
- */
+/*
+* Modal to create a new task. Submitting adds to pool or to a person if "Asignar a" is set.
+*/
 
 import { useState } from 'react'
 import type { CreateTaskDto, TaskType } from '../../types/Task'
@@ -39,6 +39,8 @@ export function CreateTaskModal({
     const [estimatedHours, setEstimatedHours] = useState<number>(4)
     const [assigneeId, setAssigneeId] = useState<number | null>(null)
 
+    const [dueDate, setDueDate] = useState<string>('')
+
     const hasNoFeatures = features.length === 0
 
     useEffect(() => {
@@ -72,6 +74,7 @@ export function CreateTaskModal({
             actualHours: 0,
             isVisible: true,
             featureId,
+            dueDate: dueDate ? new Date(dueDate).toISOString() : undefined
         })
     }
 
@@ -160,6 +163,17 @@ export function CreateTaskModal({
                                 setEstimatedHours(Number(e.target.value) || 0)
                             }
                             className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-oracle-orange)]"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
+                           Fecha límite
+                        </label>
+                        <input
+                           type="date"
+                           value={dueDate}
+                           onChange={(e) => setDueDate(e.target.value)}
+                           className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-surface)]"
                         />
                     </div>
                     <div>

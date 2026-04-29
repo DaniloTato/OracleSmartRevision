@@ -30,6 +30,11 @@ export function TaskCard({
 
     const typeLabel = TYPE_LABELS[task.type] ?? 'Feature'
 
+    const isOverdue = task.dueDate && new Date(task.dueDate).getTime() < Date.now()
+
+    const formattedDueDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : null
+    const isLate = isOverdue && task.status !== 'closed'
+
     return (
         <div
             ref={(node) => {
@@ -40,21 +45,32 @@ export function TaskCard({
             {...listeners}
             {...attributes}
             className={`
-        rounded-lg border p-3 shadow-sm text-left
-        bg-[var(--color-surface)]
-        text-[var(--color-text)]
-        cursor-grab active:cursor-grabbing touch-none
-        ${isDragging ? 'opacity-50 shadow-md' : ''}
-        ${
-            isHighlighted
-                ? 'ring-2 border-[var(--color-primary)] ring-[var(--color-primary)]'
-                : 'border-[var(--color-border)]'
-        }
-      `}
+               rounded-lg border p-3 shadow-sm text-left
+               bg-[var(--color-surface)]
+               text-[var(--color-text)]
+               cursor-grab active:cursor-grabbing touch-none
+               ${isDragging ? 'opacity-50 shadow-md' : ''}
+               ${
+                    isHighlighted
+                    ? 'ring-2 border-[var(--color-primary)] ring-[var(--color-primary)]'
+                    : ''
+               }
+               ${
+                    isLate
+                    ? 'border-[var(--color-danger)] bg-[rgba(220,38,38,0.05)]'
+                    : 'border-[var(--color-border)]'
+               }
+               `}
         >
             {/* Title */}
-            <div className="flex justify-between gap-1">
-                <p className="text-sm font-medium truncate">{task.title}</p>
+            <div className="flex justify-between items-center gap-2">
+               <p className="text-sm font-medium truncate">{task.title}</p>
+
+               {isLate && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-medium">
+                        Late
+                  </span>
+               )}
             </div>
 
             {/* Meta */}
@@ -67,6 +83,12 @@ export function TaskCard({
 
                 {task.actualHours != null && (
                     <span>Real: {task.actualHours}</span>
+                )}
+
+                {formattedDueDate && (
+                    <span>
+                        Fecha Límite: {formattedDueDate}
+                    </span>
                 )}
             </div>
 
@@ -81,9 +103,9 @@ export function TaskCard({
                         onClick={(e) => e.stopPropagation()}
                         onPointerDown={(e) => e.stopPropagation()}
                         className="text-xs border rounded px-2 py-1
-              bg-[var(--color-surface)]
-              border-[var(--color-border)]
-            "
+                        bg-[var(--color-surface)]
+                        border-[var(--color-border)]
+                        "
                     >
                         {STATUS_OPTIONS.map((opt) => (
                             <option key={opt.value} value={opt.value}>

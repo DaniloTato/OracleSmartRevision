@@ -170,7 +170,7 @@ export function TaskManager() {
         async (task: CreateTaskDto) => {
             const payload = {
                 title: task.title,
-                description: 'string',
+                description: task.description,
                 type: task.type,
                 status: task.status,
                 estimatedHours: task.estimatedHours,
@@ -178,7 +178,10 @@ export function TaskManager() {
                 featureId: task.featureId,
                 assigneeId: task.assigneeId,
                 isVisible: task.isVisible,
+                dueDate: task.dueDate
             }
+
+            console.log("payload due date", task.dueDate)
 
             setCreateModalOpen(false)
 

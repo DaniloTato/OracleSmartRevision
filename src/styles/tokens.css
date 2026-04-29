@@ -46,9 +46,9 @@
     --color-dark-text-muted: #9ca3af; /* gray-400 */
 
     --color-dark-warning: rgba(185, 43, 43, 0.476);
-    --color-dark-info: rgba(209, 16, 216, 0.242);
+    --color-dark-info: #8a5cf669;
     --color-dark-suggestion: rgba(18, 202, 193, 0.397);
-    --color-dark-success: rgba(22, 163, 74, 0.397);
+    --color-dark-success: rgba(13, 206, 90, 0.384);
 }
 
 /* Base */

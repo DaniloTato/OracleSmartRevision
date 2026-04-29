@@ -11,11 +11,9 @@ export const mockReports: DelayReport[] = [
         aiSummary: 'Dependencia externa bloqueó el progreso.',
         aiCategory: 'external_dependency',
         severity: 'medium',
-        impact: {
-            delayDays: 1,
-            impactLevel: 'medium',
-            description: 'Afecta funcionalidades dependientes del login.',
-        },
+        delayDays: 1,
+        impactLevel: 'medium',
+        description: 'Afecta funcionalidades dependientes del login.',
         recommendation: 'Usar mocks para desacoplar frontend del backend.',
     },
     {
@@ -28,11 +26,9 @@ export const mockReports: DelayReport[] = [
         aiSummary: 'Subestimación de complejidad.',
         aiCategory: 'underestimated',
         severity: 'high',
-        impact: {
-            delayDays: 1,
-            impactLevel: 'high',
-            description: 'Retrasa métricas clave del dashboard.',
-        },
+        delayDays: 1,
+        impactLevel: 'high',
+        description: 'Retrasa métricas clave del dashboard.',
         recommendation: 'Dividir tareas grandes en subtareas más pequeñas.',
     },
     {
@@ -45,41 +41,10 @@ export const mockReports: DelayReport[] = [
         aiSummary: 'Problema técnico interno.',
         aiCategory: 'blocked',
         severity: 'medium',
-        impact: {
-            delayDays: 1,
-            impactLevel: 'medium',
-            description: 'Bloquea asignación eficiente de tareas.',
-        },
+        delayDays: 1,
+        impactLevel: 'medium',
+        description: 'Bloquea asignación eficiente de tareas.',
         recommendation:
             'Asignar tiempo de investigación para nuevas librerías.',
     },
 ]
-
-export const mockSprintReport: SprintDelayReport = {
-    sprintId: 1,
-    totalDelayedTasks: 3,
-    totalDelayDays: 3,
-
-    impact: {
-        overallImpact: 'medium',
-        summary:
-            'Los retrasos afectan parcialmente la entrega del sprint, con impacto moderado en funcionalidades clave.',
-    },
-
-    mainCauses: [
-        { category: 'external_dependency', count: 1 },
-        { category: 'underestimated', count: 1 },
-        { category: 'blocked', count: 1 },
-    ],
-
-    recommendations: [
-        'Mejorar estimaciones iniciales.',
-        'Reducir dependencias externas.',
-        'Planificar tiempo para investigación técnica.',
-    ],
-
-    suggestedAdjustments: {
-        suggestedEndDate: '2026-04-23T00:00:00Z',
-        notes: 'Se recomienda extender el sprint 1-2 días.',
-    },
-}

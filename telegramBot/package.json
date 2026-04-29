@@ -3,21 +3,24 @@
     "version": "1.0.0",
     "description": "Telegram bot for task manager",
     "main": "src/bot.js",
-    "type": "commonjs",
+    "type": "module",
     "scripts": {
-        "start": "node src/bot.js",
-        "dev": "nodemon src/bot.js",
-        "test": "echo \"No tests yet\""
+      "server": "node src/server.js",
+      "bot": "node src/bot.js",
+      "dev": "concurrently \"npm run server\" \"npm run bot\""
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@google/generative-ai": "^0.24.1",
         "axios": "^1.15.2",
         "dotenv": "^17.4.2",
+        "express": "^5.2.1",
         "node-telegram-bot-api": "^0.67.0"
     },
     "devDependencies": {
+        "concurrently": "^9.2.1",
         "nodemon": "^3.0.0"
     }
 }

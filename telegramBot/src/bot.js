@@ -1,14 +1,17 @@
-require('dotenv').config()
-const TelegramBot = require('node-telegram-bot-api')
-const axios = require('axios')
+import dotenv from 'dotenv'
+import TelegramBot from 'node-telegram-bot-api'
+import axios from 'axios'
+import { processOverdueTask } from "./aiPipeline.js"
+
+dotenv.config()
 
 const TOKEN = process.env.TELEGRAM_TOKEN
 const BASE_URL = process.env.API_BASE_URL
+const AI_BASE_URL = process.env.AI_BASE_URL
 
 const PROJECT_ID = process.env.PROJECT_ID || 1
 const SPRINT_ID = 1
 const DEFAULT_ASSIGNEE_ID = 105
-w
 
 if (!TOKEN || !BASE_URL) {
     console.error('Faltan variables de entorno')
@@ -19,6 +22,11 @@ const bot = new TelegramBot(TOKEN, { polling: true })
 const reply = (id, msg) => bot.sendMessage(id, msg)
 
 const userState = {}
+
+function getSafeDueDate(task) {
+    if (task.dueDate) return new Date(task.dueDate)
+    return new Date()
+}
 
 // ================= COMMAND HANDLERS =================
 
@@ -106,6 +114,19 @@ Comandos:
             reply(msg.chat.id, 'Error actualizando estado')
         }
     },
+
+    overdue: async (msg, args) => {
+        const chatId = msg.chat.id
+        const taskId = args[0]
+        if (!taskId || isNaN(taskId)) {
+            return reply(chatId, '⚠️ Uso correcto: /overdue <taskId>')
+        }
+        userState[chatId] = {
+            action: 'awaiting_reason',
+            taskId
+        }
+        reply(chatId, '✍️ Escribe la razón del atraso:')
+    }
 }
 
 // ================= MAIN MESSAGE HANDLER =================
@@ -141,6 +162,38 @@ bot.on('message', async (msg) => {
         return
     }
 
+    if (state?.action === 'awaiting_reason') {
+        const reason = text
+        const taskId = state.taskId
+
+        try {
+            const { data: task } = await axios.get(
+                `${BASE_URL}/issues/${taskId}`
+            )
+
+            const formattedTask = {
+                ...task,
+                dueDate: getSafeDueDate(task),
+            }
+
+            console.log('TASK PASSED TO PIPELINE:', formattedTask)
+
+            await processOverdueTask(formattedTask, {
+                apiUrl: BASE_URL,
+                aiUrl: AI_BASE_URL
+            }, reason)
+
+            reply(chatId, `Reporte generado para tarea #${taskId}`)
+        } catch (err) {
+            console.error(err)
+            reply(chatId, '❌ Error generando reporte')
+        } finally {
+            delete userState[chatId]
+        }
+
+        return
+    }
+
     if (text.startsWith('/')) {
         const [cmd, ...args] = text.slice(1).split(' ')
 
@@ -163,6 +216,7 @@ bot.setMyCommands([
     { command: 'tasks', description: 'Ver tareas pendientes' },
     { command: 'users', description: 'Ver usuarios' },
     { command: 'create', description: 'Crear nueva tarea' },
+    { command: 'overdue', description: 'Generar reporte de tarea atrasada' }
 ])
 
 process.on('unhandledRejection', (err) => {
