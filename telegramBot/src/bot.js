@@ -10,7 +10,7 @@ const BASE_URL = process.env.API_BASE_URL
 const AI_BASE_URL = process.env.AI_BASE_URL
 
 const PROJECT_ID = process.env.PROJECT_ID || 1
-const SPRINT_ID = 1
+const SPRINT_ID = 3
 const DEFAULT_ASSIGNEE_ID = 105
 
 if (!TOKEN || !BASE_URL) {
@@ -118,6 +118,7 @@ Comandos:
     overdue: async (msg, args) => {
         const chatId = msg.chat.id
         const taskId = args[0]
+
         if (!taskId || isNaN(taskId)) {
             return reply(chatId, '⚠️ Uso correcto: /overdue <taskId>')
         }
@@ -125,7 +126,31 @@ Comandos:
             action: 'awaiting_reason',
             taskId
         }
-        reply(chatId, '✍️ Escribe la razón del atraso:')
+
+        try {
+            const { data: task } = await axios.get(`${BASE_URL}/issues/${taskId}`)
+
+            const taskTitle = task?.title || `#${taskId}`
+
+            userState[chatId] = {
+                action: 'awaiting_reason',
+                taskId,
+                taskTitle
+            }
+
+            reply(
+                chatId,
+                `👋 Hola ${msg.from.first_name || 'de nuevo'}.\n\n` +
+                `Noté que la fecha de entrega de la tarea *"${taskTitle}"* ha sido superada.\n\n` +
+                `¿Podrías contarme brevemente qué ocurrió o qué bloqueó su entrega?\n\n` +
+                `Tu respuesta será utilizada para generar un reporte interno de seguimiento.`,
+                { parse_mode: 'Markdown' }
+            )
+
+        } catch (err) {
+            console.error(err)
+            reply(chatId, 'No pude obtener la información de la tarea 😅')
+        }
     }
 }
 
@@ -183,7 +208,14 @@ bot.on('message', async (msg) => {
                 aiUrl: AI_BASE_URL
             }, reason)
 
-            reply(chatId, `Reporte generado para tarea #${taskId}`)
+            reply(
+                chatId,
+                `✅ Gracias, hemos registrado tu respuesta.\n\n` +
+                `Se generará un reporte de seguimiento para la tarea *"${state.taskTitle}"*.\n\n` +
+                `📌 Este reporte será compartido con el equipo responsable para análisis interno y mejora del proceso.\n\n` +
+                `Si necesitas apoyo para desbloquear este tipo de tareas, puedes contactar a tu manager o al equipo de soporte técnico.`,
+                { parse_mode: 'Markdown' }
+            )
         } catch (err) {
             console.error(err)
             reply(chatId, '❌ Error generando reporte')
