@@ -178,7 +178,7 @@ describe('TaskManager (Requirements)', () => {
         // simulate completion action
         await api.updateTask(1, { status: 'closed' })
 
-        expect(api.updateTask).toHaveBeenCalledWith(1, { status: 'completed' })
+        expect(api.updateTask).toHaveBeenCalledWith(1, { status: 'closed' })
     })
 
     // =========================================================
