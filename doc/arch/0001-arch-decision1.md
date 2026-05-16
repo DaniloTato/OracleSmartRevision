@@ -56,11 +56,11 @@ Also, a failure in one part of the system could bring down the entire applicatio
 ## 4. Consequences
 
 **Positive:**
--The bot and backend can be deployed, scaled, and updated independently without affecting each other.
--A failure in the Telegram bot doesn't impact the REST API Backend or the web portal.
--New services can be added without modifying existing ones
+- The bot and backend can be deployed, scaled, and updated independently without affecting each other.
+- A failure in the Telegram bot doesn't impact the REST API Backend or the web portal.
+- New services can be added without modifying existing ones
 - We can replace the Gemini service with a different AI by changing only the AI focused service.
 
 **Negative:**
--Is harder to debug and trace than a singular monolithic application. 
--Communication over HTTP adds latency (however since our application is relatively small and does not have a great amount of users this latency is minimal)
+- Is harder to debug and trace than a singular monolithic application. 
+- Communication over HTTP adds latency (however since our application is relatively small and does not have a great amount of users this latency is minimal)

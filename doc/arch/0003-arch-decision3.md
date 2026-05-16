@@ -14,7 +14,7 @@ been updated within a sprint or hours have not been logged. This feature cannot
 rely on a direct user action, it must fire automatically based on conditions
 detected in the system.
 
-A synchronous or request-driven approach would require the manager to manually
+A request-driven approach would require the manager to manually
 trigger the check, which eliminates the value of automation. The team needed a
 mechanism that reacts to conditions as they emerge, not on demand. The
 constraint is that the system runs on OCI with a Node.js backend and must
