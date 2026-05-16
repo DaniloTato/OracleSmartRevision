@@ -1,0 +1,958 @@
+{
+  "configuration" : { },
+  "description" : "Architecture model for the Oracle Project Management system, supporting developers and managers through a web portal and Telegram bot.",
+  "documentation" : {
+    "decisions" : [ {
+      "content" : "# ADR-001: Layered and Client-Server Architecture\n\n**Date:** 2025-05-01\n**Status:** Accepted\n**Consulted:** Full development team, Project Manager\n\n---\n\n## 1. Context\n\nThe Oracle Project Management system must support two distinct user interfaces —\na web portal and a Telegram bot — both requiring access to the same business\nlogic and data. Without a defined structural organization, business logic would\nbe duplicated across interfaces, data access would be inconsistent, and the\nsystem would become difficult to extend or maintain.\n\nThe team needed a structure that enforced clear separation between presentation,\nbusiness rules, and data persistence while satisfying reliability and\nmaintainability requirements. The existing tech stack is Node.js with an Oracle\nATP database deployed on OCI.\n\n---\n\n## 2. Decision\n\nWe will organize the system using a **Layered (N-tier) Architecture** combined\nwith a **Client-Server** style as the foundational structural approach.\n\nThe layers are defined as follows:\n\n- **Presentation Layer**: Web Portal UI and Telegram Bot UI. Responsible solely\n  for user interaction. Contains no business logic.\n- **Integration Layer**: REST API Backend (`server.js`) and Bot Integration\n  Adapter (`bot.js`). Single entry point for all client requests.\n- **Application Layer**: Auth & Access, Task Management, Team Activity, KPI &\n  Reporting, and Gemini Service. Contains all business rules and domain logic.\n- **Data Layer**: Oracle ATP Database. Responsible for persistent storage.\n\nThe Client-Server style is applied by treating the Web Portal and Telegram Bot\nas independent clients that communicate exclusively with the REST API Backend.\nNeither client accesses the database or application services directly.\n\n---\n\n## 3. Alternatives Considered\n\n| Tension Point | Layered + Client-Server | Alternative |\n|---|---|---|\n| Code duplication across interfaces | Single backend serves both clients via REST | Each interface implements its own logic — rejected due to duplication and inconsistency |\n| Separation of concerns | Each layer has one responsibility | Monolithic single-file approach — rejected due to poor maintainability |\n| Extensibility for new clients | New clients consume the same REST API | Tight coupling per interface — rejected because adding a mobile app would require rewriting logic |\n\n---\n\n## 4. Consequences\n\n**Positive (The Gains):**\n- Both interfaces share the same business rules, ensuring consistent behavior across channels.\n- Each layer can be modified independently without affecting the others.\n- New clients (mobile app, third-party integrations) can be added without changes to the backend.\n- Each layer can be tested in isolation.\n\n**Negative (The Pains):**\n- All requests must pass through the REST API layer, adding a network hop compared to direct access.\n- The REST API Backend is a single point of failure; its unavailability affects all clients simultaneously.",
+      "date" : "2026-05-15T15:02:40Z",
+      "format" : "Markdown",
+      "id" : "1",
+      "status" : "Proposed",
+      "title" : " ADR-001: Layered and Client-Server Architecture"
+    }, {
+      "content" : "# ADR-002: Component-Based Design with Single Responsibility\n\n**Date:** 2025-05-01\n**Status:** Accepted\n**Consulted:** Full development team, Project Manager\n\n---\n\n## 1. Context\n\nThe system handles several distinct business concerns: task management, KPI\ncalculation, team activity tracking, authentication, and AI integration. The\nteam also needed to integrate Google Gemini as an external AI service without\ncoupling it to the core task logic.\n\nIf these responsibilities were bundled into a single module, changes to one\nconcern would risk breaking others. The codebase would become difficult to\ntest, maintain, or extend — especially given that the AI provider may change\nin the future and the team is working under sprint-based delivery constraints.\n\n---\n\n## 2. Decision\n\nWe will structure the backend using a **Component-Based Architecture** style,\nassigning each functional concern to a dedicated component with a single,\nwell-defined responsibility (Single Responsibility Principle at the\narchitectural level).\n\nThe components and their responsibilities are:\n\n| Component | File | Responsibility |\n|---|---|---|\n| Bot Integration Adapter | `bot.js` | Receives Telegram commands, translates them into REST calls |\n| REST API Backend | `server.js` | Exposes HTTP endpoints, coordinates between clients and services |\n| Auth & Access Service | `server.js` (auth module) | Validates identity and manages permissions |\n| Task Management Service | `server.js` (task module) | Handles task retrieval, creation, and status updates |\n| Team Activity Service | `server.js` (activity module) | Tracks and exposes team actions and task changes |\n| KPI & Reporting Service | `server.js` (kpi module) | Calculates and exposes productivity metrics |\n| Gemini Service | `geminiService.js` | Manages all communication with Google Gemini API |\n\nComponents communicate through defined interfaces (HTTP/REST or internal calls),\nnever through shared mutable state.\n\n---\n\n## 3. Alternatives Considered\n\n| Tension Point | Component-Based | Alternative |\n|---|---|---|\n| AI provider coupling | Gemini logic isolated in `geminiService.js`, replaceable independently | Inline Gemini calls inside `server.js` — rejected because changing AI provider would require modifying the entire backend |\n| Business logic organization | Each concern in a dedicated module | Single `server.js` handling everything — rejected due to high coupling and poor testability |\n| Team parallel development | Components owned independently by team members | Shared monolithic file — rejected due to merge conflicts and unclear ownership |\n\n---\n\n## 4. Consequences\n\n**Positive (The Gains):**\n- Each component can be modified or replaced independently as long as its interface remains stable.\n- The Gemini Service can be swapped for a different AI provider by changing only `geminiService.js`.\n- Team members can own and develop components in parallel with minimal conflicts.\n- Components can be unit tested in isolation by mocking their dependencies.\n\n**Negative (The Pains):**\n- Multiple components must collaborate to fulfill a single user request, requiring clear interface contracts.\n- Defining component boundaries upfront requires more design effort than a simple monolithic approach.",
+      "date" : "2026-05-15T15:02:40Z",
+      "format" : "Markdown",
+      "id" : "2",
+      "status" : "Proposed",
+      "title" : " ADR-002: Component-Based Design with Single Responsibility"
+    }, {
+      "content" : "# ADR-003: Event-Driven Architecture for AI Feature\n\n**Date:** 2025-05-01\n**Status:** Accepted\n**Consulted:** Full development team, Project Manager\n\n---\n\n## 1. Context\n\nThe system includes an AI-powered feature that monitors developer activity and\nautomatically generates reports for the Project Manager when tasks have not\nbeen updated within a sprint or hours have not been logged. This feature cannot\nrely on a direct user action — it must fire automatically based on conditions\ndetected in the system.\n\nA synchronous or request-driven approach would require the manager to manually\ntrigger the check, which eliminates the value of automation. The team needed a\nmechanism that reacts to conditions as they emerge, not on demand. The\nconstraint is that the system runs on OCI with a Node.js backend and must\nintegrate with Google Gemini API for the AI processing.\n\n---\n\n## 2. Decision\n\nWe will implement the AI monitoring feature using an **Event-Driven\nArchitecture** style. The flow is triggered by two types of events:\n\n1. **Scheduled event**: A scheduler runs periodically and emits a trigger when\n   the inactivity check interval is reached, initiating the monitoring cycle\n   automatically without user interaction.\n2. **Command event**: A developer sends a Telegram command (e.g. `/update`,\n   `/status`). The bot receives it as an event and routes it to the appropriate\n   service.\n\nThe event-driven flow for the AI feature:\n\n```\nScheduler trigger\n  → Gemini Service queries Task Management Service for stale tasks\n  → Gemini Service sends context prompt to Google Gemini API\n  → Gemini API returns analysis and report content\n  → Gemini Service persists report to Oracle ATP Database\n  → Telegram Bot delivers report notification to Project Manager\n```\n\n---\n\n## 3. Alternatives Considered\n\n| Tension Point | Event-Driven | Alternative |\n|---|---|---|\n| Report generation trigger | Scheduler fires automatically based on inactivity conditions | Manager manually requests report via portal — rejected because it requires human intervention and defeats the automation purpose |\n| Decoupling of monitoring logic | Scheduler only emits trigger; Gemini Service processes independently | Scheduler directly calls Gemini API — rejected because it creates tight coupling between scheduling and AI logic |\n| Handling external AI failures | Gemini Service handles retries and error logging independently | Inline error handling in scheduler — rejected because it mixes scheduling concerns with AI error management |\n\n---\n\n## 4. Consequences\n\n**Positive (The Gains):**\n- The Project Manager receives reports automatically without manual requests, improving visibility into team activity.\n- The scheduler and Gemini Service are decoupled; the scheduler has no knowledge of what processes its trigger.\n- New event types (sprint end, milestone reached) can be added as triggers without modifying existing components.\n- The system reacts to real conditions (task inactivity) rather than waiting for explicit user requests.\n\n**Negative (The Pains):**\n- Automated flows are harder to trace and debug than synchronous interactions; explicit logging and monitoring are required.\n- The feature depends on Google Gemini API availability; if the external service is down, report generation fails unless retry logic is implemented.\n- The relevance of AI reports depends on the scheduler interval being correctly configured for the team's sprint cadence.",
+      "date" : "2026-05-15T15:02:40Z",
+      "format" : "Markdown",
+      "id" : "3",
+      "status" : "Proposed",
+      "title" : " ADR-003: Event-Driven Architecture for AI Feature"
+    } ],
+    "sections" : [ {
+      "content" : "# ADR-001: Layered and Client-Server Architecture\n\n**Date:** 2025-05-01\n**Status:** Accepted\n**Consulted:** Full development team, Project Manager\n\n---\n\n## 1. Context\n\nThe Oracle Project Management system must support two distinct user interfaces —\na web portal and a Telegram bot — both requiring access to the same business\nlogic and data. Without a defined structural organization, business logic would\nbe duplicated across interfaces, data access would be inconsistent, and the\nsystem would become difficult to extend or maintain.\n\nThe team needed a structure that enforced clear separation between presentation,\nbusiness rules, and data persistence while satisfying reliability and\nmaintainability requirements. The existing tech stack is Node.js with an Oracle\nATP database deployed on OCI.\n\n---\n\n## 2. Decision\n\nWe will organize the system using a **Layered (N-tier) Architecture** combined\nwith a **Client-Server** style as the foundational structural approach.\n\nThe layers are defined as follows:\n\n- **Presentation Layer**: Web Portal UI and Telegram Bot UI. Responsible solely\n  for user interaction. Contains no business logic.\n- **Integration Layer**: REST API Backend (`server.js`) and Bot Integration\n  Adapter (`bot.js`). Single entry point for all client requests.\n- **Application Layer**: Auth & Access, Task Management, Team Activity, KPI &\n  Reporting, and Gemini Service. Contains all business rules and domain logic.\n- **Data Layer**: Oracle ATP Database. Responsible for persistent storage.\n\nThe Client-Server style is applied by treating the Web Portal and Telegram Bot\nas independent clients that communicate exclusively with the REST API Backend.\nNeither client accesses the database or application services directly.\n\n---\n\n## 3. Alternatives Considered\n\n| Tension Point | Layered + Client-Server | Alternative |\n|---|---|---|\n| Code duplication across interfaces | Single backend serves both clients via REST | Each interface implements its own logic — rejected due to duplication and inconsistency |\n| Separation of concerns | Each layer has one responsibility | Monolithic single-file approach — rejected due to poor maintainability |\n| Extensibility for new clients | New clients consume the same REST API | Tight coupling per interface — rejected because adding a mobile app would require rewriting logic |\n\n---\n\n## 4. Consequences\n\n**Positive (The Gains):**\n- Both interfaces share the same business rules, ensuring consistent behavior across channels.\n- Each layer can be modified independently without affecting the others.\n- New clients (mobile app, third-party integrations) can be added without changes to the backend.\n- Each layer can be tested in isolation.\n\n**Negative (The Pains):**\n- All requests must pass through the REST API layer, adding a network hop compared to direct access.\n- The REST API Backend is a single point of failure; its unavailability affects all clients simultaneously.",
+      "filename" : "0001-arch-decision1.md",
+      "format" : "Markdown",
+      "order" : 1,
+      "title" : ""
+    }, {
+      "content" : "# ADR-002: Component-Based Design with Single Responsibility\n\n**Date:** 2025-05-01\n**Status:** Accepted\n**Consulted:** Full development team, Project Manager\n\n---\n\n## 1. Context\n\nThe system handles several distinct business concerns: task management, KPI\ncalculation, team activity tracking, authentication, and AI integration. The\nteam also needed to integrate Google Gemini as an external AI service without\ncoupling it to the core task logic.\n\nIf these responsibilities were bundled into a single module, changes to one\nconcern would risk breaking others. The codebase would become difficult to\ntest, maintain, or extend — especially given that the AI provider may change\nin the future and the team is working under sprint-based delivery constraints.\n\n---\n\n## 2. Decision\n\nWe will structure the backend using a **Component-Based Architecture** style,\nassigning each functional concern to a dedicated component with a single,\nwell-defined responsibility (Single Responsibility Principle at the\narchitectural level).\n\nThe components and their responsibilities are:\n\n| Component | File | Responsibility |\n|---|---|---|\n| Bot Integration Adapter | `bot.js` | Receives Telegram commands, translates them into REST calls |\n| REST API Backend | `server.js` | Exposes HTTP endpoints, coordinates between clients and services |\n| Auth & Access Service | `server.js` (auth module) | Validates identity and manages permissions |\n| Task Management Service | `server.js` (task module) | Handles task retrieval, creation, and status updates |\n| Team Activity Service | `server.js` (activity module) | Tracks and exposes team actions and task changes |\n| KPI & Reporting Service | `server.js` (kpi module) | Calculates and exposes productivity metrics |\n| Gemini Service | `geminiService.js` | Manages all communication with Google Gemini API |\n\nComponents communicate through defined interfaces (HTTP/REST or internal calls),\nnever through shared mutable state.\n\n---\n\n## 3. Alternatives Considered\n\n| Tension Point | Component-Based | Alternative |\n|---|---|---|\n| AI provider coupling | Gemini logic isolated in `geminiService.js`, replaceable independently | Inline Gemini calls inside `server.js` — rejected because changing AI provider would require modifying the entire backend |\n| Business logic organization | Each concern in a dedicated module | Single `server.js` handling everything — rejected due to high coupling and poor testability |\n| Team parallel development | Components owned independently by team members | Shared monolithic file — rejected due to merge conflicts and unclear ownership |\n\n---\n\n## 4. Consequences\n\n**Positive (The Gains):**\n- Each component can be modified or replaced independently as long as its interface remains stable.\n- The Gemini Service can be swapped for a different AI provider by changing only `geminiService.js`.\n- Team members can own and develop components in parallel with minimal conflicts.\n- Components can be unit tested in isolation by mocking their dependencies.\n\n**Negative (The Pains):**\n- Multiple components must collaborate to fulfill a single user request, requiring clear interface contracts.\n- Defining component boundaries upfront requires more design effort than a simple monolithic approach.",
+      "filename" : "0002-arch-decision2.md",
+      "format" : "Markdown",
+      "order" : 2,
+      "title" : ""
+    }, {
+      "content" : "# ADR-003: Event-Driven Architecture for AI Feature\n\n**Date:** 2025-05-01\n**Status:** Accepted\n**Consulted:** Full development team, Project Manager\n\n---\n\n## 1. Context\n\nThe system includes an AI-powered feature that monitors developer activity and\nautomatically generates reports for the Project Manager when tasks have not\nbeen updated within a sprint or hours have not been logged. This feature cannot\nrely on a direct user action — it must fire automatically based on conditions\ndetected in the system.\n\nA synchronous or request-driven approach would require the manager to manually\ntrigger the check, which eliminates the value of automation. The team needed a\nmechanism that reacts to conditions as they emerge, not on demand. The\nconstraint is that the system runs on OCI with a Node.js backend and must\nintegrate with Google Gemini API for the AI processing.\n\n---\n\n## 2. Decision\n\nWe will implement the AI monitoring feature using an **Event-Driven\nArchitecture** style. The flow is triggered by two types of events:\n\n1. **Scheduled event**: A scheduler runs periodically and emits a trigger when\n   the inactivity check interval is reached, initiating the monitoring cycle\n   automatically without user interaction.\n2. **Command event**: A developer sends a Telegram command (e.g. `/update`,\n   `/status`). The bot receives it as an event and routes it to the appropriate\n   service.\n\nThe event-driven flow for the AI feature:\n\n```\nScheduler trigger\n  → Gemini Service queries Task Management Service for stale tasks\n  → Gemini Service sends context prompt to Google Gemini API\n  → Gemini API returns analysis and report content\n  → Gemini Service persists report to Oracle ATP Database\n  → Telegram Bot delivers report notification to Project Manager\n```\n\n---\n\n## 3. Alternatives Considered\n\n| Tension Point | Event-Driven | Alternative |\n|---|---|---|\n| Report generation trigger | Scheduler fires automatically based on inactivity conditions | Manager manually requests report via portal — rejected because it requires human intervention and defeats the automation purpose |\n| Decoupling of monitoring logic | Scheduler only emits trigger; Gemini Service processes independently | Scheduler directly calls Gemini API — rejected because it creates tight coupling between scheduling and AI logic |\n| Handling external AI failures | Gemini Service handles retries and error logging independently | Inline error handling in scheduler — rejected because it mixes scheduling concerns with AI error management |\n\n---\n\n## 4. Consequences\n\n**Positive (The Gains):**\n- The Project Manager receives reports automatically without manual requests, improving visibility into team activity.\n- The scheduler and Gemini Service are decoupled; the scheduler has no knowledge of what processes its trigger.\n- New event types (sprint end, milestone reached) can be added as triggers without modifying existing components.\n- The system reacts to real conditions (task inactivity) rather than waiting for explicit user requests.\n\n**Negative (The Pains):**\n- Automated flows are harder to trace and debug than synchronous interactions; explicit logging and monitoring are required.\n- The feature depends on Google Gemini API availability; if the external service is down, report generation fails unless retry logic is implemented.\n- The relevance of AI reports depends on the scheduler interval being correctly configured for the team's sprint cadence.",
+      "filename" : "0003-arch-decision3.md",
+      "format" : "Markdown",
+      "order" : 3,
+      "title" : ""
+    } ]
+  },
+  "id" : 1,
+  "lastModifiedDate" : "2026-05-15T15:02:40Z",
+  "model" : {
+    "deploymentNodes" : [ {
+      "children" : [ {
+        "containerInstances" : [ {
+          "containerId" : "9",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Oracle Cloud Infrastructure (OCI)",
+          "id" : "41",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "apiInstance"
+          },
+          "relationships" : [ {
+            "description" : "Reads and writes data",
+            "destinationId" : "48",
+            "id" : "49",
+            "linkedRelationshipId" : "26",
+            "sourceId" : "41",
+            "technology" : "SQL"
+          } ],
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "7",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Oracle Cloud Infrastructure (OCI)",
+          "id" : "42",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "botInstance"
+          },
+          "relationships" : [ {
+            "description" : "Forwards parsed commands",
+            "destinationId" : "41",
+            "id" : "43",
+            "linkedRelationshipId" : "25",
+            "sourceId" : "42",
+            "technology" : "HTTPS / REST"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "description" : "Runs the backend API and Telegram bot process.",
+        "environment" : "Oracle Cloud Infrastructure (OCI)",
+        "id" : "40",
+        "instances" : "1",
+        "name" : "Node.js Runtime",
+        "properties" : {
+          "structurizr.dsl.identifier" : "679ff595-dee9-437b-ad07-ba6d69c39a74"
+        },
+        "tags" : "Element,Deployment Node",
+        "technology" : "Node.js 18+"
+      } ],
+      "description" : "Virtual machine running the Node.js backend and bot.",
+      "environment" : "Oracle Cloud Infrastructure (OCI)",
+      "id" : "39",
+      "instances" : "1",
+      "name" : "OCI Compute Instance",
+      "properties" : {
+        "structurizr.dsl.identifier" : "6742ea45-b7b1-4799-b2d4-6e240b40f099"
+      },
+      "tags" : "Element,Deployment Node",
+      "technology" : "Oracle Cloud VM"
+    }, {
+      "containerInstances" : [ {
+        "containerId" : "6",
+        "deploymentGroups" : [ "Default" ],
+        "environment" : "Oracle Cloud Infrastructure (OCI)",
+        "id" : "45",
+        "instanceId" : 1,
+        "properties" : {
+          "structurizr.dsl.identifier" : "webPortalInstance"
+        },
+        "relationships" : [ {
+          "description" : "Makes API calls",
+          "destinationId" : "41",
+          "id" : "46",
+          "linkedRelationshipId" : "24",
+          "sourceId" : "45",
+          "technology" : "HTTPS / REST"
+        } ],
+        "tags" : "Container Instance"
+      } ],
+      "description" : "Handles inbound HTTPS traffic.",
+      "environment" : "Oracle Cloud Infrastructure (OCI)",
+      "id" : "44",
+      "instances" : "1",
+      "name" : "OCI Networking",
+      "properties" : {
+        "structurizr.dsl.identifier" : "eac74d0b-d4e2-424b-bc2f-e30f3841f094"
+      },
+      "tags" : "Element,Deployment Node",
+      "technology" : "OCI Load Balancer"
+    }, {
+      "containerInstances" : [ {
+        "containerId" : "15",
+        "deploymentGroups" : [ "Default" ],
+        "environment" : "Oracle Cloud Infrastructure (OCI)",
+        "id" : "48",
+        "instanceId" : 1,
+        "properties" : {
+          "structurizr.dsl.identifier" : "dbInstance"
+        },
+        "tags" : "Container Instance"
+      } ],
+      "description" : "Managed Oracle database service.",
+      "environment" : "Oracle Cloud Infrastructure (OCI)",
+      "id" : "47",
+      "instances" : "1",
+      "name" : "Oracle ATP",
+      "properties" : {
+        "structurizr.dsl.identifier" : "4fc6f8d2-fb72-4a9e-989c-dc8cc4e456e9"
+      },
+      "tags" : "Element,Deployment Node",
+      "technology" : "Oracle Autonomous Transaction Processing"
+    } ],
+    "people" : [ {
+      "description" : "Team member who checks assigned tasks, updates task status, and interacts with the system via web portal or Telegram bot.",
+      "id" : "1",
+      "name" : "Developer",
+      "properties" : {
+        "structurizr.dsl.identifier" : "developer"
+      },
+      "relationships" : [ {
+        "description" : "Checks tasks, updates status, consults project data",
+        "destinationId" : "5",
+        "id" : "16",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Uses to manage tasks and view project data",
+        "destinationId" : "6",
+        "id" : "18",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Sends commands to check and update tasks",
+        "destinationId" : "7",
+        "id" : "19",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "Telegram"
+      } ],
+      "tags" : "Element,Person"
+    }, {
+      "description" : "Supervises team tasks, reviews KPI metrics, monitors team activity, and receives AI-generated reports.",
+      "id" : "2",
+      "name" : "Project Manager",
+      "properties" : {
+        "structurizr.dsl.identifier" : "manager"
+      },
+      "relationships" : [ {
+        "description" : "Reviews KPIs, monitors activity, receives AI reports",
+        "destinationId" : "5",
+        "id" : "17",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Uses to review KPIs and monitor team",
+        "destinationId" : "6",
+        "id" : "20",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Receives AI-generated reports and alerts",
+        "destinationId" : "7",
+        "id" : "21",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "Telegram"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "description" : "External messaging platform. Delivers messages between users and the bot using the token issued by BotFather.",
+      "documentation" : { },
+      "id" : "3",
+      "name" : "Telegram API",
+      "properties" : {
+        "structurizr.dsl.identifier" : "telegramApi"
+      },
+      "tags" : "Element,Software System,External System"
+    }, {
+      "description" : "External AI service used to detect inactive developers, understand blockers, and generate automated reports for the project manager.",
+      "documentation" : { },
+      "id" : "4",
+      "name" : "Google Gemini API",
+      "properties" : {
+        "structurizr.dsl.identifier" : "geminiApi"
+      },
+      "tags" : "Element,Software System,External System"
+    }, {
+      "containers" : [ {
+        "description" : "Browser-based interface for developers and managers to manage tasks, view KPIs, and monitor team activity.",
+        "documentation" : { },
+        "id" : "6",
+        "name" : "Web Portal",
+        "properties" : {
+          "structurizr.dsl.identifier" : "webPortal"
+        },
+        "relationships" : [ {
+          "description" : "Makes API calls",
+          "destinationId" : "9",
+          "id" : "24",
+          "sourceId" : "6",
+          "tags" : "Relationship",
+          "technology" : "HTTPS / REST"
+        } ],
+        "tags" : "Element,Container,Web Browser",
+        "technology" : "React / HTML"
+      }, {
+        "components" : [ {
+          "description" : "Receives Telegram updates, parses commands, translates them into REST calls to the backend API, and formats responses back to Telegram.",
+          "documentation" : { },
+          "id" : "8",
+          "name" : "Bot Integration Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "botAdapter"
+          },
+          "relationships" : [ {
+            "description" : "Authenticates incoming requests",
+            "destinationId" : "10",
+            "id" : "27",
+            "sourceId" : "8",
+            "tags" : "Relationship",
+            "technology" : "HTTPS / REST"
+          }, {
+            "description" : "Requests task data and status updates",
+            "destinationId" : "11",
+            "id" : "28",
+            "sourceId" : "8",
+            "tags" : "Relationship",
+            "technology" : "HTTPS / REST"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Node.js"
+        } ],
+        "description" : "Conversational interface on Telegram. Receives commands, forwards requests to the backend, and returns formatted responses to the user.",
+        "documentation" : { },
+        "id" : "7",
+        "name" : "Telegram Bot (bot.js)",
+        "properties" : {
+          "structurizr.dsl.identifier" : "telegramBot"
+        },
+        "relationships" : [ {
+          "description" : "Sends and receives messages",
+          "destinationId" : "3",
+          "id" : "22",
+          "sourceId" : "7",
+          "tags" : "Relationship",
+          "technology" : "HTTPS / Telegram Bot API"
+        }, {
+          "description" : "Forwards parsed commands",
+          "destinationId" : "9",
+          "id" : "25",
+          "sourceId" : "7",
+          "tags" : "Relationship",
+          "technology" : "HTTPS / REST"
+        } ],
+        "tags" : "Element,Container,Telegram Client",
+        "technology" : "Node.js"
+      }, {
+        "components" : [ {
+          "description" : "Validates user identity, manages permissions, and ensures secure access to all system functions.",
+          "documentation" : { },
+          "id" : "10",
+          "name" : "Auth & Access Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "authService"
+          },
+          "relationships" : [ {
+            "description" : "Validates credentials and permissions",
+            "destinationId" : "15",
+            "id" : "29",
+            "sourceId" : "10",
+            "tags" : "Relationship",
+            "technology" : "SQL"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Node.js"
+        }, {
+          "description" : "Handles task retrieval, status updates, assignment queries, and project data consultation.",
+          "documentation" : { },
+          "id" : "11",
+          "name" : "Task Management Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "taskService"
+          },
+          "relationships" : [ {
+            "description" : "Persists and retrieves task records",
+            "destinationId" : "15",
+            "id" : "30",
+            "sourceId" : "11",
+            "tags" : "Relationship",
+            "technology" : "SQL"
+          }, {
+            "description" : "Notifies of task changes",
+            "destinationId" : "12",
+            "id" : "31",
+            "sourceId" : "11",
+            "tags" : "Relationship",
+            "technology" : "Internal call"
+          }, {
+            "description" : "Provides task data for KPI calculation",
+            "destinationId" : "13",
+            "id" : "32",
+            "sourceId" : "11",
+            "tags" : "Relationship",
+            "technology" : "Internal call"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Node.js"
+        }, {
+          "description" : "Tracks and exposes recent team actions, task changes, and collaboration activity.",
+          "documentation" : { },
+          "id" : "12",
+          "name" : "Team Activity Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "activityService"
+          },
+          "relationships" : [ {
+            "description" : "Stores activity logs",
+            "destinationId" : "15",
+            "id" : "33",
+            "sourceId" : "12",
+            "tags" : "Relationship",
+            "technology" : "SQL"
+          }, {
+            "description" : "Feeds activity data into productivity metrics",
+            "destinationId" : "13",
+            "id" : "34",
+            "sourceId" : "12",
+            "tags" : "Relationship",
+            "technology" : "Internal call"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Node.js"
+        }, {
+          "description" : "Calculates and exposes productivity indicators, sprint progress metrics, and team-level KPI dashboards.",
+          "documentation" : { },
+          "id" : "13",
+          "name" : "KPI & Reporting Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "kpiService"
+          },
+          "relationships" : [ {
+            "description" : "Reads KPI records and writes computed metrics",
+            "destinationId" : "15",
+            "id" : "35",
+            "sourceId" : "13",
+            "tags" : "Relationship",
+            "technology" : "SQL"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Node.js"
+        }, {
+          "description" : "Detects developers with inactive tasks, sends contextual prompts to Google Gemini API, parses the AI response, and triggers automated report generation for the project manager.",
+          "documentation" : { },
+          "id" : "14",
+          "name" : "Gemini Service (GeminiService.js)",
+          "properties" : {
+            "structurizr.dsl.identifier" : "geminiService"
+          },
+          "relationships" : [ {
+            "description" : "Sends prompt with task context, receives AI analysis",
+            "destinationId" : "4",
+            "id" : "23",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "HTTPS / REST"
+          }, {
+            "description" : "Sends contextual prompts and receives analysis",
+            "destinationId" : "4",
+            "id" : "36",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "HTTPS / REST"
+          }, {
+            "description" : "Saves generated reports",
+            "destinationId" : "15",
+            "id" : "37",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "SQL"
+          }, {
+            "description" : "Queries tasks with no recent updates",
+            "destinationId" : "11",
+            "id" : "38",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "Internal call"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Node.js"
+        } ],
+        "description" : "Central entry point for all business operations. Exposes REST endpoints consumed by the web portal and the Telegram bot.",
+        "documentation" : { },
+        "id" : "9",
+        "name" : "REST API Backend (Server.js)",
+        "properties" : {
+          "structurizr.dsl.identifier" : "apiBackend"
+        },
+        "relationships" : [ {
+          "description" : "Reads and writes data",
+          "destinationId" : "15",
+          "id" : "26",
+          "sourceId" : "9",
+          "tags" : "Relationship",
+          "technology" : "SQL"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Node.js / Express"
+      }, {
+        "description" : "Persistent storage for tasks, users, KPI records, activity logs, and AI-generated reports.",
+        "documentation" : { },
+        "id" : "15",
+        "name" : "Oracle ATP Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "database"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "Oracle Autonomous Transaction Processing"
+      } ],
+      "description" : "Centralised system that allows developers and managers to manage tasks, track KPIs, monitor team activity, and automate follow-up via AI.",
+      "documentation" : { },
+      "id" : "5",
+      "name" : "Oracle Project Management System",
+      "properties" : {
+        "structurizr.dsl.identifier" : "oraclePMS"
+      },
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Oracle Project Management",
+  "properties" : {
+    "structurizr.inspection.error" : "3",
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.warning" : "0"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "containerId" : "9",
+      "description" : "Components inside the REST API Backend.",
+      "elements" : [ {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "Components_API",
+      "name" : "Component View: Oracle Project Management System - REST API Backend (Server.js)",
+      "order" : 4,
+      "relationships" : [ {
+        "id" : "23"
+      }, {
+        "id" : "29"
+      }, {
+        "id" : "30"
+      }, {
+        "id" : "31"
+      }, {
+        "id" : "32"
+      }, {
+        "id" : "33"
+      }, {
+        "id" : "34"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "36"
+      }, {
+        "id" : "37"
+      }, {
+        "id" : "38"
+      } ]
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "containerId" : "7",
+      "description" : "Components inside the Telegram Bot container.",
+      "elements" : [ {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "Components_Bot",
+      "name" : "Component View: Oracle Project Management System - Telegram Bot (bot.js)",
+      "order" : 5
+    } ],
+    "configuration" : {
+      "styles" : {
+        "elements" : [ {
+          "background" : "#9aafc9",
+          "color" : "#ffffff",
+          "tag" : "Component"
+        }, {
+          "background" : "#6b8cba",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "background" : "#f5a623",
+          "color" : "#ffffff",
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#999999",
+          "color" : "#ffffff",
+          "tag" : "External System"
+        }, {
+          "background" : "#7b6faa",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#4a6fa5",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        }, {
+          "shape" : "MobileDeviceLandscape",
+          "tag" : "Telegram Client"
+        }, {
+          "shape" : "WebBrowser",
+          "tag" : "Web Browser"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Internal containers of the Oracle Project Management system.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "Containers",
+      "name" : "Container View: Oracle Project Management System",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "18"
+      }, {
+        "id" : "19"
+      }, {
+        "id" : "20"
+      }, {
+        "id" : "21"
+      }, {
+        "id" : "22"
+      }, {
+        "id" : "24"
+      }, {
+        "id" : "25"
+      }, {
+        "id" : "26"
+      } ],
+      "softwareSystemId" : "5"
+    } ],
+    "deploymentViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "How the system is deployed on OCI.",
+      "elements" : [ {
+        "id" : "39",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "40",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "41",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "42",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "44",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "45",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "47",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "48",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "environment" : "Oracle Cloud Infrastructure (OCI)",
+      "key" : "Deployment",
+      "name" : "Deployment View: Oracle Project Management System - Oracle Cloud Infrastructure (OCI)",
+      "order" : 6,
+      "relationships" : [ {
+        "id" : "43"
+      }, {
+        "id" : "46"
+      }, {
+        "id" : "49"
+      } ],
+      "softwareSystemId" : "5"
+    } ],
+    "dynamicViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Developer updates a task status through the Telegram bot.",
+      "elementId" : "5",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "DynamicTaskUpdate",
+      "name" : "Dynamic View: Oracle Project Management System",
+      "order" : 7,
+      "relationships" : [ {
+        "description" : "Sends /update command via Telegram",
+        "id" : "19",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Forwards parsed update request",
+        "id" : "25",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Validates user and persists new task status",
+        "id" : "26",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "Returns confirmation response",
+        "id" : "25",
+        "order" : "4",
+        "response" : true
+      }, {
+        "description" : "Delivers confirmation message via Telegram",
+        "id" : "19",
+        "order" : "5",
+        "response" : true
+      } ]
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "AI feature detects an inactive developer and generates a report for the manager.",
+      "elementId" : "5",
+      "elements" : [ {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "DynamicAIReport",
+      "name" : "Dynamic View: Oracle Project Management System",
+      "order" : 8,
+      "relationships" : [ {
+        "description" : "Queries and saves AI-generated report",
+        "id" : "26",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Sends report notification to manager",
+        "id" : "25",
+        "order" : "2",
+        "response" : true
+      }, {
+        "description" : "Delivers AI report via Telegram",
+        "id" : "21",
+        "order" : "3",
+        "response" : true
+      } ]
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Internal component flow for the AI report feature.",
+      "elementId" : "9",
+      "elements" : [ {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "DynamicAIReportDetail",
+      "name" : "Dynamic View: Oracle Project Management System - REST API Backend (Server.js)",
+      "order" : 9,
+      "relationships" : [ {
+        "description" : "Queries tasks with no recent updates",
+        "id" : "38",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Sends prompt with inactivity context",
+        "id" : "36",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Saves generated report",
+        "id" : "37",
+        "order" : "3",
+        "response" : false
+      } ]
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "How actors and external systems interact with Oracle Project Management.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemContext",
+      "name" : "System Context View: Oracle Project Management System",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "16"
+      }, {
+        "id" : "17"
+      } ],
+      "softwareSystemId" : "5"
+    } ],
+    "systemLandscapeViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Overview of all systems and actors.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemLandscape",
+      "name" : "System Landscape View",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "16"
+      }, {
+        "id" : "17"
+      } ]
+    } ]
+  }
+}
