@@ -27,7 +27,7 @@ describe('Telegram Bot Commands', () => {
         })
     })
 
-    it('debe crear una tarea', async () => {
+    it('debe crear una tarea [B-01]', async () => {
         axios.post.mockResolvedValue({})
 
         const msg = {
@@ -57,7 +57,7 @@ describe('Telegram Bot Commands', () => {
         expect(reply).toHaveBeenCalledWith(123, 'Tarea creada')
     })
 
-    it('debe mostrar tareas completadas de un sprint', async () => {
+    it('debe mostrar tareas completadas de un sprint [B-02]', async () => {
         axios.get.mockResolvedValue({
             data: [
                 {
@@ -101,7 +101,7 @@ describe('Telegram Bot Commands', () => {
         )
     })
 
-    it('debe mostrar tareas completadas de usuario en sprint', async () => {
+    it('debe mostrar tareas completadas de usuario en sprint [B-03]', async () => {
         axios.get.mockResolvedValue({
             data: [
                 {
