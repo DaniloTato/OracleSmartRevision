@@ -1,0 +1,41 @@
+version: 0.1
+component: build
+timeoutInSeconds: 1200
+shell: bash
+
+env:
+  variables:
+    IMAGE_NAME: oracle-smart-frontend
+    IMAGE_TAG: ${OCI_BUILD_RUN_ID}
+    OCIR_REGION: qro.ocir.io
+    OCIR_NAMESPACE: axozuy0c3gbd
+
+steps:
+  - type: Command
+    name: "Install dependencies and run frontend build test"
+    command: |
+      npm ci
+      npm run build
+
+  - type: Command
+    name: "Build Docker image"
+    command: |
+      docker build -t ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} .
+
+  - type: Command
+    name: "Push Docker image to OCIR"
+    command: |
+      docker push ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
+
+  - type: Command
+    name: "Prepare Kubernetes manifest for green deployment"
+    command: |
+      sed "s|qro.ocir.io/axozuy0c3gbd/oracle-smart-frontend:v1|${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}|g" green-deployment.yaml > green-deployment.generated.yaml
+
+outputArtifacts:
+  - name: frontend_green_manifest
+    type: BINARY
+    location: green-deployment.generated.yaml
+  - name: frontend_green_ingress
+    type: BINARY
+    location: green-ingress.yaml
