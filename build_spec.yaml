@@ -9,6 +9,8 @@ env:
     IMAGE_TAG: v1
     OCIR_REGION: qro.ocir.io
     OCIR_NAMESPACE: axozuy0c3gbd
+    OCIR_USERNAME: axozuy0c3gbd/a01645849@tec.mx
+    OCIR_AUTH_TOKEN: "iZ]K.Y[qebt01w0H[4wH"
 
 steps:
   - type: Command
@@ -16,6 +18,11 @@ steps:
     command: |
       npm ci
       npm run build
+
+  - type: Command
+    name: "Login to OCIR"
+    command: |
+      echo "${OCIR_AUTH_TOKEN}" | podman login ${OCIR_REGION} -u "${OCIR_USERNAME}" --password-stdin
 
   - type: Command
     name: "Build Docker image"
@@ -36,6 +43,7 @@ outputArtifacts:
   - name: frontend_green_manifest
     type: BINARY
     location: green-deployment.generated.yaml
+
   - name: frontend_green_ingress
     type: BINARY
     location: green-ingress.yaml
