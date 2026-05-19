@@ -35,15 +35,11 @@ steps:
       podman push ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
 
   - type: Command
-    name: "Prepare Kubernetes manifest for green deployment"
+    name: "Prepare Blue/Green Kubernetes manifest"
     command: |
-      sed "s|qro.ocir.io/axozuy0c3gbd/oracle-smart-frontend:v1|${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}|g" green-deployment.yaml > green-deployment.generated.yaml
+      sed "s|qro.ocir.io/axozuy0c3gbd/oracle-smart-frontend:v1|${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}|g" frontend-bluegreen.yaml > frontend-bluegreen.generated.yaml
 
 outputArtifacts:
-  - name: frontend_green_manifest
+  - name: frontend_bluegreen_manifest
     type: BINARY
-    location: green-deployment.generated.yaml
-
-  - name: frontend_green_ingress
-    type: BINARY
-    location: green-ingress.yaml
+    location: frontend-bluegreen.generated.yaml
