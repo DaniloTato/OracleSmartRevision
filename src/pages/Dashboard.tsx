@@ -82,7 +82,7 @@ export function Dashboard() {
             {/* KPI */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <KpiCard
-                    title="Tareas Completadas"
+                    title="Tareas Completadas ESTO ES UN TEST DE BLUE GREEN"
                     value={completedCount}
                     subtitle="Sprint actual"
                     icon={HiOutlineCheckCircle}
