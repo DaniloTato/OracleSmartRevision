@@ -6,7 +6,7 @@ shell: bash
 env:
   variables:
     IMAGE_NAME: oracle-smart-frontend
-    IMAGE_TAG: ${OCI_BUILD_RUN_ID}
+    IMAGE_TAG: v1
     OCIR_REGION: qro.ocir.io
     OCIR_NAMESPACE: axozuy0c3gbd
 
@@ -20,12 +20,12 @@ steps:
   - type: Command
     name: "Build Docker image"
     command: |
-      docker build -t ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} .
+      podman build -t ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} .
 
   - type: Command
     name: "Push Docker image to OCIR"
     command: |
-      docker push ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
+      podman push ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
 
   - type: Command
     name: "Prepare Kubernetes manifest for green deployment"
