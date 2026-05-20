@@ -6,11 +6,12 @@ shell: bash
 env:
   variables:
     IMAGE_NAME: oracle-smart-frontend
-    IMAGE_TAG: v1
     OCIR_REGION: qro.ocir.io
     OCIR_NAMESPACE: axozuy0c3gbd
     OCIR_USERNAME: axozuy0c3gbd/a01645849@tec.mx
-    OCIR_AUTH_TOKEN: "iZ]K.Y[qebt01w0H[4wH"
+
+  vaultVariables:
+    OCIR_AUTH_TOKEN: ocid1.vaultsecret.oc1.mx-queretaro-1.amaaaaaa7v5mmhaaf7q2urefhhriu4aezmyxyk4hm3peqlvlpnph6fwa4afa
 
 steps:
   - type: Command
@@ -27,16 +28,19 @@ steps:
   - type: Command
     name: "Build Docker image"
     command: |
+      IMAGE_TAG=$(git rev-parse --short HEAD)
       podman build -t ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} .
 
   - type: Command
     name: "Push Docker image to OCIR"
     command: |
+      IMAGE_TAG=$(git rev-parse --short HEAD)
       podman push ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
 
   - type: Command
     name: "Prepare Blue/Green Kubernetes manifest"
     command: |
+      IMAGE_TAG=$(git rev-parse --short HEAD)
       sed "s|qro.ocir.io/axozuy0c3gbd/oracle-smart-frontend:v1|${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}|g" frontend-bluegreen.yaml > frontend-bluegreen.generated.yaml
 
 outputArtifacts:
