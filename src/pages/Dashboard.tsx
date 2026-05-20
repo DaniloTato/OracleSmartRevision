@@ -74,7 +74,7 @@ export function Dashboard() {
                         Dashboard
                     </h1>
                     <p className="text-sm text-[var(--color-text-muted)]">
-                        Resumen del sprint y métricas del equipo --  TEST DE BLUE GREEN
+                        Resumen del sprint y métricas del equipo --  TEST DE BLUE GREEN 3
                     </p>
                 </div>
             </div>
@@ -82,7 +82,7 @@ export function Dashboard() {
             {/* KPI */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <KpiCard
-                    title="Tareas Completadas ESTO ES UN TEST DE BLUE GREEN"
+                    title="Tareas Completadas"
                     value={completedCount}
                     subtitle="Sprint actual"
                     icon={HiOutlineCheckCircle}
