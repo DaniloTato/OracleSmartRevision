@@ -74,7 +74,7 @@ export function Dashboard() {
                         Dashboard
                     </h1>
                     <p className="text-sm text-[var(--color-text-muted)]">
-                        Resumen del sprint y métricas del equipo
+                        Resumen del sprint y métricas del equipo --  TEST DE BLUE GREEN
                     </p>
                 </div>
             </div>
