@@ -41,9 +41,9 @@ steps:
     name: "Prepare Blue/Green Kubernetes manifest"
     command: |
       IMAGE_TAG=$(git rev-parse --short HEAD)
-      sed "s|qro.ocir.io/axozuy0c3gbd/oracle-smart-frontend:v1|${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}|g" frontend-bluegreen.yaml > frontend-bluegreen.generated.yaml
+      sed "s|qro.ocir.io/axozuy0c3gbd/oracle-smart-frontend:v1|${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}|g" frontend-rolling.yaml > frontend-rolling.generated.yaml
 
 outputArtifacts:
-  - name: frontend_bluegreen_manifest
+  - name: frontend_rolling_manifest
     type: BINARY
-    location: frontend-bluegreen.generated.yaml
+    location: frontend-rolling.generated.yaml
