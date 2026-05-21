@@ -9,13 +9,14 @@ env:
     OCIR_REGION: qro.ocir.io
     OCIR_NAMESPACE: axozuy0c3gbd
     OCIR_USERNAME: axozuy0c3gbd/a01645849@tec.mx
+    FRONTEND_RUNTIME_BASE: qro.ocir.io/axozuy0c3gbd/oracle-smart-frontend:a2c76df
 
   vaultVariables:
     OCIR_AUTH_TOKEN: ocid1.vaultsecret.oc1.mx-queretaro-1.amaaaaaa7v5mmhaaf7q2urefhhriu4aezmyxyk4hm3peqlvlpnph6fwa4afa
 
 steps:
   - type: Command
-    name: "Install dependencies and run frontend build test"
+    name: "Install dependencies and build frontend"
     command: |
       npm ci
       npm run build
@@ -26,10 +27,19 @@ steps:
       echo "${OCIR_AUTH_TOKEN}" | podman login ${OCIR_REGION} -u "${OCIR_USERNAME}" --password-stdin
 
   - type: Command
-    name: "Build Docker image"
+    name: "Build frontend image from OCIR runtime base"
     command: |
       IMAGE_TAG=$(git rev-parse --short HEAD)
-      podman build -t ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} .
+
+      cat > Dockerfile.ci <<DOCKERFILE
+      FROM ${FRONTEND_RUNTIME_BASE}
+      RUN rm -rf /usr/share/nginx/html/*
+      COPY dist /usr/share/nginx/html
+      EXPOSE 80
+      CMD ["nginx", "-g", "daemon off;"]
+      DOCKERFILE
+
+      podman build -f Dockerfile.ci -t ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} .
 
   - type: Command
     name: "Push Docker image to OCIR"
@@ -38,7 +48,7 @@ steps:
       podman push ${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
 
   - type: Command
-    name: "Prepare Blue/Green Kubernetes manifest"
+    name: "Prepare rolling Kubernetes manifest"
     command: |
       IMAGE_TAG=$(git rev-parse --short HEAD)
       sed "s|qro.ocir.io/axozuy0c3gbd/oracle-smart-frontend:v1|${OCIR_REGION}/${OCIR_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}|g" frontend-rolling.yaml > frontend-rolling.generated.yaml
