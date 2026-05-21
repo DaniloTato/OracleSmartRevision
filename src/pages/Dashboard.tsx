@@ -71,7 +71,7 @@ export function Dashboard() {
                 </div>
                 <div>
                     <h1 className="text-2xl font-semibold text-[var(--color-text)]">
-                        Dashboard
+                        Dashboard     TEST DE CI/CD FUNCIONANDO
                     </h1>
                     <p className="text-sm text-[var(--color-text-muted)]">
                         Resumen del sprint y métricas del equipo
