@@ -49,10 +49,14 @@ export function TH({
 export function TD({
     children,
     className = '',
+    colSpan,
     ...props
-}: { children: ReactNode } & HTMLAttributes<HTMLTableCellElement>) {
+}: {
+    children: ReactNode
+    colSpan?: number
+} & HTMLAttributes<HTMLTableCellElement>) {
     return (
-        <td className={`px-4 py-3 ${className}`} {...props}>
+        <td className={`px-4 py-3 ${className}`} colSpan={colSpan} {...props}>
             {children}
         </td>
     )
