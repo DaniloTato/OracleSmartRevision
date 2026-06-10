@@ -18,41 +18,37 @@ function App() {
     return (
         <BrowserRouter>
             <AuthProvider>
-                <SprintProvider>
-                    <Routes>
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route
-                            path="/"
-                            element={
-                                <ProtectedRoute>
+                <Routes>
+                    <Route path="/login" element={<LoginPage />} />
+
+                    <Route
+                        path="/"
+                        element={
+                            <ProtectedRoute>
+                                <SprintProvider>
                                     <MainLayout />
-                                </ProtectedRoute>
-                            }
-                        >
-                            <Route
-                                index
-                                element={<Navigate to="/dashboard" replace />}
-                            />
-                            <Route path="dashboard" element={<Dashboard />} />
-                            <Route
-                                path="task-manager"
-                                element={<TaskManager />}
-                            />
-                            <Route
-                                path="ai-reports"
-                                element={<AiReportsPage />}
-                            />
-                            <Route
-                                path="completed-tasks"
-                                element={<CompletedTasksPage />}
-                            />
-                        </Route>
+                                </SprintProvider>
+                            </ProtectedRoute>
+                        }
+                    >
                         <Route
-                            path="*"
-                            element={<Navigate to="/login" replace />}
+                            index
+                            element={<Navigate to="/dashboard" replace />}
                         />
-                    </Routes>
-                </SprintProvider>
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="task-manager" element={<TaskManager />} />
+                        <Route path="ai-reports" element={<AiReportsPage />} />
+                        <Route
+                            path="completed-tasks"
+                            element={<CompletedTasksPage />}
+                        />
+                    </Route>
+
+                    <Route
+                        path="*"
+                        element={<Navigate to="/login" replace />}
+                    />
+                </Routes>
             </AuthProvider>
         </BrowserRouter>
     )
