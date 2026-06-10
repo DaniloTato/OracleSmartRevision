@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import type { TasksByUser } from '../types/dashboard'
-
 import { getTasksByUser, getTasksByUserAndSprint } from '../api/dashboardApi'
 
 interface CompletedTasksData {

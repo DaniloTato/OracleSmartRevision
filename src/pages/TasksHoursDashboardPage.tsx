@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
     HiOutlineCheckCircle,
     HiOutlineClock,
@@ -10,16 +10,14 @@ import { useSprint } from '../context/SprintContext'
 import { Section } from '../components/ui/Section'
 import { KpiCard } from '../components/ui/KpiCard'
 import { Table, THead, TRow, TH, TD } from '../components/ui/Table'
+import {
+    getRealHoursByUser,
+    getTasksByUser,
+    getTasksByUserAndSprint,
+} from '../api/dashboardApi'
+import type { HoursByUser, TasksByUser } from '../types/dashboard'
 
-type TasksRow = {
-    user: string
-    tasksCompleted: number
-}
-
-type HoursRow = {
-    user: string
-    hours: number
-}
+const PROJECT_ID = 1
 
 export function TasksHoursDashboardPage() {
     const { sprints } = useSprint()
@@ -27,13 +25,58 @@ export function TasksHoursDashboardPage() {
     const [selectedSprint, setSelectedSprint] = useState<number | 'all'>('all')
 
     const [selectedDeveloper, setSelectedDeveloper] = useState<string>('all')
+    const [tasksData, setTasksData] = useState<TasksByUser[]>([])
+    const [hoursData, setHoursData] = useState<HoursByUser[]>([])
+    const [loading, setLoading] = useState(true)
 
-    /*
-        TODO:
-        Replace these with your real hook
-    */
-    const tasksData: TasksRow[] = []
-    const hoursData: HoursRow[] = []
+    useEffect(() => {
+        async function loadData() {
+            setLoading(true)
+
+            try {
+                if (selectedSprint === 'all') {
+                    const [tasks, hoursBySprint] = await Promise.all([
+                        getTasksByUser(PROJECT_ID),
+                        Promise.all(
+                            sprints.map((sprint) =>
+                                getRealHoursByUser(PROJECT_ID, sprint.id)
+                            )
+                        ),
+                    ])
+
+                    const hoursByUser = new Map<string, HoursByUser>()
+
+                    hoursBySprint.flat().forEach((row) => {
+                        const current = hoursByUser.get(row.user)
+                        hoursByUser.set(row.user, {
+                            ...row,
+                            hours: (current?.hours ?? 0) + (row.hours ?? 0),
+                        })
+                    })
+
+                    setTasksData(tasks ?? [])
+                    setHoursData([...hoursByUser.values()])
+                    return
+                }
+
+                const [tasks, hours] = await Promise.all([
+                    getTasksByUserAndSprint(PROJECT_ID, selectedSprint),
+                    getRealHoursByUser(PROJECT_ID, selectedSprint),
+                ])
+
+                setTasksData(tasks ?? [])
+                setHoursData(hours ?? [])
+            } catch (err) {
+                console.error('TasksHoursDashboard load failed', err)
+                setTasksData([])
+                setHoursData([])
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        loadData()
+    }, [selectedSprint, sprints])
 
     const developers = useMemo(() => {
         return Array.from(
@@ -123,6 +166,10 @@ export function TasksHoursDashboardPage() {
             }
         })
     }, [developers, tasksData, hoursData])
+
+    if (loading) {
+        return <div className="p-4 text-muted">Cargando métricas...</div>
+    }
 
     return (
         <div className="space-y-8">
