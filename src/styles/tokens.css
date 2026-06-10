@@ -158,7 +158,6 @@ body {
     background-color: var(--color-surface);
 }
 
-
 /* DarkPage */
 .dark-page {
     background-color: var(--color-dark-bg);
@@ -240,7 +239,6 @@ body {
     color: var(--color-danger);
 }
 
-
 /* Dark mode overrides */
 .dark-page .bg-badge-default {
     background-color: #1f2937; /* gray-800 */
@@ -297,5 +295,12 @@ body {
 }
 
 .dark-page .bg-severity-high {
+    background-color: rgba(220, 38, 38, 0.2);
+}
+
+.bg-danger-soft {
+    background-color: var(--color-danger-light);
+}
+.dark-page .bg-danger-soft {
     background-color: rgba(220, 38, 38, 0.2);
 }
