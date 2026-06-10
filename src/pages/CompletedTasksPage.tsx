@@ -1,182 +1,264 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
     HiOutlineCheckCircle,
-    HiOutlineUserGroup,
+    HiOutlineClock,
     HiOutlineTrendingUp,
+    HiOutlineUserGroup,
 } from 'react-icons/hi'
+
 import { useSprint } from '../context/SprintContext'
-import { useCompletedTasksData } from '../hooks/useCompletedTasksData'
 import { Section } from '../components/ui/Section'
 import { KpiCard } from '../components/ui/KpiCard'
 import { Table, THead, TRow, TH, TD } from '../components/ui/Table'
 
-const PROJECT_ID = 1
+type TasksRow = {
+    user: string
+    tasksCompleted: number
+}
 
-export function CompletedTasksPage() {
-    const { selectedSprintId } = useSprint()
-    const sprintId = selectedSprintId ?? 1
+type HoursRow = {
+    user: string
+    hours: number
+}
 
-    const { sprintTasks, allTimeTasks, loading } = useCompletedTasksData(
-        PROJECT_ID,
-        sprintId
+export function TasksHoursDashboardPage() {
+    const { sprints } = useSprint()
+
+    const [selectedSprint, setSelectedSprint] = useState<number | 'all'>('all')
+
+    const [selectedDeveloper, setSelectedDeveloper] = useState<string>('all')
+
+    /*
+        TODO:
+        Replace these with your real hook
+    */
+    const tasksData: TasksRow[] = []
+    const hoursData: HoursRow[] = []
+
+    const developers = useMemo(() => {
+        return Array.from(
+            new Set([
+                ...tasksData.map((x) => x.user),
+                ...hoursData.map((x) => x.user),
+            ])
+        )
+    }, [tasksData, hoursData])
+
+    const filteredTasks = useMemo(() => {
+        if (selectedDeveloper === 'all') return tasksData
+
+        return tasksData.filter((t) => t.user === selectedDeveloper)
+    }, [tasksData, selectedDeveloper])
+
+    const filteredHours = useMemo(() => {
+        if (selectedDeveloper === 'all') return hoursData
+
+        return hoursData.filter((h) => h.user === selectedDeveloper)
+    }, [hoursData, selectedDeveloper])
+
+    const completedTasks = useMemo(
+        () =>
+            filteredTasks.reduce(
+                (sum, row) => sum + (row.tasksCompleted ?? 0),
+                0
+            ),
+        [filteredTasks]
     )
 
-    const totalSprintCompleted = useMemo(
-        () => sprintTasks.reduce((sum, u) => sum + (u.tasksCompleted ?? 0), 0),
-        [sprintTasks]
+    const totalHours = useMemo(
+        () => filteredHours.reduce((sum, row) => sum + (row.hours ?? 0), 0),
+        [filteredHours]
     )
 
     const avgTasks = useMemo(() => {
-        if (!sprintTasks.length) return 0
-        return Math.round(totalSprintCompleted / sprintTasks.length)
-    }, [sprintTasks, totalSprintCompleted])
+        if (!filteredTasks.length) return 0
 
-    if (loading) {
-        return (
-            <div className="p-4 text-muted">Cargando tareas completadas...</div>
-        )
-    }
+        return Math.round(completedTasks / filteredTasks.length)
+    }, [completedTasks, filteredTasks])
+
+    const avgHours = useMemo(() => {
+        if (!filteredHours.length) return 0
+
+        return Math.round(totalHours / filteredHours.length)
+    }, [totalHours, filteredHours])
+
+    const medianTasks = useMemo(() => {
+        const values = filteredTasks
+            .map((x) => x.tasksCompleted ?? 0)
+            .sort((a, b) => a - b)
+
+        if (!values.length) return 0
+
+        const mid = Math.floor(values.length / 2)
+
+        return values.length % 2
+            ? values[mid]
+            : Math.round((values[mid - 1] + values[mid]) / 2)
+    }, [filteredTasks])
+
+    const medianHours = useMemo(() => {
+        const values = filteredHours
+            .map((x) => x.hours ?? 0)
+            .sort((a, b) => a - b)
+
+        if (!values.length) return 0
+
+        const mid = Math.floor(values.length / 2)
+
+        return values.length % 2
+            ? values[mid]
+            : Math.round((values[mid - 1] + values[mid]) / 2)
+    }, [filteredHours])
+
+    const rows = useMemo(() => {
+        return developers.map((developer) => {
+            const taskRow = tasksData.find((t) => t.user === developer)
+
+            const hourRow = hoursData.find((h) => h.user === developer)
+
+            return {
+                developer,
+                tasks: taskRow?.tasksCompleted ?? 0,
+                hours: hourRow?.hours ?? 0,
+            }
+        })
+    }, [developers, tasksData, hoursData])
 
     return (
         <div className="space-y-8">
-            {/* Header */}
+            {/* HEADER */}
+
             <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
-                    <HiOutlineCheckCircle className="w-6 h-6" />
+                    <HiOutlineTrendingUp className="w-6 h-6" />
                 </div>
+
                 <div>
-                    <h1 className="text-2xl font-semibold text-[var(--color-text)]">
-                        Tareas Completadas
+                    <h1 className="text-2xl font-semibold">
+                        Análisis de Tasks / Hours
                     </h1>
+
                     <p className="text-sm text-muted">
-                        Desempeño por desarrollador en el sprint actual
+                        Dashboard ejecutivo de productividad
                     </p>
                 </div>
             </div>
 
+            {/* FILTERS */}
+
+            <div className="flex gap-4">
+                <select
+                    value={selectedSprint}
+                    onChange={(e) =>
+                        setSelectedSprint(
+                            e.target.value === 'all'
+                                ? 'all'
+                                : Number(e.target.value)
+                        )
+                    }
+                    className="rounded-lg border border-default px-3 py-2"
+                >
+                    <option value="all">All Sprints</option>
+
+                    {sprints.map((s) => (
+                        <option key={s.id} value={s.id}>
+                            {s.name}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    value={selectedDeveloper}
+                    onChange={(e) => setSelectedDeveloper(e.target.value)}
+                    className="rounded-lg border border-default px-3 py-2"
+                >
+                    <option value="all">All Devs</option>
+
+                    {developers.map((d) => (
+                        <option key={d} value={d}>
+                            {d}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
             {/* KPIs */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-5">
                 <KpiCard
-                    title="Total Completadas"
-                    value={totalSprintCompleted}
-                    subtitle="Sprint actual"
+                    title="Completed Tasks"
+                    value={completedTasks}
+                    subtitle="Selected filters"
                     icon={HiOutlineCheckCircle}
                     color="data-2"
                 />
+
                 <KpiCard
-                    title="Promedio por Dev"
+                    title="Total Real Hours"
+                    value={totalHours}
+                    subtitle="Selected filters"
+                    icon={HiOutlineClock}
+                    color="data-3"
+                />
+
+                <KpiCard
+                    title="Avg Task/Dev"
                     value={avgTasks}
-                    subtitle="Sprint actual"
-                    icon={HiOutlineTrendingUp}
+                    subtitle="Selected filters"
+                    icon={HiOutlineUserGroup}
                     color="data-1"
                 />
+
                 <KpiCard
-                    title="Desarrolladores"
-                    value={sprintTasks.length}
-                    subtitle="Con tareas completadas"
-                    icon={HiOutlineUserGroup}
+                    title="Avg Hours/Dev"
+                    value={avgHours}
+                    subtitle="Selected filters"
+                    icon={HiOutlineTrendingUp}
+                    color="data-4"
+                />
+
+                <KpiCard
+                    title="Median Task/Dev"
+                    value={medianTasks}
+                    subtitle="Selected filters"
+                    icon={HiOutlineCheckCircle}
+                    color="data-2"
+                />
+
+                <KpiCard
+                    title="Median Hours/Dev"
+                    value={medianHours}
+                    subtitle="Selected filters"
+                    icon={HiOutlineClock}
                     color="data-3"
                 />
             </div>
 
-            {/* Sprint breakdown table */}
-            <Section
-                title="Por desarrollador — Sprint actual"
-                icon={HiOutlineCheckCircle}
-            >
-                <Table>
-                    <THead>
-                        <TRow>
-                            <TH>#</TH>
-                            <TH>Desarrollador</TH>
-                            <TH className="text-right">Tareas completadas</TH>
-                            <TH className="text-right">% del total</TH>
-                        </TRow>
-                    </THead>
-                    <tbody>
-                        {[...sprintTasks]
-                            .sort(
-                                (a, b) =>
-                                    (b.tasksCompleted ?? 0) -
-                                    (a.tasksCompleted ?? 0)
-                            )
-                            .map((row, i) => {
-                                const pct =
-                                    totalSprintCompleted > 0
-                                        ? Math.round(
-                                              ((row.tasksCompleted ?? 0) /
-                                                  totalSprintCompleted) *
-                                                  100
-                                          )
-                                        : 0
-                                return (
-                                    <TRow key={row.user}>
-                                        <TD className="text-muted">{i + 1}</TD>
-                                        <TD className="font-medium">
-                                            {row.user}
-                                        </TD>
-                                        <TD className="text-right font-semibold text-[var(--color-data-2)]">
-                                            {row.tasksCompleted ?? 0}
-                                        </TD>
-                                        <TD className="text-right text-muted">
-                                            {pct}%
-                                        </TD>
-                                    </TRow>
-                                )
-                            })}
-                        {sprintTasks.length === 0 && (
-                            <TRow>
-                                <TD
-                                    className="text-muted text-center"
-                                    colSpan={4}
-                                >
-                                    No hay datos para este sprint.
-                                </TD>
-                            </TRow>
-                        )}
-                    </tbody>
-                </Table>
-            </Section>
+            {/* DETAIL TABLE */}
 
-            {/* All-time breakdown table */}
             <Section
-                title="Histórico — Todos los sprints"
-                icon={HiOutlineTrendingUp}
+                title="Detalle por desarrollador"
+                icon={HiOutlineUserGroup}
             >
                 <Table>
                     <THead>
                         <TRow>
-                            <TH>#</TH>
-                            <TH>Desarrollador</TH>
-                            <TH className="text-right">Total completadas</TH>
+                            <TH>Developer</TH>
+                            <TH className="text-right">Tasks</TH>
+                            <TH className="text-right">Hours</TH>
                         </TRow>
                     </THead>
+
                     <tbody>
-                        {[...allTimeTasks]
-                            .sort(
-                                (a, b) =>
-                                    (b.tasksCompleted ?? 0) -
-                                    (a.tasksCompleted ?? 0)
-                            )
-                            .map((row, i) => (
-                                <TRow key={row.user}>
-                                    <TD className="text-muted">{i + 1}</TD>
-                                    <TD className="font-medium">{row.user}</TD>
-                                    <TD className="text-right font-semibold text-[var(--color-data-1)]">
-                                        {row.tasksCompleted ?? 0}
-                                    </TD>
-                                </TRow>
-                            ))}
-                        {allTimeTasks.length === 0 && (
-                            <TRow>
-                                <TD
-                                    className="text-muted text-center"
-                                    colSpan={3}
-                                >
-                                    No hay datos históricos disponibles.
-                                </TD>
+                        {rows.map((row) => (
+                            <TRow key={row.developer}>
+                                <TD>{row.developer}</TD>
+
+                                <TD className="text-right">{row.tasks}</TD>
+
+                                <TD className="text-right">{row.hours}</TD>
                             </TRow>
-                        )}
+                        ))}
                     </tbody>
                 </Table>
             </Section>
