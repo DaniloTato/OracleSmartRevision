@@ -12,7 +12,7 @@ import { Dashboard } from './pages/Dashboard'
 import { TaskManager } from './pages/TaskManager'
 import { AiReportsPage } from './pages/AiReportsPage'
 import { LoginPage } from './pages/LoginPage'
-import { CompletedTasksPage } from './pages/CompletedTasksPage'
+import { TasksHoursDashboardPage } from './pages/TasksHoursDashboardPage'
 
 function App() {
     return (
@@ -40,7 +40,7 @@ function App() {
                         <Route path="ai-reports" element={<AiReportsPage />} />
                         <Route
                             path="completed-tasks"
-                            element={<CompletedTasksPage />}
+                            element={<TasksHoursDashboardPage />}
                         />
                     </Route>
 
