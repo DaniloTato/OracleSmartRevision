@@ -1,6 +1,5 @@
 import type { Sprint } from '../types'
+import { apiFetch } from './client'
 
-export async function getSprints(projectId: number): Promise<Sprint[]> {
-    const res = await fetch(`/api/projects/${projectId}/sprints`)
-    return res.json()
-}
+export const getSprints = (projectId: number) =>
+    apiFetch<Sprint[]>(`/projects/${projectId}/sprints`)
