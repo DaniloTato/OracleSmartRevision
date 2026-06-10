@@ -8,16 +8,24 @@ export interface LoginResponse {
     roleId: number
 }
 
-export async function login(email: string, password: string): Promise<LoginResponse> {
+export async function login(
+    email: string,
+    password: string
+): Promise<LoginResponse> {
     const res = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ email, password }),
     })
 
     if (!res.ok) {
-        if (res.status === 401) throw new Error('Invalid email or password.')
-        throw new Error('Something went wrong. Please try again.')
+        if (res.status === 401) {
+            throw new Error('Invalid email or password.')
+        }
+
+        throw new Error('Something went wrong.')
     }
 
     return res.json()

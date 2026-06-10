@@ -1,10 +1,10 @@
-import type { DelayReport } from "../types/DelayReport"
+import { apiFetch } from './client'
+import type { DelayReport } from '../types/DelayReport'
 
 export async function fetchReports(): Promise<DelayReport[]> {
-    const res = await fetch(`/api/overdue-reports`)
-    const data = await res.json()
+    const data = await apiFetch<any[]>('/overdue-reports')
 
-    return data.map((r: any) => ({
+    return data.map((r) => ({
         id: r.id,
         taskTitle: r.taskTitle,
         developerName: r.developerName,
@@ -13,7 +13,7 @@ export async function fetchReports(): Promise<DelayReport[]> {
         reason: r.reason,
         aiSummary: r.aiSummary,
         aiCategory: r.aiCategory,
-        severity: r.severity.toLowerCase(), // 👈 importante
+        severity: r.severity.toLowerCase(),
         delayDays: r.delayDays,
         impactLevel: r.impactLevel.toLowerCase(),
         description: r.description,
