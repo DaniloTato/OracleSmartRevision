@@ -246,22 +246,12 @@ export function TaskManager() {
     return (
         <div className="space-y-6">
             <Section>
-                <div className="space-y-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <h1 className="text-2xl font-semibold">
-                            Gestor de Tareas
-                        </h1>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h1 className="text-2xl font-semibold">Gestor de Tareas</h1>
 
-                        <Button onClick={() => setCreateModalOpen(true)}>
-                            Crear Tarea
-                        </Button>
-                    </div>
-
-                    <SemanticSearch
-                        projectId={projectId}
-                        onResultsChange={setSemanticMatches}
-                        placeholder="Search tasks semantically..."
-                    />
+                    <Button onClick={() => setCreateModalOpen(true)}>
+                        Crear Tarea
+                    </Button>
                 </div>
             </Section>
 
@@ -274,14 +264,21 @@ export function TaskManager() {
                     <ChartPlaceholder message="No hay tareas aún" />
                 ) : (
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
-                        <TeamBoard
-                            tasks={boardTasksBySprint}
-                            members={members}
-                            onUpdateStatus={handleUpdateTaskStatus}
-                            onDeleteTask={handleAskDeleteConfirmation}
-                            bestMatchId={bestMatchId}
-                            semanticSet={semanticSet}
-                        />
+                        <div className="space-y-4">
+                            <SemanticSearch
+                                projectId={projectId}
+                                onResultsChange={setSemanticMatches}
+                                placeholder="Search tasks semantically..."
+                            />
+                            <TeamBoard
+                                tasks={boardTasksBySprint}
+                                members={members}
+                                onUpdateStatus={handleUpdateTaskStatus}
+                                onDeleteTask={handleAskDeleteConfirmation}
+                                bestMatchId={bestMatchId}
+                                semanticSet={semanticSet}
+                            />
+                        </div>
                     </DndContext>
                 )}
             </Section>
