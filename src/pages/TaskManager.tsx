@@ -5,7 +5,6 @@ import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { CreateTaskDto, Task, TaskStatus, TaskType } from '../types/Task'
 import type { Member } from '../types'
 
-import { TaskPool } from '../components/task-manager/TaskPool'
 import { TeamBoard } from '../components/task-manager/TeamBoard'
 import { CreateTaskModal } from '../components/task-manager/CreateTaskModal'
 
@@ -14,7 +13,7 @@ import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { ChartPlaceholder } from '../components/ui/ChartPlaceholder'
 
-import { filterPoolTasks, filterBoardTasks } from '../utils/taskManager/filters'
+import { filterBoardTasks } from '../utils/taskManager/filters'
 
 import { useSprint } from '../context/SprintContext'
 import { loadTaskManagerData } from '../services/taskManager'
@@ -61,9 +60,14 @@ export function TaskManager() {
 
     const [searchParams] = useSearchParams()
     const filterUnassignedFromUrl = searchParams.get('filter') === 'unassigned'
-    const highlightedTaskId = searchParams.get('taskId')
-        ? Number(searchParams.get('taskId'))
-        : undefined
+
+    const bestMatchId = semanticMatches?.[0] ?? null
+
+    const TOP_N = 3
+
+    const semanticSet = useMemo(() => {
+        return new Set((semanticMatches ?? []).slice(0, TOP_N))
+    }, [semanticMatches])
 
     /* =========================
      LOAD DATA
@@ -202,7 +206,6 @@ export function TaskManager() {
 
             try {
                 const created = await createTask(projectId, payload)
-                await refreshEmbeddings()
 
                 if (created) {
                     setTasks((prev) => [...prev, created])
@@ -221,17 +224,11 @@ export function TaskManager() {
   ========================== */
 
     const searchedTasks = useMemo(() => {
-        if (semanticMatches === null) {
-            return tasks
-        }
+        if (!semanticMatches) return tasks
 
-        return tasks.filter((task) => semanticMatches.includes(task.id))
+        const set = new Set(semanticMatches)
+        return tasks.filter((task) => set.has(task.id))
     }, [tasks, semanticMatches])
-
-    const poolTasks = useMemo(
-        () => filterPoolTasks(searchedTasks, filters),
-        [searchedTasks, filters]
-    )
 
     const boardTasksBySprint = useMemo(
         () => filterBoardTasks(searchedTasks, filters),
@@ -249,22 +246,12 @@ export function TaskManager() {
     return (
         <div className="space-y-6">
             <Section>
-                <div className="space-y-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <h1 className="text-2xl font-semibold">
-                            Gestor de Tareas
-                        </h1>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h1 className="text-2xl font-semibold">Gestor de Tareas</h1>
 
-                        <Button onClick={() => setCreateModalOpen(true)}>
-                            Crear Tarea
-                        </Button>
-                    </div>
-
-                    <SemanticSearch
-                        projectId={projectId}
-                        onResultsChange={setSemanticMatches}
-                        placeholder="Search tasks semantically..."
-                    />
+                    <Button onClick={() => setCreateModalOpen(true)}>
+                        Crear Tarea
+                    </Button>
                 </div>
             </Section>
 
@@ -277,24 +264,19 @@ export function TaskManager() {
                     <ChartPlaceholder message="No hay tareas aún" />
                 ) : (
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
-                        <div className="grid grid-cols-1 xl:grid-cols-[minmax(280px,360px)_1fr] gap-4">
-                            <TaskPool
-                                tasks={poolTasks}
-                                sprints={sprints}
-                                filters={filters}
-                                onFiltersChange={setFilters}
-                                onUpdateStatus={handleUpdateTaskStatus}
-                                onDeleteTask={handleAskDeleteConfirmation}
-                                poolId={POOL_ID}
-                                highlightedTaskId={highlightedTaskId}
+                        <div className="space-y-4">
+                            <SemanticSearch
+                                projectId={projectId}
+                                onResultsChange={setSemanticMatches}
+                                placeholder="Search tasks semantically..."
                             />
-
                             <TeamBoard
                                 tasks={boardTasksBySprint}
                                 members={members}
                                 onUpdateStatus={handleUpdateTaskStatus}
                                 onDeleteTask={handleAskDeleteConfirmation}
-                                highlightedTaskId={highlightedTaskId}
+                                bestMatchId={bestMatchId}
+                                semanticSet={semanticSet}
                             />
                         </div>
                     </DndContext>
