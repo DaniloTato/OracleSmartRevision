@@ -1,39 +1,58 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import type { TaskCardProps } from './types.ts'
 import { TYPE_LABELS, STATUS_OPTIONS } from './taskCard.config'
 
+interface ExtendedTaskCardProps extends TaskCardProps {
+    isLate?: boolean
+    isSemanticMatch?: boolean
+    isBestMatch?: boolean
+}
+
 export function TaskCard({
     task,
     onUpdateStatus,
     onDelete,
-    isHighlighted,
-}: TaskCardProps) {
+    isLate = false,
+    isSemanticMatch = false,
+    isBestMatch = false,
+}: ExtendedTaskCardProps) {
     const cardRef = useRef<HTMLDivElement>(null)
 
     const { attributes, listeners, setNodeRef, transform, isDragging } =
         useDraggable({ id: task.id, data: { task } })
 
+    const late = isLate && task.status !== 'closed'
+    const semantic = isSemanticMatch
+    const best = isBestMatch
+
     useEffect(() => {
-        if (isHighlighted) {
+        if (best) {
             cardRef.current?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'nearest',
             })
         }
-    }, [isHighlighted])
+    }, [best])
 
-    const style = transform
-        ? { transform: CSS.Translate.toString(transform) }
-        : undefined
+    const style = useMemo(() => {
+        const base = transform
+            ? { transform: CSS.Translate.toString(transform) }
+            : {}
+
+        const semanticStyle =
+            semantic && !best && !late
+                ? {
+                      backgroundColor: 'rgba(59, 130, 246, 0.04)', // más tenue
+                      boxShadow: '0 0 0 1px rgba(59,130,246,0.08)', // más sutil
+                  }
+                : {}
+
+        return { ...base, ...semanticStyle }
+    }, [transform, semantic, best, late])
 
     const typeLabel = TYPE_LABELS[task.type] ?? 'Feature'
-
-    const isOverdue = task.dueDate && new Date(task.dueDate).getTime() < Date.now()
-
-    const formattedDueDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : null
-    const isLate = isOverdue && task.status !== 'closed'
 
     return (
         <div
@@ -45,35 +64,63 @@ export function TaskCard({
             {...listeners}
             {...attributes}
             className={`
-               rounded-lg border p-3 shadow-sm text-left
-               bg-[var(--color-surface)]
-               text-[var(--color-text)]
-               cursor-grab active:cursor-grabbing touch-none
-               ${isDragging ? 'opacity-50 shadow-md' : ''}
-               ${
-                    isHighlighted
-                    ? 'ring-2 border-[var(--color-primary)] ring-[var(--color-primary)]'
-                    : ''
-               }
-               ${
-                    isLate
-                    ? 'border-[var(--color-danger)] bg-[rgba(220,38,38,0.05)]'
-                    : 'border-[var(--color-border)]'
-               }
-               `}
-        >
-            {/* Title */}
-            <div className="flex justify-between items-center gap-2">
-               <p className="text-sm font-medium truncate">{task.title}</p>
+                rounded-lg border p-3 shadow-sm text-left
+                bg-[var(--color-surface)]
+                text-[var(--color-text)]
+                cursor-grab active:cursor-grabbing touch-none
+                transition-all duration-200
 
-               {isLate && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-medium">
+                ${isDragging ? 'opacity-50 shadow-md' : ''}
+
+                /* =========================
+                   BORDER PRIORITY
+                ========================== */
+                ${
+                    late
+                        ? 'border-[var(--color-danger)]'
+                        : best
+                          ? 'border-blue-500'
+                          : semantic
+                            ? 'border-blue-400/60'
+                            : 'border-[var(--color-border)]'
+                }
+
+                /* =========================
+                   RING LAYER
+                ========================== */
+                ${semantic ? 'ring-2 ring-blue-400/30' : ''}
+                ${best ? 'ring-4 ring-blue-500/40 scale-[1.02]' : ''}
+
+                /* =========================
+                   BACKGROUND PRIORITY
+                ========================== */
+                ${late ? 'bg-[rgba(220,38,38,0.05)]' : best ? 'bg-blue-300/60' : ''}
+            `}
+        >
+            {/* HEADER */}
+            <div className="flex justify-between items-center gap-2">
+                <p className="text-sm font-medium truncate">{task.title}</p>
+
+                {late && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-medium">
                         Late
-                  </span>
-               )}
+                    </span>
+                )}
+
+                {best && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-600 text-white font-medium">
+                        Best
+                    </span>
+                )}
+
+                {semantic && !best && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 font-medium">
+                        Match
+                    </span>
+                )}
             </div>
 
-            {/* Meta */}
+            {/* META */}
             <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-[var(--color-text-muted)]">
                 <span>{typeLabel}</span>
 
@@ -85,14 +132,14 @@ export function TaskCard({
                     <span>Real: {task.actualHours}</span>
                 )}
 
-                {formattedDueDate && (
+                {task.dueDate && (
                     <span>
-                        Fecha Límite: {formattedDueDate}
+                        Due: {new Date(task.dueDate).toLocaleDateString()}
                     </span>
                 )}
             </div>
 
-            {/* Actions */}
+            {/* ACTIONS */}
             <div className="mt-2 flex justify-between items-center">
                 {onUpdateStatus ? (
                     <select
@@ -102,10 +149,7 @@ export function TaskCard({
                         }
                         onClick={(e) => e.stopPropagation()}
                         onPointerDown={(e) => e.stopPropagation()}
-                        className="text-xs border rounded px-2 py-1
-                        bg-[var(--color-surface)]
-                        border-[var(--color-border)]
-                        "
+                        className="text-xs border rounded px-2 py-1 bg-[var(--color-surface)] border-[var(--color-border)]"
                     >
                         {STATUS_OPTIONS.map((opt) => (
                             <option key={opt.value} value={opt.value}>
