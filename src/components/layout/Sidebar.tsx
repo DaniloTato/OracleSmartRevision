@@ -3,7 +3,6 @@ import {
     HiOutlineViewGrid,
     HiOutlineClipboardList,
     HiOutlineSparkles,
-    HiOutlineCheckCircle,
 } from 'react-icons/hi'
 
 const navItems = [
@@ -17,11 +16,6 @@ const navItems = [
         to: '/ai-reports',
         label: 'Reportes de Tareas Atrasadas',
         icon: HiOutlineSparkles,
-    },
-    {
-        to: '/completed-tasks',
-        label: 'Tareas Completadas',
-        icon: HiOutlineCheckCircle,
     },
 ]
 

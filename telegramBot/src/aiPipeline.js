@@ -1,3 +1,4 @@
+import { apiClient } from './apiClient.js'
 import axios from 'axios'
 
 const API_BASE_URL = process.env.API_BASE_URL
@@ -14,7 +15,7 @@ export async function processOverdueTask(task, config, reason) {
         ai,
     })
 
-    await axios.post(`${apiUrl}/overdue-reports`, delayReport)
+    await apiClient.post(`${apiUrl}/overdue-reports`, delayReport)
 }
 
 /**
@@ -65,7 +66,11 @@ function normalizeImpact(value) {
 function normalizeCategory(value) {
     const v = (value || '').toLowerCase()
 
-    if (['blocked', 'underestimated', 'external_dependency', 'other'].includes(v)) {
+    if (
+        ['blocked', 'underestimated', 'external_dependency', 'other'].includes(
+            v
+        )
+    ) {
         return v
     }
 
