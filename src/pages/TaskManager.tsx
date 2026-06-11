@@ -19,6 +19,9 @@ import { filterPoolTasks, filterBoardTasks } from '../utils/taskManager/filters'
 import { useSprint } from '../context/SprintContext'
 import { loadTaskManagerData } from '../services/taskManager'
 import { getUpdatedAssignee } from '../utils/taskManager/dnd'
+import { SemanticSearch } from '../components/task-manager/SemanticSearch'
+
+import { reindexEmbeddings } from '../api/vectorSearchApi'
 
 import {
     getTasks,
@@ -35,6 +38,9 @@ export function TaskManager() {
     const [tasks, setTasks] = useState<Task[]>([])
     const [members, setMembers] = useState<Member[]>([])
     const [sprints, setSprints] = useState<any[]>([])
+    const [semanticMatches, setSemanticMatches] = useState<number[] | null>(
+        null
+    )
 
     const [loading, setLoading] = useState(true)
 
@@ -93,6 +99,14 @@ export function TaskManager() {
     const loadTasks = useCallback(async () => {
         const tasksRes = await getTasks(projectId)
         setTasks(tasksRes)
+    }, [projectId])
+
+    const refreshEmbeddings = useCallback(async () => {
+        try {
+            await reindexEmbeddings(projectId)
+        } catch (err) {
+            console.error('EMBEDDING REINDEX FAILED', err)
+        }
     }, [projectId])
 
     /* =========================
@@ -159,6 +173,7 @@ export function TaskManager() {
             try {
                 await deleteTask(taskId)
                 await loadTasks()
+                await refreshEmbeddings()
             } catch (err) {
                 console.error('DELETE FAILED:', err)
             }
@@ -178,15 +193,16 @@ export function TaskManager() {
                 featureId: task.featureId,
                 assigneeId: task.assigneeId,
                 isVisible: task.isVisible,
-                dueDate: task.dueDate
+                dueDate: task.dueDate,
             }
 
-            console.log("payload due date", task.dueDate)
+            console.log('payload due date', task.dueDate)
 
             setCreateModalOpen(false)
 
             try {
                 const created = await createTask(projectId, payload)
+                await refreshEmbeddings()
 
                 if (created) {
                     setTasks((prev) => [...prev, created])
@@ -204,14 +220,22 @@ export function TaskManager() {
      FILTERS
   ========================== */
 
+    const searchedTasks = useMemo(() => {
+        if (semanticMatches === null) {
+            return tasks
+        }
+
+        return tasks.filter((task) => semanticMatches.includes(task.id))
+    }, [tasks, semanticMatches])
+
     const poolTasks = useMemo(
-        () => filterPoolTasks(tasks, filters),
-        [tasks, filters]
+        () => filterPoolTasks(searchedTasks, filters),
+        [searchedTasks, filters]
     )
 
     const boardTasksBySprint = useMemo(
-        () => filterBoardTasks(tasks, filters),
-        [tasks, filters]
+        () => filterBoardTasks(searchedTasks, filters),
+        [searchedTasks, filters]
     )
 
     const sensors = useSensors(
@@ -225,12 +249,22 @@ export function TaskManager() {
     return (
         <div className="space-y-6">
             <Section>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h1 className="text-2xl font-semibold">Gestor de Tareas</h1>
+                <div className="space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <h1 className="text-2xl font-semibold">
+                            Gestor de Tareas
+                        </h1>
 
-                    <Button onClick={() => setCreateModalOpen(true)}>
-                        Crear Tarea
-                    </Button>
+                        <Button onClick={() => setCreateModalOpen(true)}>
+                            Crear Tarea
+                        </Button>
+                    </div>
+
+                    <SemanticSearch
+                        projectId={projectId}
+                        onResultsChange={setSemanticMatches}
+                        placeholder="Search tasks semantically..."
+                    />
                 </div>
             </Section>
 

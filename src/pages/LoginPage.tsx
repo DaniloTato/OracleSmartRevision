@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent } from '../components/ui/Card'
-import { Label } from '../components/ui/Label'
+import { TextInput } from '../components/ui/TextInput'
 
 export function LoginPage() {
     const { login } = useAuth()
@@ -58,37 +58,21 @@ export function LoginPage() {
                                 </div>
                             )}
 
-                            {/* Email */}
-                            <div>
-                                <Label>Email</Label>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="you@example.com"
-                                    className="w-full px-3 py-2 text-sm text-[var(--color-text)] bg-surface border border-default rounded-lg outline-none focus:border-primary transition-colors"
-                                />
-                            </div>
+                            <TextInput
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={setEmail}
+                                placeholder="you@example.com"
+                            />
 
-                            {/* Password */}
-                            <div>
-                                <Label>Password</Label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    autoComplete="current-password"
-                                    required
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
-                                    placeholder="••••••••"
-                                    className="w-full px-3 py-2 text-sm text-[var(--color-text)] bg-surface border border-default rounded-lg outline-none focus:border-primary transition-colors"
-                                />
-                            </div>
+                            <TextInput
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={setPassword}
+                                placeholder="••••••••"
+                            />
 
                             {/* Submit */}
                             <Button
