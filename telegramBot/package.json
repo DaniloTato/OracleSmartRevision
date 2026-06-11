@@ -5,9 +5,9 @@
     "main": "src/bot.js",
     "type": "module",
     "scripts": {
-      "server": "node src/server.js",
-      "bot": "node src/bot.js",
-      "dev": "concurrently \"npm run server\" \"npm run bot\""
+        "server": "node src/server.js",
+        "bot": "node src/bot.js",
+        "dev": "concurrently \"npm run server\" \"npm run bot\""
     },
     "keywords": [],
     "author": "",

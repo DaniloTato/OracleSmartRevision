@@ -8,11 +8,10 @@ import { SprintProvider } from './context/SprintContext'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import { MainLayout } from './components/layout/MainLayout'
-import { Dashboard } from './pages/Dashboard'
 import { TaskManager } from './pages/TaskManager'
 import { AiReportsPage } from './pages/AiReportsPage'
 import { LoginPage } from './pages/LoginPage'
-import { TasksHoursDashboardPage } from './pages/TasksHoursDashboardPage'
+import { UnifiedDashboard } from './pages/UnifiedDashboard'
 
 function App() {
     return (
@@ -35,13 +34,12 @@ function App() {
                             index
                             element={<Navigate to="/dashboard" replace />}
                         />
-                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route
+                            path="dashboard"
+                            element={<UnifiedDashboard />}
+                        />
                         <Route path="task-manager" element={<TaskManager />} />
                         <Route path="ai-reports" element={<AiReportsPage />} />
-                        <Route
-                            path="completed-tasks"
-                            element={<TasksHoursDashboardPage />}
-                        />
                     </Route>
 
                     <Route

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { apiClient } from './apiClient.js'
 import { processOverdueTask } from './aiPipeline.js'
 
 export function createCommands({
@@ -50,7 +50,7 @@ export function createCommands({
 
         users: async (msg) => {
             try {
-                const { data } = await axios.get(`${BASE_URL}/users`)
+                const { data } = await apiClient.get(`${BASE_URL}/users`)
 
                 const text = data
                     .map((u) => `ID:${u.id} - ${u.name}`)
@@ -64,7 +64,7 @@ export function createCommands({
 
         tasks: async (msg) => {
             try {
-                const { data } = await axios.get(
+                const { data } = await apiClient.get(
                     `${BASE_URL}/projects/${PROJECT_ID}/issues`,
                     {
                         params: {
@@ -97,7 +97,7 @@ export function createCommands({
 
         complete: async (msg, args) => {
             try {
-                await axios.patch(`${BASE_URL}/issues/${args[0]}`, {
+                await apiClient.patch(`${BASE_URL}/issues/${args[0]}`, {
                     status: 'closed',
                 })
 
@@ -109,7 +109,7 @@ export function createCommands({
 
         assign: async (msg, args) => {
             try {
-                await axios.patch(`${BASE_URL}/issues/${args[0]}`, {
+                await apiClient.patch(`${BASE_URL}/issues/${args[0]}`, {
                     assigneeId: parseInt(args[1]),
                 })
 
@@ -140,7 +140,7 @@ export function createCommands({
                     params.assignedTo = args[1]
                 }
 
-                const { data } = await axios.get(
+                const { data } = await apiClient.get(
                     `${BASE_URL}/projects/${PROJECT_ID}/issues`,
                     { params }
                 )
@@ -167,7 +167,7 @@ export function createCommands({
 
         status: async (msg, args) => {
             try {
-                await axios.patch(`${BASE_URL}/issues/${args[0]}`, {
+                await apiClient.patch(`${BASE_URL}/issues/${args[0]}`, {
                     status: args[1],
                 })
 
@@ -191,7 +191,7 @@ export function createCommands({
             }
 
             try {
-                const { data: task } = await axios.get(
+                const { data: task } = await apiClient.get(
                     `${BASE_URL}/issues/${taskId}`
                 )
 
@@ -224,17 +224,20 @@ export function createCommands({
             const chatId = msg.chat.id
 
             try {
-                await axios.post(`${BASE_URL}/projects/${PROJECT_ID}/issues`, {
-                    title: msg.text,
-                    description: '',
-                    type: 'BUG',
-                    status: 'closed',
-                    estimatedHours: 0,
-                    actualHours: 0,
-                    featureId: 2,
-                    assigneeId: DEFAULT_ASSIGNEE_ID,
-                    isVisible: true,
-                })
+                await apiClient.post(
+                    `${BASE_URL}/projects/${PROJECT_ID}/issues`,
+                    {
+                        title: msg.text,
+                        description: '',
+                        type: 'BUG',
+                        status: 'closed',
+                        estimatedHours: 0,
+                        actualHours: 0,
+                        featureId: 2,
+                        assigneeId: DEFAULT_ASSIGNEE_ID,
+                        isVisible: true,
+                    }
+                )
 
                 reply(chatId, 'Tarea creada')
             } catch {
@@ -250,7 +253,7 @@ export function createCommands({
             const taskId = state.taskId
 
             try {
-                const { data: task } = await axios.get(
+                const { data: task } = await apiClient.get(
                     `${BASE_URL}/issues/${taskId}`
                 )
 

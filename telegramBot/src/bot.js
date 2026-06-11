@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import TelegramBot from 'node-telegram-bot-api'
 
 import { createCommands } from './commands.js'
+import { startOverdueNotifier } from './scheduler.js'
 
 dotenv.config()
 
@@ -12,6 +13,8 @@ const AI_BASE_URL = process.env.AI_BASE_URL
 const PROJECT_ID = process.env.PROJECT_ID || 1
 const SPRINT_ID = 3
 const DEFAULT_ASSIGNEE_ID = 105
+
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID
 
 if (!TOKEN || !BASE_URL) {
     console.error('Faltan variables de entorno')
@@ -68,6 +71,8 @@ bot.on('message', async (msg) => {
     reply(chatId, 'No entendí ese mensaje 😅\nUsa /help para ver comandos.')
 })
 
+startOverdueNotifier(bot, ADMIN_CHAT_ID)
+
 bot.setMyCommands([
     {
         command: 'tasks',
@@ -93,6 +98,10 @@ bot.setMyCommands([
 
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled rejection:', err.message || err)
+})
+
+bot.on('message', (msg) => {
+    console.log('CHAT ID:', msg.chat.id)
 })
 
 console.log('Bot listo')
