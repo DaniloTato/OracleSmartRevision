@@ -1,11 +1,10 @@
 /*
-* Modal to create a new task. Submitting adds to pool or to a person if "Asignar a" is set.
-*/
+ * Modal to create a new task. Submitting adds to pool or to a person if "Asignar a" is set.
+ */
 
 import { useState } from 'react'
 import type { CreateTaskDto, TaskType } from '../../types/Task'
 import type { Sprint, Member } from '../../types'
-import { useSprint } from '../../context/SprintContext'
 import type { Feature } from '../../types'
 import { getFeaturesBySprint } from '../../api/taskManagerApi'
 import { useEffect } from 'react'
@@ -15,6 +14,7 @@ interface CreateTaskModalProps {
     members: Member[]
     onClose: () => void
     onSubmit: (task: CreateTaskDto) => void
+    selectedSprintId: number
 }
 
 const TIPO_OPTIONS: TaskType[] = ['TASK', 'BUG', 'TRAINING']
@@ -28,9 +28,8 @@ export function CreateTaskModal({
     members,
     onClose,
     onSubmit,
+    selectedSprintId,
 }: CreateTaskModalProps) {
-    const { selectedSprintId } = useSprint()
-
     const [features, setFeatures] = useState<Feature[]>([])
     const [featureId, setFeatureId] = useState<number | null>(null)
 
@@ -74,7 +73,7 @@ export function CreateTaskModal({
             actualHours: 0,
             isVisible: true,
             featureId,
-            dueDate: dueDate ? new Date(dueDate).toISOString() : undefined
+            dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
         })
     }
 
@@ -167,13 +166,13 @@ export function CreateTaskModal({
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
-                           Fecha límite
+                            Fecha límite
                         </label>
                         <input
-                           type="date"
-                           value={dueDate}
-                           onChange={(e) => setDueDate(e.target.value)}
-                           className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-surface)]"
+                            type="date"
+                            value={dueDate}
+                            onChange={(e) => setDueDate(e.target.value)}
+                            className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-surface)]"
                         />
                     </div>
                     <div>

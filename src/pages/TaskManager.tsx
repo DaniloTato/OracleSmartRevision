@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import type { DragEndEvent } from '@dnd-kit/core'
 
 import type { CreateTaskDto, Task, TaskStatus, TaskType } from '../types/Task'
-import type { Member } from '../types'
+import type { Member, Sprint } from '../types'
 
 import { TeamBoard } from '../components/task-manager/TeamBoard'
 import { CreateTaskModal } from '../components/task-manager/CreateTaskModal'
@@ -15,10 +16,11 @@ import { ChartPlaceholder } from '../components/ui/ChartPlaceholder'
 
 import { filterBoardTasks } from '../utils/taskManager/filters'
 
-import { useSprint } from '../context/SprintContext'
 import { loadTaskManagerData } from '../services/taskManager'
 import { getUpdatedAssignee } from '../utils/taskManager/dnd'
 import { SemanticSearch } from '../components/task-manager/SemanticSearch'
+
+import { Select } from '../components/ui/Select'
 
 import { reindexEmbeddings } from '../api/vectorSearchApi'
 
@@ -36,7 +38,7 @@ export function TaskManager() {
 
     const [tasks, setTasks] = useState<Task[]>([])
     const [members, setMembers] = useState<Member[]>([])
-    const [sprints, setSprints] = useState<any[]>([])
+    const [sprints, setSprints] = useState<Sprint[]>([])
     const [semanticMatches, setSemanticMatches] = useState<number[] | null>(
         null
     )
@@ -56,22 +58,35 @@ export function TaskManager() {
     const [closingTaskId, setClosingTaskId] = useState<number | null>(null)
     const [realHours, setRealHours] = useState<number>(0)
 
-    const { selectedSprintId } = useSprint()
-
     const [searchParams] = useSearchParams()
     const filterUnassignedFromUrl = searchParams.get('filter') === 'unassigned'
 
     const bestMatchId = semanticMatches?.[0] ?? null
 
-    const TOP_N = 3
+    const TOP_N = 5
 
     const semanticSet = useMemo(() => {
         return new Set((semanticMatches ?? []).slice(0, TOP_N))
     }, [semanticMatches])
 
+    const loadTasks = useCallback(async () => {
+        const tasksRes = await getTasks(projectId)
+        setTasks(tasksRes)
+    }, [projectId])
+
     /* =========================
      LOAD DATA
   ========================== */
+
+    useEffect(() => {
+        if (sprints.length > 0) {
+            setFilters((prev) => ({
+                ...prev,
+                sprintId: String(sprints[0].id),
+            }))
+        }
+    }, [sprints])
+
     useEffect(() => {
         async function load() {
             setLoading(true)
@@ -91,20 +106,6 @@ export function TaskManager() {
         load()
     }, [projectId])
 
-    useEffect(() => {
-        if (!selectedSprintId) return
-
-        setFilters((f) => ({
-            ...f,
-            sprintId: String(selectedSprintId),
-        }))
-    }, [selectedSprintId])
-
-    const loadTasks = useCallback(async () => {
-        const tasksRes = await getTasks(projectId)
-        setTasks(tasksRes)
-    }, [projectId])
-
     const refreshEmbeddings = useCallback(async () => {
         try {
             await reindexEmbeddings(projectId)
@@ -117,7 +118,7 @@ export function TaskManager() {
      DRAG & DROP
   ========================== */
     const handleDragEnd = useCallback(
-        async (event: any) => {
+        async (event: DragEndEvent) => {
             const { active, over } = event
             if (!over) return
 
@@ -182,7 +183,7 @@ export function TaskManager() {
                 console.error('DELETE FAILED:', err)
             }
         },
-        [loadTasks]
+        [loadTasks, refreshEmbeddings]
     )
 
     const handleCreateTask = useCallback(
@@ -216,7 +217,7 @@ export function TaskManager() {
                 console.error('CREATE TASK FAILED:', err)
             }
         },
-        [projectId, selectedSprintId, loadTasks]
+        [projectId, loadTasks]
     )
 
     /* =========================
@@ -260,6 +261,66 @@ export function TaskManager() {
             )}
 
             <Section>
+                <div className="flex items-center gap-8 flex-wrap">
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium">Sprint</label>
+
+                        <Select
+                            value={filters.sprintId}
+                            onChange={(value) =>
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    sprintId: value,
+                                }))
+                            }
+                            options={[
+                                {
+                                    value: '',
+                                    label: 'Todos los sprints',
+                                },
+                                ...sprints.map((sprint) => ({
+                                    value: String(sprint.id),
+                                    label: sprint.name,
+                                })),
+                            ]}
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium">Estado</label>
+
+                        <Select
+                            value={filters.estado}
+                            onChange={(value) =>
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    estado: value as '' | TaskStatus,
+                                }))
+                            }
+                            options={[
+                                {
+                                    value: '',
+                                    label: 'Todos los estados',
+                                },
+                                {
+                                    value: 'open',
+                                    label: 'Abiertas',
+                                },
+                                {
+                                    value: 'in_progress',
+                                    label: 'En progreso',
+                                },
+                                {
+                                    value: 'closed',
+                                    label: 'Cerradas',
+                                },
+                            ]}
+                        />
+                    </div>
+                </div>
+            </Section>
+
+            <Section>
                 {tasks.length === 0 ? (
                     <ChartPlaceholder message="No hay tareas aún" />
                 ) : (
@@ -289,6 +350,7 @@ export function TaskManager() {
                     members={members}
                     onClose={() => setCreateModalOpen(false)}
                     onSubmit={handleCreateTask}
+                    selectedSprintId={Number(filters.sprintId)}
                 />
             )}
 

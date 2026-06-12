@@ -1,11 +1,58 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { TaskManager } from './TaskManager'
-import { vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
+import { vi } from 'vitest'
+
+import { TaskManager } from './TaskManager'
 
 import * as taskService from '../services/taskManager'
 import * as api from '../api/taskManagerApi'
+
+import type { Task } from '../types/Task'
+import type { Member, Sprint } from '../types'
+import type { CreateTaskDto } from '../types/Task'
+
+const createTaskMock = (overrides: Partial<Task> = {}): Task => ({
+    id: 1,
+    projectId: 1,
+    sprintId: 1,
+    featureId: 1,
+
+    title: 'Task',
+    description: '',
+
+    status: 'open',
+    type: 'TASK',
+
+    assigneeId: null,
+
+    createdAt: '2026-01-01',
+    updatedAt: '2026-01-01',
+
+    estimatedHours: 0,
+    actualHours: 0,
+
+    isVisible: true,
+
+    ...overrides,
+})
+
+const createMemberMock = (overrides: Partial<Member> = {}): Member => ({
+    userId: 1,
+    name: 'Danilo',
+    role: 'PM',
+    ...overrides,
+})
+
+const createSprintMock = (overrides: Partial<Sprint> = {}): Sprint => ({
+    id: 1,
+    name: 'Sprint 1',
+    startDate: '2026-01-01',
+    endDate: '2026-01-15',
+    status: 'active',
+    projectId: 1,
+    ...overrides,
+})
 
 // ================= MOCKS =================
 
@@ -16,16 +63,20 @@ vi.mock('../context/SprintContext', () => ({
 
 // Mock filters to avoid altering task data during tests
 vi.mock('../utils/taskManager/filters', () => ({
-    filterPoolTasks: (tasks: any) => tasks,
-    filterBoardTasks: (tasks: any) => tasks,
+    filterPoolTasks: (tasks: Task[]) => tasks,
+    filterBoardTasks: (tasks: Task[]) => tasks,
 }))
 
 // Mock CreateTaskModal:
 // - We bypass UI complexity
 // - We directly trigger onSubmit with valid task data
 // - Ensures create flow can be tested deterministically
+interface MockCreateTaskModalProps {
+    onSubmit: (task: CreateTaskDto) => void
+}
+
 vi.mock('../components/task-manager/CreateTaskModal.tsx', () => ({
-    CreateTaskModal: ({ onSubmit }: any) => (
+    CreateTaskModal: ({ onSubmit }: MockCreateTaskModalProps) => (
         <div>
             <button
                 onClick={() =>
@@ -38,7 +89,6 @@ vi.mock('../components/task-manager/CreateTaskModal.tsx', () => ({
                         featureId: 1,
                         assigneeId: null,
                         isVisible: true,
-                        sprintId: 1,
                         description: '',
                     })
                 }
@@ -72,15 +122,29 @@ describe('TaskManager (Requirements)', () => {
     test('[TM-01] displays tasks assigned to each user in real-time', async () => {
         vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
             tasks: [
-                { id: 1, title: 'Task A', assignedTo: 'Danilo', sprintId: 1 },
-                { id: 2, title: 'Task B', assignedTo: 'Ana', sprintId: 1 },
+                createTaskMock({
+                    id: 1,
+                    title: 'Task A',
+                    assigneeId: 1,
+                }),
+                createTaskMock({
+                    id: 2,
+                    title: 'Task B',
+                    assigneeId: 2,
+                }),
             ],
             members: [
-                { iserId: 1, name: 'Danilo', role: 'PM' },
-                { iserId: 2, name: 'Ana', role: 'Backend dev' },
+                createMemberMock({
+                    userId: 1,
+                    name: 'Danilo',
+                }),
+                createMemberMock({
+                    userId: 2,
+                    name: 'Ana',
+                }),
             ],
-            sprints: [{ id: 1 }],
-        } as any)
+            sprints: [createSprintMock()],
+        })
 
         renderWithRouter(<TaskManager />)
 
@@ -99,26 +163,30 @@ describe('TaskManager (Requirements)', () => {
     test('[TM-02] updates UI when task state changes', async () => {
         vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
             tasks: [
-                {
-                    id: 1,
+                createTaskMock({
                     title: 'Task A',
-                    assignedTo: 'Danilo',
                     status: 'open',
-                    sprintId: 1,
-                },
+                }),
             ],
             members: [],
-            sprints: [{ id: 1 }],
-        } as any)
+            sprints: [createSprintMock()],
+        })
 
-        vi.mocked(api.updateTask).mockResolvedValue({} as any)
+        vi.mocked(api.updateTask).mockResolvedValue(
+            createTaskMock({
+                status: 'closed',
+            })
+        )
 
         renderWithRouter(<TaskManager />)
 
-        // simulate state change
-        await api.updateTask(1, { status: 'closed' })
+        await api.updateTask(1, {
+            status: 'closed',
+        })
 
-        expect(api.updateTask).toHaveBeenCalled()
+        expect(api.updateTask).toHaveBeenCalledWith(1, {
+            status: 'closed',
+        })
     })
 
     // =========================================================
@@ -131,24 +199,22 @@ describe('TaskManager (Requirements)', () => {
     test('[TM-03] completed tasks show required fields', async () => {
         vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
             tasks: [
-                {
-                    id: 1,
+                createTaskMock({
                     title: 'completed task',
                     status: 'closed',
-                    priority: 'media',
-                    type: 'TASK',
-                    sprintId: 1,
                     assigneeId: 1,
-                    createdAt: '2026-04-23',
-                    actualHours: 6,
                     estimatedHours: 5,
-                    isVisible: true,
-                    featureId: 1,
-                },
+                    actualHours: 6,
+                }),
             ],
-            members: [{ iserId: 1, name: 'Danilo', role: 'PM' }],
-            sprints: [{ id: 1 }],
-        } as any)
+            members: [
+                createMemberMock({
+                    userId: 1,
+                    name: 'Danilo',
+                }),
+            ],
+            sprints: [createSprintMock()],
+        })
 
         renderWithRouter(<TaskManager />)
 
@@ -165,20 +231,45 @@ describe('TaskManager (Requirements)', () => {
     // - Correct API call must be issued
     // =========================================================
     test('[TM-04] allows marking a task as completed', async () => {
+        vi.mocked(api.getTasks).mockResolvedValue([
+            createTaskMock({
+                id: 1,
+                status: 'closed',
+            }),
+        ])
         vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
-            tasks: [{ id: 1, title: 'Task A', status: 'open', sprintId: 1 }],
-            members: [],
-            sprints: [{ id: 1 }],
-        } as any)
-
-        vi.mocked(api.updateTask).mockResolvedValue({} as any)
-
+            tasks: [
+                createTaskMock({
+                    id: 1,
+                    title: 'Task A',
+                    status: 'open',
+                    assigneeId: 1,
+                }),
+            ],
+            members: [createMemberMock()],
+            sprints: [createSprintMock()],
+        })
+        vi.mocked(api.updateTask).mockResolvedValue(
+            createTaskMock({
+                id: 1,
+                status: 'closed',
+            })
+        )
         renderWithRouter(<TaskManager />)
+        const selects = await screen.findAllByRole('combobox')
+        const taskStatusSelect = selects[2]
+        await userEvent.selectOptions(taskStatusSelect, 'closed')
+        const confirmButton = await screen.findByRole('button', {
+            name: /confirmar/i,
+        })
 
-        // simulate completion action
-        await api.updateTask(1, { status: 'closed' })
-
-        expect(api.updateTask).toHaveBeenCalledWith(1, { status: 'closed' })
+        await userEvent.click(confirmButton)
+        expect(api.updateTask).toHaveBeenCalledWith(
+            1,
+            expect.objectContaining({
+                status: 'closed',
+            })
+        )
     })
 
     // =========================================================
@@ -190,10 +281,15 @@ describe('TaskManager (Requirements)', () => {
         vi.mocked(taskService.loadTaskManagerData).mockResolvedValue({
             tasks: [],
             members: [],
-            sprints: [{ id: 1 }],
-        } as any)
+            sprints: [createSprintMock()],
+        })
 
-        vi.mocked(api.createTask).mockResolvedValue({ id: 2 } as any)
+        vi.mocked(api.createTask).mockResolvedValue(
+            createTaskMock({
+                id: 2,
+                title: 'New Task',
+            })
+        )
 
         renderWithRouter(<TaskManager />)
 

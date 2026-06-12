@@ -2,6 +2,7 @@ import { useDroppable } from '@dnd-kit/core'
 import { TaskCard } from './TaskCard'
 import type { Member } from '../../types'
 import type { Task, TaskStatus } from '../../types/Task'
+import { isTaskLate } from '../../helpers/isTaskLate'
 
 interface TeamBoardProps {
     tasks: Task[]
@@ -21,6 +22,7 @@ export function TeamBoard({
     semanticSet = new Set(),
 }: TeamBoardProps) {
     const isSemanticMatch = (id: number) => semanticSet.has(id)
+
     return (
         <div className="flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-sidebar-bg)] overflow-hidden min-h-[320px] flex-1 min-w-0">
             <div className="p-4 border-b border-[var(--color-border)] shrink-0">
@@ -75,11 +77,6 @@ function MemberColumn({
         (sum, t) => sum + (t.estimatedHours ?? 0),
         0
     )
-
-    const isTaskLate = (task: Task) =>
-        task.dueDate &&
-        new Date(task.dueDate).getTime() < Date.now() &&
-        task.status !== 'closed'
 
     return (
         <div

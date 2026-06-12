@@ -3,6 +3,7 @@ import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import type { TaskCardProps } from './types.ts'
 import { TYPE_LABELS, STATUS_OPTIONS } from './taskCard.config'
+import type { TaskStatus } from '../../types/Task'
 
 interface ExtendedTaskCardProps extends TaskCardProps {
     isLate?: boolean
@@ -145,7 +146,10 @@ export function TaskCard({
                     <select
                         value={task.status}
                         onChange={(e) =>
-                            onUpdateStatus(task.id, e.target.value as any)
+                            onUpdateStatus(
+                                task.id,
+                                e.target.value as TaskStatus
+                            )
                         }
                         onClick={(e) => e.stopPropagation()}
                         onPointerDown={(e) => e.stopPropagation()}

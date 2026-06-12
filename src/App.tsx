@@ -4,8 +4,7 @@
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { SprintProvider } from './context/SprintContext'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthProvider'
 import ProtectedRoute from './components/ProtectedRoute'
 import { MainLayout } from './components/layout/MainLayout'
 import { TaskManager } from './pages/TaskManager'
@@ -24,9 +23,7 @@ function App() {
                         path="/"
                         element={
                             <ProtectedRoute>
-                                <SprintProvider>
-                                    <MainLayout />
-                                </SprintProvider>
+                                <MainLayout />
                             </ProtectedRoute>
                         }
                     >
