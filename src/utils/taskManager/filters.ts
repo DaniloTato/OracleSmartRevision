@@ -7,9 +7,18 @@ interface Filters {
 }
 
 export function filterBoardTasks(tasks: Task[], filters: Filters): Task[] {
-    return tasks.filter(
-        (t) =>
-            t.assigneeId != null &&
-            (filters.sprintId === '' || String(t.sprintId) === filters.sprintId)
-    )
+    return tasks.filter((task) => {
+        const assignedMatch = task.assigneeId != null
+
+        const sprintMatch =
+            filters.sprintId === '' ||
+            String(task.sprintId) === filters.sprintId
+
+        const statusMatch =
+            filters.estado === '' || task.status === filters.estado
+
+        const typeMatch = filters.tipo === '' || task.type === filters.tipo
+
+        return assignedMatch && sprintMatch && statusMatch && typeMatch
+    })
 }

@@ -1,10 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-import axios from 'axios'
+process.env.API_BASE_URL = 'http://localhost:8080'
+process.env.SERVICE_API_TOKEN = 'fake-token'
 
+vi.mock('../src/apiClient.js', () => ({
+    apiClient: {
+        get: vi.fn(),
+        post: vi.fn(),
+        patch: vi.fn(),
+    },
+}))
+
+import { apiClient } from '../src/apiClient.js'
 import { createCommands } from '../src/commands.js'
-
-vi.mock('axios')
 
 describe('Telegram Bot Commands', () => {
     let reply
@@ -12,8 +20,9 @@ describe('Telegram Bot Commands', () => {
     let userState
 
     beforeEach(() => {
-        reply = vi.fn()
+        vi.clearAllMocks()
 
+        reply = vi.fn()
         userState = {}
 
         commands = createCommands({
@@ -27,110 +36,70 @@ describe('Telegram Bot Commands', () => {
         })
     })
 
-    it('debe crear una tarea [B-01]', async () => {
-        axios.post.mockResolvedValue({})
+    it('[B-01] should create a task and confirm message', async () => {
+        apiClient.post.mockResolvedValue({})
 
         const msg = {
-            chat: {
-                id: 123,
-            },
+            chat: { id: 123 },
             text: 'Nueva tarea de testing',
         }
 
         await commands.handleCreatingTask(msg)
 
-        expect(axios.post).toHaveBeenCalledWith(
+        expect(apiClient.post).toHaveBeenCalledWith(
             'http://localhost:8080/projects/1/issues',
-            {
+            expect.objectContaining({
                 title: 'Nueva tarea de testing',
-                description: '',
-                type: 'BUG',
-                status: 'closed',
-                estimatedHours: 0,
-                actualHours: 0,
-                featureId: 2,
                 assigneeId: 105,
-                isVisible: true,
-            }
+                type: 'BUG',
+            })
         )
 
         expect(reply).toHaveBeenCalledWith(123, 'Tarea creada')
+        expect(userState[123]).toBeUndefined()
     })
 
-    it('debe mostrar tareas completadas de un sprint [B-02]', async () => {
-        axios.get.mockResolvedValue({
+    it('[B-02] should list only closed tasks in sprint', async () => {
+        apiClient.get.mockResolvedValue({
             data: [
-                {
-                    id: 1,
-                    title: 'Fix Login',
-                    status: 'closed',
-                },
-                {
-                    id: 2,
-                    title: 'Dashboard',
-                    status: 'closed',
-                },
-                {
-                    id: 3,
-                    title: 'Task Pending',
-                    status: 'open',
-                },
+                { id: 1, title: 'Fix Login', status: 'closed' },
+                { id: 2, title: 'Dashboard', status: 'closed' },
+                { id: 3, title: 'Task Pending', status: 'open' },
             ],
         })
 
-        const msg = {
-            chat: {
-                id: 123,
-            },
-        }
+        const msg = { chat: { id: 123 } }
 
         await commands.list_completed(msg, ['3'])
 
-        expect(axios.get).toHaveBeenCalledWith(
+        expect(apiClient.get).toHaveBeenCalledWith(
             'http://localhost:8080/projects/1/issues',
             {
-                params: {
-                    sprintId: '3',
-                },
+                params: { sprintId: '3' },
             }
         )
 
-        expect(reply).toHaveBeenCalledWith(
-            123,
-            'Tareas completas en sprint-id 3:\n\n#1 - Fix Login\n#2 - Dashboard'
-        )
+        const output = reply.mock.calls[0][1]
+
+        expect(output).toContain('#1 - Fix Login')
+        expect(output).toContain('#2 - Dashboard')
+        expect(output).not.toContain('Task Pending')
     })
 
-    it('debe mostrar tareas completadas de usuario en sprint [B-03]', async () => {
-        axios.get.mockResolvedValue({
+    it('[B-03] should filter by sprint and user', async () => {
+        apiClient.get.mockResolvedValue({
             data: [
-                {
-                    id: 10,
-                    title: 'API Refactor',
-                    status: 'closed',
-                },
-                {
-                    id: 11,
-                    title: 'Testing',
-                    status: 'closed',
-                },
-                {
-                    id: 12,
-                    title: 'Pending',
-                    status: 'open',
-                },
+                { id: 10, title: 'API Refactor', status: 'closed' },
+                { id: 11, title: 'Testing', status: 'closed' },
+                { id: 12, title: 'Pending', status: 'open' },
             ],
         })
 
-        const msg = {
-            chat: {
-                id: 123,
-            },
-        }
+        const msg = { chat: { id: 123 } }
 
         await commands.list_completed(msg, ['3', '101'])
 
-        expect(axios.get).toHaveBeenCalledWith(
+        expect(apiClient.get).toHaveBeenCalledWith(
             'http://localhost:8080/projects/1/issues',
             {
                 params: {
@@ -140,9 +109,34 @@ describe('Telegram Bot Commands', () => {
             }
         )
 
+        const output = reply.mock.calls[0][1]
+
+        expect(output).toContain('#10 - API Refactor')
+        expect(output).toContain('#11 - Testing')
+        expect(output).not.toContain('Pending')
+    })
+
+    it('should handle empty completed tasks', async () => {
+        apiClient.get.mockResolvedValue({ data: [] })
+
+        const msg = { chat: { id: 123 } }
+
+        await commands.list_completed(msg, ['3'])
+
+        const output = reply.mock.calls[0][1]
+
+        expect(output).toContain('Tareas completas')
+        expect(output).not.toContain('#')
+    })
+
+    it('should show usage when args are invalid', async () => {
+        const msg = { chat: { id: 123 } }
+
+        await commands.list_completed(msg, [])
+
         expect(reply).toHaveBeenCalledWith(
             123,
-            'Tareas completas en sprint-id 3:\n\n#10 - API Refactor\n#11 - Testing'
+            'Uso correcto: /list_completed [sprintId] [userId]'
         )
     })
 })

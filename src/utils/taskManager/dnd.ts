@@ -1,4 +1,7 @@
-export function getUpdatedAssignee(overId: any, poolId: string): number | null {
+export function getUpdatedAssignee(
+    overId: string | number,
+    poolId: string
+): number | null {
     if (overId === poolId) return null
 
     const parsed = Number(overId)

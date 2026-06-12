@@ -10,7 +10,7 @@ import {
 } from 'recharts'
 
 interface MultiBarChartProps {
-    data: any[]
+    data: Record<string, unknown>[]
     keys: string[]
     colors?: string[]
     xKey: string

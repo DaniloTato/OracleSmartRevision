@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from 'react'
 import {
     HiOutlineCheckCircle,
     HiOutlineClock,
@@ -6,217 +5,46 @@ import {
     HiOutlineUserGroup,
 } from 'react-icons/hi'
 
-import { useSprint } from '../context/SprintContext'
 import { Section } from '../components/ui/Section'
 import { KpiCard } from '../components/ui/KpiCard'
 import { Table, THead, TRow, TH, TD } from '../components/ui/Table'
-import {
-    getRealHoursByUser,
-    getTasksByUser,
-    getTasksByUserAndSprint,
-} from '../api/dashboardApi'
-import type { HoursByUser, TasksByUser } from '../types/dashboard'
-import type { TasksPerSprint } from '../types/dashboard'
-import type { Member } from '../types'
-import {
-    getTasksByUserPerSprint,
-    getHoursByUserPerSprint,
-} from '../services/dashboard'
-import { getUsers } from '../api/dashboardApi'
+
 import { MultiBarChart } from '../components/charts/MultiBarChart'
 import { GenericBarChart } from '../components/charts/GenericBarChart'
-
-const PROJECT_ID = 1
+import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard'
+import { Select } from '../components/ui/Select'
 
 export function UnifiedDashboard() {
-    const { sprints } = useSprint()
+    const {
+        loading,
 
-    const [selectedSprint, setSelectedSprint] = useState<number | 'all'>('all')
+        selectedSprint,
+        setSelectedSprint,
 
-    const [selectedDeveloper, setSelectedDeveloper] = useState<string>('all')
-    const [tasksData, setTasksData] = useState<TasksByUser[]>([])
-    const [hoursData, setHoursData] = useState<HoursByUser[]>([])
-    const [loading, setLoading] = useState(true)
-    const [multiSprintTasks, setmultiSprintTasks] = useState<TasksPerSprint[]>(
-        []
-    )
-    const [multiSprintHours, setMultiSprintHours] = useState<TasksPerSprint[]>(
-        []
-    )
+        selectedDeveloper,
+        setSelectedDeveloper,
 
-    const [users, setUsers] = useState<Member[]>([])
+        sprints,
+        developers,
+        userKeys,
 
-    const userKeys = useMemo(() => {
-        return users.map((u) => u.name)
-    }, [users])
+        multiSprintTasks,
+        multiSprintHours,
 
-    useEffect(() => {
-        async function loadData() {
-            setLoading(true)
+        completedTasks,
+        totalHours,
 
-            try {
-                const fetchedUsers = await getUsers()
-                setUsers(fetchedUsers)
-                setMultiSprintHours(
-                    await getHoursByUserPerSprint(
-                        PROJECT_ID,
-                        sprints,
-                        fetchedUsers
-                    )
-                )
-                setmultiSprintTasks(
-                    await getTasksByUserPerSprint(
-                        PROJECT_ID,
-                        sprints,
-                        fetchedUsers
-                    )
-                )
-                if (selectedSprint === 'all') {
-                    const [tasks, hoursBySprint] = await Promise.all([
-                        getTasksByUser(PROJECT_ID),
-                        Promise.all(
-                            sprints.map((sprint) =>
-                                getRealHoursByUser(PROJECT_ID, sprint.id)
-                            )
-                        ),
-                    ])
+        avgTasks,
+        avgHours,
 
-                    const hoursByUser = new Map<string, HoursByUser>()
+        medianTasks,
+        medianHours,
 
-                    hoursBySprint.flat().forEach((row) => {
-                        const current = hoursByUser.get(row.user)
-                        hoursByUser.set(row.user, {
-                            ...row,
-                            hours: (current?.hours ?? 0) + (row.hours ?? 0),
-                        })
-                    })
+        rows,
 
-                    setTasksData(tasks ?? [])
-                    setHoursData([...hoursByUser.values()])
-                    return
-                }
-
-                const [tasks, hours] = await Promise.all([
-                    getTasksByUserAndSprint(PROJECT_ID, selectedSprint),
-                    getRealHoursByUser(PROJECT_ID, selectedSprint),
-                ])
-
-                setTasksData(tasks ?? [])
-                setHoursData(hours ?? [])
-            } catch (err) {
-                console.error('TasksHoursDashboard load failed', err)
-                setTasksData([])
-                setHoursData([])
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        loadData()
-    }, [selectedSprint, sprints])
-
-    const developers = useMemo(() => {
-        return Array.from(
-            new Set([
-                ...tasksData.map((x) => x.user),
-                ...hoursData.map((x) => x.user),
-            ])
-        )
-    }, [tasksData, hoursData])
-
-    const filteredTasks = useMemo(() => {
-        if (selectedDeveloper === 'all') return tasksData
-
-        return tasksData.filter((t) => t.user === selectedDeveloper)
-    }, [tasksData, selectedDeveloper])
-
-    const filteredHours = useMemo(() => {
-        if (selectedDeveloper === 'all') return hoursData
-
-        return hoursData.filter((h) => h.user === selectedDeveloper)
-    }, [hoursData, selectedDeveloper])
-
-    const completedTasks = useMemo(
-        () =>
-            filteredTasks.reduce(
-                (sum, row) => sum + (row.tasksCompleted ?? 0),
-                0
-            ),
-        [filteredTasks]
-    )
-
-    const totalHours = useMemo(
-        () => filteredHours.reduce((sum, row) => sum + (row.hours ?? 0), 0),
-        [filteredHours]
-    )
-
-    const avgTasks = useMemo(() => {
-        if (!filteredTasks.length) return 0
-
-        return Math.round(completedTasks / filteredTasks.length)
-    }, [completedTasks, filteredTasks])
-
-    const avgHours = useMemo(() => {
-        if (!filteredHours.length) return 0
-
-        return Math.round(totalHours / filteredHours.length)
-    }, [totalHours, filteredHours])
-
-    const medianTasks = useMemo(() => {
-        const values = filteredTasks
-            .map((x) => x.tasksCompleted ?? 0)
-            .sort((a, b) => a - b)
-
-        if (!values.length) return 0
-
-        const mid = Math.floor(values.length / 2)
-
-        return values.length % 2
-            ? values[mid]
-            : Math.round((values[mid - 1] + values[mid]) / 2)
-    }, [filteredTasks])
-
-    const medianHours = useMemo(() => {
-        const values = filteredHours
-            .map((x) => x.hours ?? 0)
-            .sort((a, b) => a - b)
-
-        if (!values.length) return 0
-
-        const mid = Math.floor(values.length / 2)
-
-        return values.length % 2
-            ? values[mid]
-            : Math.round((values[mid - 1] + values[mid]) / 2)
-    }, [filteredHours])
-
-    const rows = useMemo(() => {
-        return developers.map((developer) => {
-            const taskRow = tasksData.find((t) => t.user === developer)
-
-            const hourRow = hoursData.find((h) => h.user === developer)
-
-            return {
-                developer,
-                tasks: taskRow?.tasksCompleted ?? 0,
-                hours: hourRow?.hours ?? 0,
-            }
-        })
-    }, [developers, tasksData, hoursData])
-
-    const sprintTasksChartData = useMemo(() => {
-        return filteredTasks.map((u) => ({
-            label: u.user,
-            value: u.tasksCompleted ?? 0,
-        }))
-    }, [filteredTasks])
-
-    const sprintHoursChartData = useMemo(() => {
-        return filteredHours.map((u) => ({
-            label: u.user,
-            value: u.hours ?? 0,
-        }))
-    }, [filteredHours])
+        sprintTasksChartData,
+        sprintHoursChartData,
+    } = useUnifiedDashboard()
 
     if (loading) {
         return <div className="p-4 text-muted">Cargando métricas...</div>
@@ -224,8 +52,6 @@ export function UnifiedDashboard() {
 
     return (
         <div className="space-y-8">
-            {/* HEADER */}
-
             <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
                     <HiOutlineTrendingUp className="w-6 h-6" />
@@ -242,45 +68,41 @@ export function UnifiedDashboard() {
                 </div>
             </div>
 
-            {/* FILTERS */}
-
             <div className="flex gap-4">
-                <select
+                <Select
                     value={selectedSprint}
-                    onChange={(e) =>
+                    onChange={(value) =>
                         setSelectedSprint(
-                            e.target.value === 'all'
-                                ? 'all'
-                                : Number(e.target.value)
+                            value === 'all' ? 'all' : Number(value)
                         )
                     }
-                    className="rounded-lg border border-default px-3 py-2"
-                >
-                    <option value="all">All Sprints</option>
+                    options={[
+                        {
+                            value: 'all',
+                            label: 'All Sprints',
+                        },
+                        ...sprints.map((sprint) => ({
+                            value: sprint.id,
+                            label: sprint.name,
+                        })),
+                    ]}
+                />
 
-                    {sprints.map((s) => (
-                        <option key={s.id} value={s.id}>
-                            {s.name}
-                        </option>
-                    ))}
-                </select>
-
-                <select
+                <Select
                     value={selectedDeveloper}
-                    onChange={(e) => setSelectedDeveloper(e.target.value)}
-                    className="rounded-lg border border-default px-3 py-2"
-                >
-                    <option value="all">All Devs</option>
-
-                    {developers.map((d) => (
-                        <option key={d} value={d}>
-                            {d}
-                        </option>
-                    ))}
-                </select>
+                    onChange={setSelectedDeveloper}
+                    options={[
+                        {
+                            value: 'all',
+                            label: 'All Devs',
+                        },
+                        ...developers.map((developer) => ({
+                            value: developer,
+                            label: developer,
+                        })),
+                    ]}
+                />
             </div>
-
-            {/* KPIs */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-5">
                 <KpiCard
@@ -332,8 +154,6 @@ export function UnifiedDashboard() {
                 />
             </div>
 
-            {/* ================= TASKS ================= */}
-
             {selectedSprint === 'all' ? (
                 <Section title="Tareas completadas por sprint y desarrollador">
                     <MultiBarChart
@@ -356,8 +176,6 @@ export function UnifiedDashboard() {
                 </Section>
             )}
 
-            {/* ================= HOURS ================= */}
-
             {selectedSprint === 'all' ? (
                 <Section title="Horas trabajadas por sprint y desarrollador">
                     <MultiBarChart
@@ -379,8 +197,6 @@ export function UnifiedDashboard() {
                     />
                 </Section>
             )}
-
-            {/* DETAIL TABLE */}
 
             <Section
                 title="Detalle por desarrollador"

@@ -1,22 +1,6 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { login as apiLogin, type LoginResponse } from '../api/authApi'
-
-interface AuthUser {
-    token: string
-    userId: number
-    email: string
-    name: string
-    roleId: number
-}
-
-interface AuthContextValue {
-    user: AuthUser | null
-    isLoading: boolean
-    login: (email: string, password: string) => Promise<void>
-    logout: () => void
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+import { AuthContext, type AuthUser } from './AuthContext'
 
 const STORAGE_KEY = 'omi_auth'
 
@@ -24,7 +8,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
-    // Rehydrate from localStorage on mount
     useEffect(() => {
         try {
             const stored = localStorage.getItem(STORAGE_KEY)
@@ -38,7 +21,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = async (email: string, password: string) => {
         const data: LoginResponse = await apiLogin(email, password)
+
         const authUser: AuthUser = data
+
         localStorage.setItem(STORAGE_KEY, JSON.stringify(authUser))
         setUser(authUser)
     }
@@ -53,10 +38,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             {children}
         </AuthContext.Provider>
     )
-}
-
-export function useAuth() {
-    const ctx = useContext(AuthContext)
-    if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
-    return ctx
 }
