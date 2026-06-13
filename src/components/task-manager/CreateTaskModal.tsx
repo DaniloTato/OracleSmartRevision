@@ -79,6 +79,7 @@ export function CreateTaskModal({
 
     return (
         <div
+            data-testid="create-task-modal"
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
             onClick={onClose}
         >
@@ -97,6 +98,7 @@ export function CreateTaskModal({
                             Título *
                         </label>
                         <input
+                            data-testid="task-title-input"
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
@@ -111,6 +113,7 @@ export function CreateTaskModal({
                             Feature *
                         </label>
                         <select
+                            data-testid="feature-select"
                             value={featureId ?? ''}
                             onChange={(e) =>
                                 setFeatureId(Number(e.target.value))
@@ -136,6 +139,7 @@ export function CreateTaskModal({
                             Tipo
                         </label>
                         <select
+                            data-testid="type-select"
                             value={tipo}
                             onChange={(e) =>
                                 setTipo(e.target.value as TaskType)
@@ -154,6 +158,7 @@ export function CreateTaskModal({
                             Estimado (horas)
                         </label>
                         <input
+                            data-testid="task-estimated-hours-input"
                             type="number"
                             min={0}
                             step={1}
@@ -169,6 +174,7 @@ export function CreateTaskModal({
                             Fecha límite
                         </label>
                         <input
+                            data-testid="task-date-input"
                             type="date"
                             value={dueDate}
                             onChange={(e) => setDueDate(e.target.value)}
@@ -180,6 +186,7 @@ export function CreateTaskModal({
                             Asignar a (opcional)
                         </label>
                         <select
+                            data-testid="assignee-select"
                             value={assigneeId ?? ''}
                             onChange={(e) =>
                                 setAssigneeId(
@@ -212,6 +219,7 @@ export function CreateTaskModal({
                             Cancelar
                         </button>
                         <button
+                            data-testid="create-task-submit"
                             type="submit"
                             className="flex-1 rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-medium text-[var(--color-text)] hover:bg-gray-50"
                         >

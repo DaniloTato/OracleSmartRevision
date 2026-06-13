@@ -11,8 +11,8 @@ const BASE_URL = process.env.API_BASE_URL
 const AI_BASE_URL = process.env.AI_BASE_URL
 
 const PROJECT_ID = process.env.PROJECT_ID || 1
-const SPRINT_ID = 3
-const DEFAULT_ASSIGNEE_ID = 105
+const SPRINT_ID = 6
+const DEFAULT_ASSIGNEE_ID = 3
 
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID
 

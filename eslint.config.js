@@ -19,5 +19,16 @@ export default defineConfig([
             ecmaVersion: 2020,
             globals: globals.browser,
         },
+        rules: {
+            'no-restricted-syntax': [
+                'error',
+                {
+                    selector:
+                        "CallExpression[callee.object.name='page'][callee.property.name='locator']",
+                    message:
+                        'Do not use page.locator(). Use getByRole/getByTestId/getByLabel/etc instead.',
+                },
+            ],
+        },
     },
 ])

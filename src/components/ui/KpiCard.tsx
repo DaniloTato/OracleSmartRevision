@@ -34,21 +34,30 @@ export function KpiCard({
 
     const styles = colorMap[color]
 
+    const slug = title.toLowerCase().replace(/[^\w]+/g, '-')
+
     return (
-        <Card className="p-5 border border-default bg-surface hover:shadow-md transition-shadow">
+        <Card
+            data-testid={`kpi-card-${slug}`}
+            className="p-5 border border-default bg-surface hover:shadow-md transition-shadow"
+        >
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="text-sm font-medium text-muted">
+                    <p
+                        data-testid={`kpi-title-${slug}`}
+                        className="text-sm font-medium text-muted"
+                    >
                         {title}
                     </p>
 
-                    <p className={`mt-1 text-2xl font-bold ${styles.text}`}>
+                    <p
+                        data-testid={`kpi-value-${slug}`}
+                        className={`mt-1 text-2xl font-bold ${styles.text}`}
+                    >
                         {value}
                     </p>
 
-                    <p className="mt-0.5 text-xs text-muted">
-                        {subtitle}
-                    </p>
+                    <p className="mt-0.5 text-xs text-muted">{subtitle}</p>
                 </div>
 
                 <div

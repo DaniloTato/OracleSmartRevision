@@ -1,13 +1,10 @@
-//move text input props into a type files
-interface TextInputProps {
-    id?: string
-    type?: string
-    value: string
+import type { ChangeEvent, InputHTMLAttributes } from 'react'
+
+type TextInputProps = Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    'onChange'
+> & {
     onChange: (value: string) => void
-    placeholder?: string
-    autoComplete?: string
-    required?: boolean
-    disabled?: boolean
 }
 
 export function TextInput({
@@ -19,6 +16,7 @@ export function TextInput({
     autoComplete,
     required,
     disabled,
+    ...rest
 }: TextInputProps) {
     return (
         <input
@@ -29,7 +27,9 @@ export function TextInput({
             required={required}
             disabled={disabled}
             placeholder={placeholder}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                onChange(e.target.value)
+            }
             className="
                 w-full
                 px-3
@@ -44,6 +44,7 @@ export function TextInput({
                 focus:border-primary
                 transition-colors
             "
+            {...rest}
         />
     )
 }

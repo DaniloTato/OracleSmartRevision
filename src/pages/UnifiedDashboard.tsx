@@ -58,7 +58,10 @@ export function UnifiedDashboard() {
                 </div>
 
                 <div>
-                    <h1 className="text-2xl font-semibold">
+                    <h1
+                        data-testid="dashboard-title"
+                        className="text-2xl font-semibold"
+                    >
                         Análisis de Tasks / Hours
                     </h1>
 

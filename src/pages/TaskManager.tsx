@@ -248,7 +248,12 @@ export function TaskManager() {
         <div className="space-y-6">
             <Section>
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h1 className="text-2xl font-semibold">Gestor de Tareas</h1>
+                    <h1
+                        data-testid="task-manager-title"
+                        className="text-2xl font-semibold"
+                    >
+                        Gestor de Tareas
+                    </h1>
 
                     <Button onClick={() => setCreateModalOpen(true)}>
                         Crear Tarea
@@ -266,6 +271,7 @@ export function TaskManager() {
                         <label className="text-sm font-medium">Sprint</label>
 
                         <Select
+                            data-testid="sprint-filter"
                             value={filters.sprintId}
                             onChange={(value) =>
                                 setFilters((prev) => ({
@@ -290,6 +296,7 @@ export function TaskManager() {
                         <label className="text-sm font-medium">Estado</label>
 
                         <Select
+                            data-testid="status-filter"
                             value={filters.estado}
                             onChange={(value) =>
                                 setFilters((prev) => ({
@@ -327,6 +334,7 @@ export function TaskManager() {
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
                         <div className="space-y-4">
                             <SemanticSearch
+                                data-testid="semantic-search"
                                 projectId={projectId}
                                 onResultsChange={setSemanticMatches}
                                 placeholder="Search tasks semantically..."
@@ -355,13 +363,20 @@ export function TaskManager() {
             )}
 
             {closingTaskId && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
+                <div
+                    data-testid="close-task-modal"
+                    className="fixed inset-0 bg-black/30 flex items-center justify-center"
+                >
                     <div className="bg-white rounded-xl p-6 w-[320px] space-y-4">
-                        <h2 className="text-lg font-semibold">
+                        <h2
+                            data-testid="register-hours-title"
+                            className="text-lg font-semibold"
+                        >
                             Registrar horas reales
                         </h2>
 
                         <input
+                            data-testid="actual-hours-input"
                             type="number"
                             className="w-full border rounded p-2"
                             placeholder="Horas reales"
@@ -373,6 +388,7 @@ export function TaskManager() {
 
                         <div className="flex justify-end gap-2">
                             <Button
+                                data-testid="cancel-close-task"
                                 variant="ghost"
                                 onClick={() => {
                                     setClosingTaskId(null)
@@ -383,6 +399,7 @@ export function TaskManager() {
                             </Button>
 
                             <Button
+                                data-testid="confirm-close-task"
                                 onClick={async () => {
                                     try {
                                         await updateTask(closingTaskId, {
@@ -407,22 +424,33 @@ export function TaskManager() {
             )}
 
             {deletingTaskId && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
+                <div
+                    data-testid="modal-backdrop"
+                    className="fixed inset-0 bg-black/30 flex items-center justify-center"
+                >
                     <div className="bg-white rounded-xl p-6 w-[320px] space-y-4">
-                        <h2 className="text-lg font-semibold">
+                        <h2
+                            data-testid="delete-task-title"
+                            className="text-lg font-semibold"
+                        >
                             ¿Eliminar tarea?
                         </h2>
-                        <p className="text-sm text-gray-500">
+                        <p
+                            data-testid="delete-task-message"
+                            className="text-sm text-gray-500"
+                        >
                             Esta acción no se puede deshacer.
                         </p>
                         <div className="flex justify-end gap-2">
                             <Button
+                                data-testid="cancel-delete-task"
                                 variant="ghost"
                                 onClick={() => setDeletingTaskId(null)}
                             >
                                 Cancelar
                             </Button>
                             <Button
+                                data-testid="confirm-delete-task"
                                 variant="danger"
                                 onClick={() => {
                                     if (deletingTaskId !== null) {

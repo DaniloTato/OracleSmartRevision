@@ -60,15 +60,21 @@ export function AiReportsPage() {
         const totalDelay = reports.reduce((acc, r) => acc + r.delayDays, 0)
         const avgDelay = totalDelay / reports.length
 
-        const severityCount = reports.reduce((acc, r) => {
-            acc[r.severity] = (acc[r.severity] || 0) + 1
-            return acc
-        }, {} as Record<string, number>)
+        const severityCount = reports.reduce(
+            (acc, r) => {
+                acc[r.severity] = (acc[r.severity] || 0) + 1
+                return acc
+            },
+            {} as Record<string, number>
+        )
 
-        const categoryCount = reports.reduce((acc, r) => {
-            acc[r.aiCategory] = (acc[r.aiCategory] || 0) + 1
-            return acc
-        }, {} as Record<string, number>)
+        const categoryCount = reports.reduce(
+            (acc, r) => {
+                acc[r.aiCategory] = (acc[r.aiCategory] || 0) + 1
+                return acc
+            },
+            {} as Record<string, number>
+        )
 
         const mainCauses = Object.entries(categoryCount)
             .map(([category, count]) => ({
@@ -81,8 +87,8 @@ export function AiReportsPage() {
             avgDelay > 3 || severityCount.high > 2
                 ? 'high'
                 : avgDelay > 1.5
-                ? 'medium'
-                : 'low'
+                  ? 'medium'
+                  : 'low'
 
         const recommendations = [
             severityCount.high
@@ -146,11 +152,7 @@ export function AiReportsPage() {
     }, [reports])
 
     if (loading) {
-        return (
-            <div className="p-6 text-muted">
-                Cargando reportes...
-            </div>
-        )
+        return <div className="p-6 text-muted">Cargando reportes...</div>
     }
 
     return (
@@ -161,7 +163,10 @@ export function AiReportsPage() {
                     <HiOutlineSparkles className="w-6 h-6" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-semibold">
+                    <h1
+                        data-testid="delay-reports-page-title"
+                        className="text-2xl font-semibold"
+                    >
                         AI Delay Reports
                     </h1>
                     <p className="text-sm text-muted">
@@ -192,15 +197,19 @@ export function AiReportsPage() {
             {/* Sprint Impact */}
             <Section title="Impacto general del sprint">
                 <div className="space-y-4">
-                    <p className="text-sm text-muted">
+                    <p
+                        data-testid="impact-summary"
+                        className="text-sm text-muted"
+                    >
                         {sprintReport.impact.summary}
                     </p>
 
                     <div>
-                        <p className="font-semibold">
-                            Recomendaciones:
-                        </p>
-                        <ul className="list-disc ml-5 text-sm text-muted">
+                        <p className="font-semibold">Recomendaciones:</p>
+                        <ul
+                            data-testid="recommendations-list"
+                            className="list-disc ml-5 text-sm text-muted"
+                        >
                             {sprintReport.recommendations.map((r, i) => (
                                 <li key={i}>{r}</li>
                             ))}
@@ -208,7 +217,10 @@ export function AiReportsPage() {
                     </div>
 
                     {sprintReport.suggestedAdjustments.suggestedEndDate && (
-                        <div className="bg-suggestion-soft p-3 rounded-lg">
+                        <div
+                            data-testid="suggested-adjustment"
+                            className="bg-suggestion-soft p-3 rounded-lg"
+                        >
                             <p className="text-sm font-semibold">
                                 Nueva fecha sugerida:{' '}
                                 {formatDate(
@@ -216,7 +228,10 @@ export function AiReportsPage() {
                                         .suggestedEndDate
                                 )}
                             </p>
-                            <p className="text-xs text-muted">
+                            <p
+                                data-testid="suggested-adjustment-note"
+                                className="text-xs text-muted"
+                            >
                                 {sprintReport.suggestedAdjustments.notes}
                             </p>
                         </div>
@@ -259,11 +274,12 @@ export function AiReportsPage() {
                             </div>
 
                             {/* AI Summary */}
-                            <div className="bg-soft rounded-lg p-3">
+                            <div
+                                data-testid={`report-summary-${r.id}`}
+                                className="bg-soft rounded-lg p-3"
+                            >
                                 <p className="text-sm">
-                                    <span className="font-semibold">
-                                        IA:
-                                    </span>{' '}
+                                    <span className="font-semibold">IA:</span>{' '}
                                     {r.aiSummary}
                                 </p>
                             </div>
@@ -282,7 +298,10 @@ export function AiReportsPage() {
                             </div>
 
                             {/* Recommendation */}
-                            <div className="bg-success-soft rounded-lg p-3">
+                            <div
+                                data-testid={`report-recommendation-${r.id}`}
+                                className="bg-success-soft rounded-lg p-3"
+                            >
                                 <p className="text-sm">
                                     <span className="font-semibold">
                                         Recomendación:
@@ -296,17 +315,13 @@ export function AiReportsPage() {
                                 <p className="text-xs text-muted">
                                     Respuesta del desarrollador:
                                 </p>
-                                <p className="text-sm italic">
-                                    "{r.reason}"
-                                </p>
+                                <p className="text-sm italic">"{r.reason}"</p>
                             </div>
 
                             {/* Footer */}
                             <div className="flex justify-between items-center text-xs text-muted">
                                 <span>Categoría: {r.aiCategory}</span>
-                                <span>
-                                    {formatDate(r.submittedAt)}
-                                </span>
+                                <span>{formatDate(r.submittedAt)}</span>
                             </div>
                         </div>
                     ))}

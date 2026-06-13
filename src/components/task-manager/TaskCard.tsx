@@ -57,6 +57,7 @@ export function TaskCard({
 
     return (
         <div
+            data-testid={`task-card-${task.id}`}
             ref={(node) => {
                 cardRef.current = node
                 setNodeRef(node)
@@ -144,6 +145,7 @@ export function TaskCard({
             <div className="mt-2 flex justify-between items-center">
                 {onUpdateStatus ? (
                     <select
+                        data-testid={`status-select-${task.id}`}
                         value={task.status}
                         onChange={(e) =>
                             onUpdateStatus(
@@ -176,6 +178,7 @@ export function TaskCard({
                         onDelete(task.id)
                     }}
                     className="text-xs text-[var(--color-danger)] hover:opacity-80"
+                    data-testid={`delete-task-${task.id}`}
                 >
                     🗑
                 </button>
