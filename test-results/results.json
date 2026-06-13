@@ -1,0 +1,1791 @@
+{
+  "config": {
+    "configFile": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/playwright.config.ts",
+    "rootDir": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 10000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 60000
+    }
+  },
+  "suites": [
+    {
+      "title": "auth.spec.ts",
+      "file": "auth.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Suite 1 — Authentication",
+          "file": "auth.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1.1 — shows error banner for invalid credentials",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 662,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:51.205Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-f7483-ner-for-invalid-credentials-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-d3c7c45a4f49fdff68a7",
+              "file": "auth.spec.ts",
+              "line": 24,
+              "column": 5
+            },
+            {
+              "title": "1.2 — manager can log in and reach dashboard",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 999,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:51.217Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-afb0f--log-in-and-reach-dashboard-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-11de931deeb1a15d5e4b",
+              "file": "auth.spec.ts",
+              "line": 41,
+              "column": 5
+            },
+            {
+              "title": "1.3 — developer can log in and reach dashboard",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 586,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:51.210Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-79276--log-in-and-reach-dashboard-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-bb32a81394bbcf0d6cb4",
+              "file": "auth.spec.ts",
+              "line": 49,
+              "column": 5
+            },
+            {
+              "title": "1.4 — submit button is disabled while signing in",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 719,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:51.214Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-9a63d-s-disabled-while-signing-in-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-c4a2c9f7d2251550b4ab",
+              "file": "auth.spec.ts",
+              "line": 56,
+              "column": 5
+            },
+            {
+              "title": "1.5 — empty email prevents form submission",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 471,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:52.083Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-c2aca-il-prevents-form-submission-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-1a9d77f785b7bc4cabfd",
+              "file": "auth.spec.ts",
+              "line": 84,
+              "column": 5
+            },
+            {
+              "title": "1.6 — retry with correct credentials after failed attempt",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 672,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:52.087Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-33884-ntials-after-failed-attempt-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-d1c43d3d2e093cda62e3",
+              "file": "auth.spec.ts",
+              "line": 92,
+              "column": 5
+            },
+            {
+              "title": "1.7 — login page displays the brand logo",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 405,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:52.158Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-d4745-age-displays-the-brand-logo-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-663020e07167b52d9977",
+              "file": "auth.spec.ts",
+              "line": 114,
+              "column": 5
+            },
+            {
+              "title": "1.8 — password field has type=\"password\"",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 338,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:52.438Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-80c8e-rd-field-has-type-password--chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-1f02b73f742c79410527",
+              "file": "auth.spec.ts",
+              "line": 121,
+              "column": 5
+            },
+            {
+              "title": "1.10 — auth token is persisted after successful login @slow",
+              "ok": true,
+              "tags": [
+                "slow"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "slow",
+                      "location": {
+                        "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/auth.spec.ts",
+                        "line": 130,
+                        "column": 14
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 592,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:52.565Z",
+                      "annotations": [
+                        {
+                          "type": "slow",
+                          "location": {
+                            "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/auth.spec.ts",
+                            "line": 130,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/auth-Suite-1-—-Authenticat-879cf-after-successful-login-slow-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d748ac400d08b85935ef-0c82ac023090bc131160",
+              "file": "auth.spec.ts",
+              "line": 127,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "dashboard.spec.ts",
+      "file": "dashboard.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Suite DB — Dashboard & Analytics",
+          "file": "dashboard.spec.ts",
+          "line": 16,
+          "column": 6,
+          "specs": [
+            {
+              "title": "[DB-01] dashboard heading and subtitle render",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 785,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:52.594Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-DB-—-Dashb-7946e-heading-and-subtitle-render-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-e231e6d36bae7e629781",
+              "file": "dashboard.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "[DB-02] six KPI cards are present on the dashboard",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 893,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:52.793Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-DB-—-Dashb-3a085-re-present-on-the-dashboard-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-1040ec54ed4649356a7a",
+              "file": "dashboard.spec.ts",
+              "line": 43,
+              "column": 5
+            },
+            {
+              "title": "[DB-03] — sprint selector contains all mock sprints",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 811,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:52.802Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-DB-—-Dashb-5a0c8-r-contains-all-mock-sprints-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-72e8bf36ff36a6012ef7",
+              "file": "dashboard.spec.ts",
+              "line": 63,
+              "column": 5
+            },
+            {
+              "title": "[DB-04] — developer selector shows all team members",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 928,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:53.198Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-DB-—-Dashb-cf417-ctor-shows-all-team-members-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-76f5057680c436be9f70",
+              "file": "dashboard.spec.ts",
+              "line": 83,
+              "column": 5
+            },
+            {
+              "title": "[DB-05] — selecting a sprint shows per-developer chart",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 959,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:53.399Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-DB-—-Dashb-8b680-t-shows-per-developer-chart-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-e0fcb235fe5c0413f9c4",
+              "file": "dashboard.spec.ts",
+              "line": 96,
+              "column": 5
+            },
+            {
+              "title": "[DB-06] — developer detail table shows all developers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 758,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:53.633Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-DB-—-Dashb-5b655--table-shows-all-developers-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-aea6a6baeac969b77de6",
+              "file": "dashboard.spec.ts",
+              "line": 113,
+              "column": 5
+            },
+            {
+              "title": "[DB-07] — KPI values reflect mocked API data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 841,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:53.706Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-DB-—-Dashb-1696b-ues-reflect-mocked-API-data-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-40188ebd861f0ac245eb",
+              "file": "dashboard.spec.ts",
+              "line": 136,
+              "column": 5
+            },
+            {
+              "title": "[DB-08] — full dashboard renders without network errors @slow",
+              "ok": true,
+              "tags": [
+                "slow"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "slow",
+                      "location": {
+                        "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts",
+                        "line": 161,
+                        "column": 14
+                      }
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 675,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:54.144Z",
+                      "annotations": [
+                        {
+                          "type": "slow",
+                          "location": {
+                            "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts",
+                            "line": 161,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-DB-—-Dashb-c1372-without-network-errors-slow-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-c47b54b569d0b80ab60b",
+              "file": "dashboard.spec.ts",
+              "line": 158,
+              "column": 5
+            }
+          ]
+        },
+        {
+          "title": "Suite AI — AI Delay Reports",
+          "file": "dashboard.spec.ts",
+          "line": 178,
+          "column": 6,
+          "specs": [
+            {
+              "title": "[AI-01] — AI Reports page heading is visible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 445,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:54.378Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-AI-—-AI-De-a75cc-rts-page-heading-is-visible-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-601513806347bf5010f5",
+              "file": "dashboard.spec.ts",
+              "line": 184,
+              "column": 5
+            },
+            {
+              "title": "[AI-02] — KPI cards reflect total and high-severity reports",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 513,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:54.410Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-AI-—-AI-De-43bb7-l-and-high-severity-reports-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-06e7aad5506fabf6725b",
+              "file": "dashboard.spec.ts",
+              "line": 192,
+              "column": 5
+            },
+            {
+              "title": "[AI-03] — report cards display task title and developer name",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 555,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:54.575Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-AI-—-AI-De-d7913-sk-title-and-developer-name-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-1629731e5d917d992990",
+              "file": "dashboard.spec.ts",
+              "line": 207,
+              "column": 5
+            },
+            {
+              "title": "[AI-04] — report cards display AI summary and recommendations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 467,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:54.837Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-AI-—-AI-De-4eba7-summary-and-recommendations-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-a34817d317f5d1f255a7",
+              "file": "dashboard.spec.ts",
+              "line": 221,
+              "column": 5
+            },
+            {
+              "title": "[AI-05] — empty reports state shows \"Sin datos aún\"",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 453,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:54.840Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-AI-—-AI-De-976d4--state-shows-Sin-datos-aún--chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-118b0764005278446a33",
+              "file": "dashboard.spec.ts",
+              "line": 237,
+              "column": 5
+            },
+            {
+              "title": "[AI-06] — negative: non-existent category badge does not appear",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [
+                    {
+                      "type": "fail",
+                      "description": "Known: if a new AI category is added without a badge, this should fail and remind us to update UI",
+                      "location": {
+                        "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts",
+                        "line": 254,
+                        "column": 14
+                      }
+                    }
+                  ],
+                  "expectedStatus": "failed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 1591,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('nonexistent_category')\nExpected: visible\nTimeout: 1000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 1000ms\u001b[22m\n\u001b[2m  - waiting for getByText('nonexistent_category')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('nonexistent_category')\nExpected: visible\nTimeout: 1000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 1000ms\u001b[22m\n\u001b[2m  - waiting for getByText('nonexistent_category')\u001b[22m\n\n    at /Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts:262:62",
+                        "location": {
+                          "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts",
+                          "column": 62,
+                          "line": 262
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 260 |\u001b[39m         \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByTestId(\u001b[32m'delay-reports-page-title'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\n \u001b[90m 261 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 262 |\u001b[39m         \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByText(\u001b[32m'nonexistent_category'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\n \u001b[90m     |\u001b[39m                                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 263 |\u001b[39m     })\n \u001b[90m 264 |\u001b[39m\n \u001b[90m 265 |\u001b[39m     test(\u001b[32m'[AI-07] — high average delay shows sprint extension recommendation'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts",
+                            "column": 62,
+                            "line": 262
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('nonexistent_category')\nExpected: visible\nTimeout: 1000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 1000ms\u001b[22m\n\u001b[2m  - waiting for getByText('nonexistent_category')\u001b[22m\n\n\n\u001b[0m \u001b[90m 260 |\u001b[39m         \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByTestId(\u001b[32m'delay-reports-page-title'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\n \u001b[90m 261 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 262 |\u001b[39m         \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByText(\u001b[32m'nonexistent_category'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\n \u001b[90m     |\u001b[39m                                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 263 |\u001b[39m     })\n \u001b[90m 264 |\u001b[39m\n \u001b[90m 265 |\u001b[39m     test(\u001b[32m'[AI-07] — high average delay shows sprint extension recommendation'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({\u001b[0m\n\u001b[2m    at /Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts:262:62\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:54.940Z",
+                      "annotations": [
+                        {
+                          "type": "fail",
+                          "description": "Known: if a new AI category is added without a badge, this should fail and remind us to update UI",
+                          "location": {
+                            "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts",
+                            "line": 254,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-AI-—-AI-De-123c5-egory-badge-does-not-appear-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-AI-—-AI-De-123c5-egory-badge-does-not-appear-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/e2e/suites/dashboard.spec.ts",
+                        "column": 62,
+                        "line": 262
+                      }
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-12b8305f8960b171c06e",
+              "file": "dashboard.spec.ts",
+              "line": 251,
+              "column": 5
+            },
+            {
+              "title": "[AI-07] — high average delay shows sprint extension recommendation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 397,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:55.150Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/dashboard-Suite-AI-—-AI-De-95f21-nt-extension-recommendation-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90cda532ab82d274b30b-e5c02851c42d126a9e9a",
+              "file": "dashboard.spec.ts",
+              "line": 265,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "task-manager.spec.ts",
+      "file": "task-manager.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Suite 2 — Task Manager",
+          "file": "task-manager.spec.ts",
+          "line": 20,
+          "column": 6,
+          "specs": [
+            {
+              "title": "[TM-01] should load task manager page and display team members",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 438,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:55.310Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-8c63b-ge-and-display-team-members-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-043eec3ba0aeb49d47b9",
+              "file": "task-manager.spec.ts",
+              "line": 38,
+              "column": 5
+            },
+            {
+              "title": "[TM-02] should render all available sprints in sprint filter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 442,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:55.323Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-373a4-le-sprints-in-sprint-filter-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-0b82d3e47e3f2c3e12e3",
+              "file": "task-manager.spec.ts",
+              "line": 49,
+              "column": 5
+            },
+            {
+              "title": "[TM-03] should hide non matching tasks when filtering by in progress status",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 438,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:55.572Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-1e042-ering-by-in-progress-status-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-67dad3df99cf5e9cd334",
+              "file": "task-manager.spec.ts",
+              "line": 62,
+              "column": 5
+            },
+            {
+              "title": "[TM-04] should open create task modal when clicking create task button",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 487,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:55.760Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-a0d15-clicking-create-task-button-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-4b9a36cf3f6c5d177fd6",
+              "file": "task-manager.spec.ts",
+              "line": 79,
+              "column": 5
+            },
+            {
+              "title": "[TM-05] should close create task modal when cancel button is clicked",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 536,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:55.777Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-7e6f6-en-cancel-button-is-clicked-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-86a87bb8b35f0b8785f6",
+              "file": "task-manager.spec.ts",
+              "line": 94,
+              "column": 5
+            },
+            {
+              "title": "[TM-06] should create task successfully (Bug with assignee)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 595,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:56.032Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-68e9d-essfully-Bug-with-assignee--chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-999d74086d324a741417",
+              "file": "task-manager.spec.ts",
+              "line": 108,
+              "column": 9
+            },
+            {
+              "title": "[TM-06] should create task successfully (Training unassigned)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 670,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:56.261Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-f67e8-sfully-Training-unassigned--chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-5c077baebb28979f2a5c",
+              "file": "task-manager.spec.ts",
+              "line": 108,
+              "column": 9
+            },
+            {
+              "title": "[TM-06] should create task successfully (Task with long estimate)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 665,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:56.323Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-59d47-ly-Task-with-long-estimate--chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-299f0f5c32d0763494cb",
+              "file": "task-manager.spec.ts",
+              "line": 108,
+              "column": 9
+            },
+            {
+              "title": "[TM-07] should update task status (Mark as completed)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 704,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:56.569Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-fe5b0-k-status-Mark-as-completed--chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-be120ffb66b0d7f1e929",
+              "file": "task-manager.spec.ts",
+              "line": 158,
+              "column": 9
+            },
+            {
+              "title": "[TM-07] should update task status (Mark as in progress)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 601,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:56.648Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-b73e4-status-Mark-as-in-progress--chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-9eb37cbe8742f834e7f0",
+              "file": "task-manager.spec.ts",
+              "line": 158,
+              "column": 9
+            },
+            {
+              "title": "[TM-07] should update task status (Move to in progress)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 544,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:56.946Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-b0920-status-Move-to-in-progress--chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-67a0b090bd73bce6cbe1",
+              "file": "task-manager.spec.ts",
+              "line": 158,
+              "column": 9
+            },
+            {
+              "title": "[TM-08] should display delete confirmation dialog",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 596,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:57.011Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-daf35--delete-confirmation-dialog-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-60a2ed231d02540be4f5",
+              "file": "task-manager.spec.ts",
+              "line": 209,
+              "column": 5
+            },
+            {
+              "title": "[TM-09] should send delete request after confirmation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 603,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:57.272Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-ffe53--request-after-confirmation-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-29fa80784eb19742e991",
+              "file": "task-manager.spec.ts",
+              "line": 222,
+              "column": 5
+            },
+            {
+              "title": "[TM-10] should not delete task when deletion is cancelled",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 566,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:57.292Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-53001--when-deletion-is-cancelled-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-e50ac4be5a4851408204",
+              "file": "task-manager.spec.ts",
+              "line": 244,
+              "column": 5
+            },
+            {
+              "title": "[TM-11] should keep task unchanged when real hours modal is cancelled",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 510,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-13T05:34:57.504Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/danilo_tato/coding/misc/Oracle-Reto/oracleSmartRevision/test-results/task-manager-Suite-2-—-Tas-61531-al-hours-modal-is-cancelled-chromium/video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2ed4c4b20b4a6915ffe3-939d0dc5954cb0c24fc0",
+              "file": "task-manager.spec.ts",
+              "line": 263,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-06-13T05:34:50.740Z",
+    "duration": 7306.87,
+    "expected": 39,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

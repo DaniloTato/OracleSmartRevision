@@ -26,6 +26,6 @@ export function startOverdueNotifier(bot, ADMIN_CHAT_ID) {
         }
     }
 
-    setInterval(run, 5 * 60 * 1000)
+    setInterval(run, 20 * 1000)
     run()
 }

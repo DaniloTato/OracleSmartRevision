@@ -20,15 +20,35 @@ export function createCommands({
             reply(
                 msg.chat.id,
                 `
-                Comandos:
-                /tasks
-                /create
-                /complete 1
-                /users
-                /assign 1 101
-                /status 1 en_progreso
-                /listCompleted 1
-                `.trim()
+📌 *Comandos disponibles*
+
+🗂️ /tasks
+Muestra todas las tareas activas del sprint actual.
+
+🆕 /create
+Inicia el flujo para crear una nueva tarea (te pedirá el título).
+
+✅ /complete <id>
+Marca una tarea como completada (estado: closed).
+
+👥 /users
+Lista todos los usuarios disponibles en el sistema.
+
+🧑‍💻 /assign <taskId> <userId>
+Asigna una tarea a un usuario específico.
+
+🔄 /status <taskId> <estado>
+Cambia el estado de una tarea (ej: en_progreso, closed, open).
+
+📋 /list_completed [sprintId] [userId]
+Muestra tareas completadas, opcionalmente filtradas por sprint o usuario.
+
+⚠️ /overdue <taskId>
+Reporta una tarea vencida y solicita contexto para análisis posterior.
+
+💡 Usa /help para ver esta lista nuevamente.
+        `.trim(),
+                { parse_mode: 'Markdown' }
             )
         },
 
@@ -36,15 +56,33 @@ export function createCommands({
             reply(
                 msg.chat.id,
                 `
-                Comandos:
-                /tasks
-                /create
-                /complete 1
-                /users
-                /assign 1 101
-                /status 1 en_progreso
-                /listCompleted 1
-                `.trim()
+📌 *Comandos disponibles*
+
+🗂️ /tasks
+Muestra todas las tareas activas del sprint actual.
+
+🆕 /create
+Inicia el flujo para crear una nueva tarea (te pedirá el título).
+
+✅ /complete <id>
+Marca una tarea como completada (estado: closed).
+
+👥 /users
+Lista todos los usuarios disponibles en el sistema.
+
+🧑‍💻 /assign <taskId> <userId>
+Asigna una tarea a un usuario específico.
+
+🔄 /status <taskId> <estado>
+Cambia el estado de una tarea (ej: en_progreso, closed, open).
+
+📋 /list_completed [sprintId] [userId]
+Muestra tareas completadas, opcionalmente filtradas por sprint o usuario.
+
+⚠️ /overdue <taskId>
+Reporta una tarea vencida y solicita contexto para análisis posterior.
+        `.trim(),
+                { parse_mode: 'Markdown' }
             )
         },
 
@@ -121,10 +159,7 @@ export function createCommands({
 
         list_completed: async (msg, args) => {
             if (args.length > 2 || !args.length) {
-                reply(
-                    msg.chat.id,
-                    'Uso correcto: /list_completed [sprintId] [userId]'
-                )
+                reply(msg.chat.id, 'Uso correcto: /list_completed [userId]')
 
                 return
             }
@@ -132,12 +167,10 @@ export function createCommands({
             try {
                 const params = {}
 
-                if (args[0]) {
-                    params.sprintId = args[0]
-                }
+                params.sprintId = SPRINT_ID
 
-                if (args[1]) {
-                    params.assignedTo = args[1]
+                if (args[0]) {
+                    params.assignedTo = args[0]
                 }
 
                 const { data } = await apiClient.get(
@@ -155,7 +188,7 @@ export function createCommands({
 
                 reply(
                     msg.chat.id,
-                    `Tareas completas en sprint-id ${args[0]}:\n\n${text}`
+                    `Tareas completas en sprint-id ${SPRINT_ID}:\n\n${text}`
                 )
             } catch {
                 reply(
@@ -230,10 +263,10 @@ export function createCommands({
                         title: msg.text,
                         description: '',
                         type: 'BUG',
-                        status: 'closed',
+                        status: 'open',
                         estimatedHours: 0,
                         actualHours: 0,
-                        featureId: 2,
+                        featureId: 6,
                         assigneeId: DEFAULT_ASSIGNEE_ID,
                         isVisible: true,
                     }

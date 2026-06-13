@@ -18,6 +18,7 @@ export function LoginPage() {
         e.preventDefault()
         setError(null)
         setLoading(true)
+
         try {
             await login(email, password)
             navigate('/dashboard')
@@ -37,6 +38,7 @@ export function LoginPage() {
                         src="/images/Logo/BlueLogoTransparent.png"
                         alt="Oracle Smart Productivity"
                         className="max-h-24 w-auto object-contain"
+                        data-testid="login-logo"
                     />
                     <p className="text-sm text-muted mt-1">
                         Sign in to your workspace
@@ -53,7 +55,10 @@ export function LoginPage() {
                         >
                             {/* Error */}
                             {error && (
-                                <div className="bg-danger-soft text-danger rounded-lg px-3 py-2 text-sm">
+                                <div
+                                    data-testid="login-error"
+                                    className="bg-danger-soft text-danger rounded-lg px-3 py-2 text-sm"
+                                >
                                     {error}
                                 </div>
                             )}
@@ -64,6 +69,7 @@ export function LoginPage() {
                                 value={email}
                                 onChange={setEmail}
                                 placeholder="you@example.com"
+                                data-testid="login-email"
                             />
 
                             <TextInput
@@ -72,6 +78,7 @@ export function LoginPage() {
                                 value={password}
                                 onChange={setPassword}
                                 placeholder="••••••••"
+                                data-testid="login-password"
                             />
 
                             {/* Submit */}
@@ -80,6 +87,7 @@ export function LoginPage() {
                                 variant="primary"
                                 disabled={loading}
                                 className="w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                                data-testid="login-submit"
                             >
                                 {loading ? 'Signing in…' : 'Sign in'}
                             </Button>
